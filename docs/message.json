@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "P2PMessage",
+    "description": "Format for message passing",
+    "type": "object",
+    "properties": {
+        "messageType": {
+            "description": "The type of msg",
+            "enum": ["HELO", "HI", "LISTCH", "JOIN", "NICK", "PASS", "LISTUSERS", "MSGCH", "FILE", "QUIT", "REPEAT"]
+        },
+        "TTL": {
+            "description": "The time to live: how many jumps the message can still survive",
+            "type": "integer"
+        },
+        "sourceIP": {
+            "description": "Where the message came from",
+            "type": "string",
+            "format": "ipv4"
+        },
+        "destinationIP": {
+            "description": "Where the message is headed",
+            "type": "string",
+            "format": "ipv4"
+        },
+        "originalSourceIP": {
+            "description": "Where the message originated",
+            "type": "string",
+            "format":"ipv4"
+        },
+        "originalDestinationIP": {
+            "description": "Where the message was originally meant to go",
+            "type": "string",
+            "format":"ipv4"
+        },
+        "channelID": {
+            "description": "ID for channel hosted by user",
+            "type": "integer"
+        },
+        "data": {
+            "oneof": [
+                {"type": "string"},
+                {"type": "array"}
+            ]
+            
+        }
+    }
+} 
