@@ -12,9 +12,9 @@ public class ClientThreadTCP implements Runnable {
 		_clientSocket = clientSocket;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		try {
-			_serverInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
+//			_serverInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
 			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
-			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
+//			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		} catch(IOException e) {
 			System.err.println("Could not create client side output stream to server.");
 		}
@@ -27,20 +27,28 @@ public class ClientThreadTCP implements Runnable {
 		String serverText = "";
 		while(userInput.compareTo("billeh") != 0 && serverText.compareTo("billeh") != 0) {
 			try {
+				_serverInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
 				serverText = _serverInput.readLine();
 				System.out.println("Recieved (" + _serverIP + "): " + serverText);
+				_serverInput.close();
+				
+				_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 				userInput = _inFromUser.readLine();
 				_serverOutput.writeBytes(userInput + '\n');
+				_inFromUser.close();
 			} catch (IOException e) {
 				System.err.println("Could send message to server.");
 			}
 		}
+		close();
+	}
+	
+	public void close() {
 		try {
 			_clientSocket.close();
 		} catch (IOException e) {
 			System.err.println("Could not close client socket");
 		}
-		
 	}
 	
 	private void start() {

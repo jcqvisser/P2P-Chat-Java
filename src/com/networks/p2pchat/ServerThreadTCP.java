@@ -10,9 +10,9 @@ public class ServerThreadTCP implements Runnable{
 		_serverSocket = clientSocket;
 		_clientIP = _serverSocket.getInetAddress().toString();
 		try {
-			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
+//			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
 			_clientOutput = new DataOutputStream(_serverSocket.getOutputStream());
-			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
+//			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		} catch(IOException e) {
 			System.err.println("Error creating stream reader for thread: " + _clientIP);
 		}
@@ -25,19 +25,20 @@ public class ServerThreadTCP implements Runnable{
 		String userText = "";
 		while(clientText.compareTo("billeh")!= 0 && userText.compareTo("billeh")!= 0) {
 			try {
+				_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
 				clientText = _clientInput.readLine();
 				System.out.println("Recieved (" + _clientIP + "): " + clientText);
+				_clientInput.close();
+				
+				_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 				userText = _inFromUser.readLine();
-				_clientOutput.writeBytes(userText + "\n");
+				_clientOutput.writeBytes(clientText + "\n");
+				_inFromUser.close();
 			} catch( IOException e) {
 				System.err.println("Error reading data from socket.");
 			}
 		}
-		try {
-			_serverSocket.close();
-		} catch( IOException e) {
-			System.err.println("Error closing server socket.");
-		}
+		close();
 	}
 	
 	public void close() {
