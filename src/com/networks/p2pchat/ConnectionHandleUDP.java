@@ -1,10 +1,14 @@
 package com.networks.p2pchat;
 
-public class ListenerUDP implements Listener {
+public class ConnectionHandleUDP implements ConnectionHandle {
 	
 	// Public Members:
 	
-	public ListenerUDP(int port) {
+	public ConnectionHandleUDP(int port) {
+		
+	}
+	
+	public void connect(String ipAddr, int port) {
 		
 	}
 	

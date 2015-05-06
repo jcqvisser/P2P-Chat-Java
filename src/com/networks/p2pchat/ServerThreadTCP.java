@@ -3,14 +3,14 @@ package com.networks.p2pchat;
 import java.io.*;
 import java.net.Socket;
 
-public class ConnectionTCP implements Runnable{
+public class ServerThreadTCP implements Runnable{
 	
 	// Public Members:
-	public ConnectionTCP(Socket clientSocket) {
-		_clientSocket = clientSocket;
-		_clientIP = _clientSocket.getInetAddress().toString();
+	public ServerThreadTCP(Socket clientSocket) {
+		_serverSocket = clientSocket;
+		_clientIP = _serverSocket.getInetAddress().toString();
 		try {
-			_clientInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
+			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
 		} catch(IOException e) {
 			System.err.println("Error creating stream reader for thread: " + _clientIP);
 		}
@@ -23,7 +23,7 @@ public class ConnectionTCP implements Runnable{
 		while(clientText.compareTo("billeh")!= 0) {
 			try {
 				clientText = _clientInput.readLine();
-				System.out.println("Recieved: " + clientText);
+				System.out.println("Recieved (" + _clientIP + "): " + clientText);
 			} catch( IOException e) {
 				System.err.println("Error reading data from socket.");
 			}
@@ -32,7 +32,7 @@ public class ConnectionTCP implements Runnable{
 	
 	public void close() {
 		try {
-			_clientSocket.close();
+			_serverSocket.close();
 		} catch( IOException e) {
 			System.err.println("Error closing socket.");
 		}
@@ -48,7 +48,7 @@ public class ConnectionTCP implements Runnable{
 		}
 	}
 	
-	private Socket _clientSocket;
+	private Socket _serverSocket;
 	private String _clientIP;
 	private Thread _thread;
 	private BufferedReader _clientInput;
