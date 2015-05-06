@@ -31,6 +31,8 @@ public class ClientThreadTCP implements Runnable {
 				System.out.println("Recieved (" + _serverIP + "): " + serverText);
 				userInput = _inFromUser.readLine();
 				_serverOutput.writeBytes(userInput + '\n');
+//				serverText = _serverInput.readUTF();
+//				System.out.println("Recieved (" + _serverIP + "): " + serverText);
 			} catch (IOException e) {
 				System.err.println("Could send message to server.");
 			}
