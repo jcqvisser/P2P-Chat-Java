@@ -8,7 +8,7 @@ public class ConnectionHandleUDP implements ConnectionHandle {
 		
 	}
 	
-	public void connect(String ipAddr, int port) {
+	public void connect(String ipAddr) {
 		
 	}
 	

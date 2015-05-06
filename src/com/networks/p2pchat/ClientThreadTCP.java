@@ -12,8 +12,9 @@ public class ClientThreadTCP implements Runnable {
 		_clientSocket = clientSocket;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		try {
+			_serverInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
+			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
 			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
-			_outToServer = new DataOutputStream(_clientSocket.getOutputStream());
 		} catch(IOException e) {
 			System.err.println("Could not create client side output stream to server.");
 		}
@@ -23,10 +24,13 @@ public class ClientThreadTCP implements Runnable {
 	
 	public void run() {
 		String userInput = "";
-		while(userInput.compareTo("billeh") != 0) {
+		String serverText = "";
+		while(userInput.compareTo("billeh") != 0 && serverText.compareTo("billeh") != 0) {
 			try {
+				serverText = _serverInput.readLine();
+				System.out.println("Recieved (" + _serverIP + "): " + serverText);
 				userInput = _inFromUser.readLine();
-				_outToServer.writeBytes(userInput + '\n');
+				_serverOutput.writeBytes(userInput + '\n');
 			} catch (IOException e) {
 				System.err.println("Could send message to server.");
 			}
@@ -53,7 +57,8 @@ public class ClientThreadTCP implements Runnable {
 	private Socket _clientSocket;
 	private Thread _thread;
 	private String _serverIP;
-	private DataOutputStream _outToServer;
+	private DataOutputStream _serverOutput;
+	private BufferedReader _serverInput;
 	private BufferedReader _inFromUser;
 	
 }

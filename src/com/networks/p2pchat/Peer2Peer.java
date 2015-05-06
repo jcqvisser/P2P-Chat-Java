@@ -10,13 +10,12 @@ public class Peer2Peer {
 		_connectionListener = new ConnectionHandleTCP(1337);
 		_connectionListener.start("billeh");
 		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
-		
-		System.out.print("Enter an ip address: ");
-		String ipAddr = getUserInput();
-		System.out.print("Enter a port number: ");
-		String port = getUserInput();
-		
-		_connectionListener.connect(ipAddr, Integer.parseInt(port));
+		String usrInpt = "";
+		System.out.println("Would you like to create a client connection, \'y\' for yes, \'n\' for no.");
+		usrInpt = getUserInput();
+		if(usrInpt.compareToIgnoreCase("y") == 0) {
+			createClientConnection();
+		} 
 	}
 	
 	public static String getUserInput() {
@@ -25,7 +24,13 @@ public class Peer2Peer {
 		} catch(IOException e) {
 			return null;
 		}
+	}
+	
+	public static void createClientConnection() {
+		System.out.print("Enter an ip address: ");
+		String ipAddr = getUserInput();
 		
+		_connectionListener.connect(ipAddr);
 	}
 	
 	// Private Members:

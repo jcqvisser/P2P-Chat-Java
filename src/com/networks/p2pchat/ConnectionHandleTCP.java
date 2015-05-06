@@ -19,7 +19,7 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		_clientSockets = new ArrayList<ClientThreadTCP>();
 	}
 	
-	public void connect(String ipAddr, int port) {
+	public void connect(String ipAddr) {
 		try {
 			Socket clientSocket = new Socket(ipAddr, 1337);
 			_clientSockets.add(new ClientThreadTCP(clientSocket));
