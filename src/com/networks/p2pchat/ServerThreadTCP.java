@@ -33,6 +33,11 @@ public class ServerThreadTCP implements Runnable{
 				System.err.println("Error reading data from socket.");
 			}
 		}
+		try {
+			_serverSocket.close();
+		} catch( IOException e) {
+			System.err.println("Error closing server socket.");
+		}
 	}
 	
 	public void close() {

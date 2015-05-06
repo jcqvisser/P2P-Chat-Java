@@ -15,7 +15,13 @@ public class Peer2Peer {
 		usrInpt = getUserInput();
 		if(usrInpt.compareToIgnoreCase("y") == 0) {
 			createClientConnection();
-		} 
+		}
+		
+		try {
+			_inFromUser.close();
+		} catch(IOException e) {
+			System.out.println("Failed to close stream input");
+		}
 	}
 	
 	public static String getUserInput() {
