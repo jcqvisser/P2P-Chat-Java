@@ -11,8 +11,8 @@ public class ClientThreadTCP implements Runnable {
 	public ClientThreadTCP(Socket clientSocket) {
 		_clientSocket = clientSocket;
 		_serverIP = _clientSocket.getInetAddress().toString();
+		_clientChatHandle = new ClientChatThreadTCP(this, _clientSocket);
 		try {
-			_serverInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
 			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
 			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		} catch(IOException e) {
@@ -24,20 +24,22 @@ public class ClientThreadTCP implements Runnable {
 	
 	public void run() {
 		String userInput = "";
-		String serverText = "";
-		while(userInput.compareTo("billeh") != 0 && serverText.compareTo("billeh") != 0) {
+		while(userInput.compareTo("!") != 0) {
 			try {
-				serverText = _serverInput.readLine();
-				System.out.println("Recieved (" + _serverIP + "): " + serverText);
 				userInput = _inFromUser.readLine();
 				_serverOutput.writeBytes(userInput + '\n');
-//				serverText = _serverInput.readUTF();
-//				System.out.println("Recieved (" + _serverIP + "): " + serverText);
 			} catch (IOException e) {
 				System.err.println("Could send message to server.");
 			}
 		}
-		close();
+	}
+	
+	public void messageHandle(String message) {
+		if(message.compareTo("!") == 0) {
+			_clientChatHandle.close();
+		} else {
+			System.out.println(message);
+		}
 	}
 	
 	public void close() {
@@ -60,10 +62,10 @@ public class ClientThreadTCP implements Runnable {
 	// Private members
 	
 	private Socket _clientSocket;
+	private ClientChatThreadTCP _clientChatHandle;
 	private Thread _thread;
 	private String _serverIP;
 	private DataOutputStream _serverOutput;
-	private BufferedReader _serverInput;
 	private BufferedReader _inFromUser;
 	
 }

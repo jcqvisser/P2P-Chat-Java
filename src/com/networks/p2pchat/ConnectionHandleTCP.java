@@ -34,6 +34,7 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		while(_checkConnections) {
 			try {
 				_serverSockets.add(new ServerThreadTCP(this, _listenSocket.accept()));
+				connect("localhost");
 			} catch (IOException e) {
 				System.err.println("Error connection TCP socket connection.");
 			}
