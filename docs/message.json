@@ -17,20 +17,32 @@
             "type": "string",
             "format": "ipv4"
         },
+        "sourcePort": {
+            "type": "integer"
+        },
         "destinationIP": {
             "description": "Where the message is headed",
             "type": "string",
             "format": "ipv4"
+        },
+        "destinationPort": {
+            "type": "integer"
         },
         "originalSourceIP": {
             "description": "Where the message originated",
             "type": "string",
             "format":"ipv4"
         },
+        "originalSourcePort": {
+            "type": "Integer"
+        },
         "originalDestinationIP": {
             "description": "Where the message was originally meant to go",
             "type": "string",
             "format":"ipv4"
+        },
+        "originalDestinationPort": {
+            "type": "integer"
         },
         "channelID": {
             "description": "ID for channel hosted by user",
@@ -41,7 +53,6 @@
                 {"type": "string"},
                 {"type": "array"}
             ]
-            
         }
     }
 } 
