@@ -6,38 +6,47 @@ import java.net.Socket;
 public class ServerThreadTCP implements Runnable{
 	
 	// Public Members:
-	public ServerThreadTCP(Socket clientSocket) {
-		_serverSocket = clientSocket;
+	public ServerThreadTCP(ConnectionHandleTCP connectionHandler, Socket serverSocket) {
+		_serverSocket = serverSocket;
 		_clientIP = _serverSocket.getInetAddress().toString();
+		_connectionHandler = connectionHandler;
 		try {
-			_clientInput = new DataInputStream(_serverSocket.getInputStream());
+			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
 			_clientOutput = new DataOutputStream(_serverSocket.getOutputStream());
-			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		} catch(IOException e) {
 			System.err.println("Error creating stream reader for thread: " + _clientIP);
 		}
 		start();
 	}
 	
+	public String getIP() {
+		return _clientIP;
+	}
+	
 	public void run() {
 //		while(!_clientSocket.isClosed()) {
 		String clientText = "";
-		String userText = "";
-		while(clientText.compareTo("billeh")!= 0 && userText.compareTo("billeh")!= 0) {
+		while(clientText.compareTo("!") !=  0) {
 			try {
-				clientText = _clientInput.readUTF();
-				System.out.println("Recieved (" + _clientIP + "): " + clientText);
-				userText = _inFromUser.readLine();
-				_clientOutput.writeBytes(clientText + "\n");
+				clientText = _clientInput.readLine();
+				_connectionHandler.serverHandle(_clientIP, clientText);
 			} catch( IOException e) {
 				System.err.println("Error reading data from socket.");
 			}
 		}
-		close();
+	}
+	
+	public void sendMessage(String message) {
+		try {
+			_clientOutput.writeBytes(message + "\n");
+		} catch (IOException ioe) {
+			System.err.println("Error sending message to IP: " + _clientIP);
+		}
 	}
 	
 	public void close() {
 		try {
+			_clientInput.close();
 			_serverSocket.close();
 		} catch( IOException e) {
 			System.err.println("Error closing socket.");
@@ -57,7 +66,7 @@ public class ServerThreadTCP implements Runnable{
 	private Socket _serverSocket;
 	private String _clientIP;
 	private Thread _thread;
-	private DataInputStream _clientInput;
+	private BufferedReader _clientInput;
 	private DataOutputStream _clientOutput;
-	private BufferedReader _inFromUser;
+	private ConnectionHandleTCP _connectionHandler;
 }

@@ -1,7 +1,6 @@
 package com.networks.p2pchat;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,7 +12,7 @@ public class ClientThreadTCP implements Runnable {
 		_clientSocket = clientSocket;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		try {
-			_serverInput = new DataInputStream(_clientSocket.getInputStream());
+			_serverInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
 			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
 			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		} catch(IOException e) {
@@ -28,10 +27,10 @@ public class ClientThreadTCP implements Runnable {
 		String serverText = "";
 		while(userInput.compareTo("billeh") != 0 && serverText.compareTo("billeh") != 0) {
 			try {
+				serverText = _serverInput.readLine();
+				System.out.println("Recieved (" + _serverIP + "): " + serverText);
 				userInput = _inFromUser.readLine();
 				_serverOutput.writeBytes(userInput + '\n');
-				serverText = _serverInput.readUTF();
-				System.out.println("Recieved (" + _serverIP + "): " + serverText);
 			} catch (IOException e) {
 				System.err.println("Could send message to server.");
 			}
@@ -62,7 +61,7 @@ public class ClientThreadTCP implements Runnable {
 	private Thread _thread;
 	private String _serverIP;
 	private DataOutputStream _serverOutput;
-	private DataInputStream _serverInput;
+	private BufferedReader _serverInput;
 	private BufferedReader _inFromUser;
 	
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	// Public Members
@@ -32,9 +33,25 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	public void run() {
 		while(_checkConnections) {
 			try {
-				_serverSockets.add(new ServerThreadTCP(_listenSocket.accept()));
+				_serverSockets.add(new ServerThreadTCP(this, _listenSocket.accept()));
 			} catch (IOException e) {
 				System.err.println("Error connection TCP socket connection.");
+			}
+		}
+	}
+	
+	public synchronized void serverHandle(String IP, String message) {
+		if(message.compareTo("!") == 0) {
+			int socketIP = findServerThreadID(IP);
+			_serverSockets.get(socketIP).close();
+			_serverSockets.remove(socketIP);
+		} else {
+			ListIterator<ServerThreadTCP> itr = _serverSockets.listIterator();
+			while(itr.hasNext()) {
+				ServerThreadTCP serverSocket= itr.next();
+				if(serverSocket.getIP().compareTo(IP) != 0) {
+					serverSocket.sendMessage(message);
+				}
 			}
 		}
 	}
@@ -52,6 +69,18 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	}
 	
 	// Private Members
+	
+	private int findServerThreadID(String ipAddr) {
+		ListIterator<ServerThreadTCP> itr = _serverSockets.listIterator();
+		int index = 0;
+		while(itr.hasNext()) {
+			index = itr.nextIndex();
+			if(itr.next().getIP().compareTo(ipAddr) == 0) {
+				return index;
+			}
+		}
+		return -1;
+	}
 	
 	private Thread _thread;
 	private ServerSocket _listenSocket;
