@@ -3,8 +3,47 @@
     <xs:element name="message">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="messageType"
+                <xs:element name="mType" type="messageType"/>
+                <xs:element name="ttl" type="xs:positiveInteger"/>
+                <xs:element name="source" type="peer"/>
+                <xs:element name="destination" type="peer"/>
+                <xs:element name="originalSource" type="peer"/>
+                <xs:element name="channelID" type="xs:positiveInteger"/>
+                <xs:element name="text" type="xs:string"/>
+                <xs:element name="filename" type="xs:string"/>
+                <xs:element name="data" type="xs:base64Binary"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+
+<xs:simpleType name="IPv4Address">
+    <xs:restriction base="xsd:string">
+        <xs:pattern value="((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name="peer">
+    <xs:sequence>
+        <xs:element name="ip" type="IPv4Address"/>
+        <xs:element name="port" type="xs:positiveInteger"/>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:simpleType name="messageType">
+  <xs:restriction base="xs:string">
+    <xs:enumeration value="HELO"/>
+    <xs:enumeration value="HI"/>
+    <xs:enumeration value="LISTCH"/>
+    <xs:enumeration value="JOIN"/>
+    <xs:enumeration value="NICK"/>
+    <xs:enumeration value="PASS"/>
+    <xs:enumeration value="LISTUSERS"/>
+    <xs:enumeration value="MSGCH"/>
+    <xs:enumeration value="FILE"/>
+    <xs:enumeration value="QUIT"/>
+    <xs:enumeration value="REPEAT"/>
+  </xs:restriction>
+</xs:simpleType>
+
 </xs:schema>
+
