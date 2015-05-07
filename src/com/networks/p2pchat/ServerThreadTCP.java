@@ -13,8 +13,8 @@ public class ServerThreadTCP implements Runnable{
 		try {
 			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
 			_clientOutput = new DataOutputStream(_serverSocket.getOutputStream());
-		} catch(IOException e) {
-			System.err.println("Error creating stream reader for thread: " + _clientIP);
+		} catch(IOException ioe) {
+			System.err.println("Error creating stream reader for thread: " + _clientIP + " - " + ioe.getMessage());
 		}
 		start();
 	}
@@ -30,8 +30,8 @@ public class ServerThreadTCP implements Runnable{
 			try {
 				clientText = _clientInput.readLine();
 				_connectionHandler.serverHandle(_clientIP, clientText);
-			} catch( IOException e) {
-				System.err.println("Error reading data from socket.");
+			} catch( IOException ioe) {
+				System.err.println("Error reading data from socket: " + ioe.getMessage());
 			}
 		}
 	}
@@ -40,7 +40,7 @@ public class ServerThreadTCP implements Runnable{
 		try {
 			_clientOutput.writeBytes(message + "\n");
 		} catch (IOException ioe) {
-			System.err.println("Error sending message to IP: " + _clientIP);
+			System.err.println("Error sending message to IP: " + _clientIP + " - " + ioe.getMessage());
 		}
 	}
 	

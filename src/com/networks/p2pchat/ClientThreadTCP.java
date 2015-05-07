@@ -12,8 +12,8 @@ public class ClientThreadTCP implements Runnable {
 		_clientSocket = clientSocket;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		_clientChatHandle = new ClientChatThreadTCP(this, _clientSocket);
-		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		try {
+			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
 		} catch(IOException e) {
 			System.err.println("Could not create client side output stream to server.");
@@ -24,18 +24,22 @@ public class ClientThreadTCP implements Runnable {
 	
 	public void run() {
 		String userInput = "";
+		long jeff = 0;
 		while(userInput.compareTo("!") != 0) {
+			jeff++;
+			if(jeff % 500000000 == 0) {
+				userInput = "hello";
+				try {
+					_serverOutput.writeBytes(userInput + '\n');
+				} catch (IOException ioe) {
+					System.err.println("Couldn't send message to server." + ioe.getMessage());
+				}
+			}
 //			try {
 //				userInput = _inFromUser.readLine();
-//			} catch (IOException e) {
-//				System.err.println("Couldn't recieve user input: " + e.getMessage());
+//			} catch (IOException ioe) {
+//				System.err.println("Couldn't recieve user input in thread: " + _serverIP + " - " + ioe.getMessage());
 //			}
-			try {
-				userInput = "HELLO!";
-				_serverOutput.writeBytes(userInput + '\n');
-			} catch (IOException e) {
-				System.err.println("Couldn't send message to server." + e.getMessage());
-			}
 		}
 	}
 	

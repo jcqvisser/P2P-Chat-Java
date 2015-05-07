@@ -7,14 +7,17 @@ public class Peer2Peer {
 	// Public Members:
 
 	public static void main(String[] args) {
-		_connectionListener = new ConnectionHandleTCP(1337);
-		_connectionListener.start("billeh");
 		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		String usrInpt = "";
 		System.out.println("Would you like to create a client connection, \'y\' for yes, \'n\' for no.");
 		usrInpt = getUserInput();
 		if(usrInpt.compareToIgnoreCase("y") == 0) {
+			_connectionListener = new ConnectionHandleTCP(1338);
+			_connectionListener.start("billeh");
 			createClientConnection();
+		} else {
+			_connectionListener = new ConnectionHandleTCP(1337);
+			_connectionListener.start("billeh");
 		}
 		
 		try {
