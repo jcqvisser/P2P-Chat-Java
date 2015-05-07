@@ -2,11 +2,10 @@ package com.networks.p2pchat;
 
 import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-
-import com.sun.glass.events.WindowEvent;
 
 public class ClientThreadTCP implements Runnable {
 
@@ -28,13 +27,7 @@ public class ClientThreadTCP implements Runnable {
 	}
 	
 	public void run() {
-		String userInput = "";
 		while(_runThread) {
-//			try {
-//				userInput = _inFromUser.readLine();
-//			} catch (IOException ioe) {
-//				System.err.println("Couldn't recieve user input in thread: " + _serverIP + " - " + ioe.getMessage());
-//			}
 			synchronized(this) {
 				try {
 					this.wait();
@@ -49,7 +42,7 @@ public class ClientThreadTCP implements Runnable {
 				}
 				
 			}
-			if(userInput.compareTo("!") == 0) {
+			if(_messageText.compareTo("QUIT") == 0) {
 				passClose();
 			}
 		}
@@ -67,7 +60,6 @@ public class ClientThreadTCP implements Runnable {
 	}
 	
 	public void messageHandle(String message) {
-		System.out.println(message);
 		_chatWindow.displayMessage(message);
 	}
 	
@@ -78,11 +70,13 @@ public class ClientThreadTCP implements Runnable {
 	public void close() {
 		try {
 			System.out.println("Closing client socket for: " + getClientIPPort());
-			_runThread = false;
 			if(_clientChatHandle != null)
 				_clientChatHandle.close();
 			if(_clientSocket != null)
 				_clientSocket.close();
+			if(_chatWindow != null)
+				_chatWindow.dispose();
+			_runThread = false;
 		} catch (IOException e) {
 			System.err.println("Could not close client socket");
 		}
@@ -106,13 +100,13 @@ public class ClientThreadTCP implements Runnable {
 			public void run() {
 				try {
 					_chatWindow = new ClientWindow(tempThis, "title");
-					_chatWindow.setVisible(true);
 					_chatWindow.addWindowListener(new WindowAdapter() {
-						@SuppressWarnings("unused")
+						@Override
 						public void windowClosing(WindowEvent e) {
-							passClose();
+							sendMessage("QUIT");
 						}
 					});
+					_chatWindow.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

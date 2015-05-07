@@ -30,7 +30,12 @@ public class ServerThreadTCP implements Runnable{
 		while(_runServerThread) {
 			try {
 				clientText = _clientInput.readLine();
-				_connectionHandler.serverHandle(getIPPort(), clientText);
+				if(clientText != null) {
+					_connectionHandler.serverHandle(getIPPort(), clientText);
+				} else {
+					_connectionHandler.closeServerSocket(getIPPort());
+				}
+				
 			} catch( IOException ioe) {
 				System.err.println("Error reading data from socket: " + ioe.getMessage());
 				_connectionHandler.closeServerSocket(getIPPort());

@@ -21,9 +21,9 @@ public class ClientWindow extends JFrame {
 	private JTextArea txtrTextarea;
 	private ClientThreadTCP _clientHandler;
 	private String _title;
-
+	
 	/**
-	 * Launch the application.
+	 *	Display message strings on the screen
 	 */
 	
 	public void displayMessage(String message) {

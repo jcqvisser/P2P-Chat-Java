@@ -40,15 +40,13 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	
 	public synchronized void serverHandle(String IPPort, String message) {
 		System.out.println("Server recieved (" + IPPort + "): " + message);
-		if(message.compareTo("!") == 0) {
+		if(message.compareTo("QUIT") == 0) {
 			closeServerSocket(IPPort);
 		} else {
 			ListIterator<ServerThreadTCP> itr = _serverSockets.listIterator();
 			while(itr.hasNext()) {
 				ServerThreadTCP serverSocket= itr.next();
-				if(serverSocket.getIPPort().compareTo(IPPort) != 0) {
-					serverSocket.sendMessage(IPPort + ": " + message);
-				}
+				serverSocket.sendMessage(IPPort + ": " + message);
 			}
 		}
 	}
@@ -67,21 +65,15 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	
 	public synchronized void closeServerSocket(String ipPort) {
 		int socketID = findServerThreadID(ipPort);
-		if(socketID == -1 ) {
-			System.err.println("Couldnt find server connection in list.");
-		} else if(_serverSockets.get(socketID) != null) {
+		if(socketID != -1 && _serverSockets.get(socketID) != null) {
 			_serverSockets.get(socketID).close();
 			_serverSockets.remove(socketID);
 		}
-		
 	}
 	
 	public synchronized void closeClientSocket(String ipPort) {
 		int socketID = findClientThreadID(ipPort);
-		if(socketID == -1) {
-			System.err.println("Couldnt find client connection in list.");
-		}
-		else if(_clientSockets.get(socketID) != null) {
+		if(socketID != -1 && _clientSockets.get(socketID) != null) {
 			_clientSockets.get(socketID).close();
 			_clientSockets.remove(socketID);
 		}

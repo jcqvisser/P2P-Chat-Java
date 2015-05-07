@@ -9,15 +9,10 @@ public class Peer2Peer {
 	public static void main(String[] args) {
 		// Initialize input streams.
 		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
-		String usrInpt = "";
-		System.out.println("Would you like to create a client connection, \'y\' for yes, \'n\' for no.");
-		usrInpt = getUserInput();
-		if(usrInpt.compareToIgnoreCase("y") == 0) {
-			setupServerListener();
+		int port = setupServerListener();
+		_connectionListener.connect("localhost", port);
+		while(true) {
 			createClientConnection();
-		} else {
-			int port = setupServerListener();
-			_connectionListener.connect("localhost", port);
 		}
 	}
 	
