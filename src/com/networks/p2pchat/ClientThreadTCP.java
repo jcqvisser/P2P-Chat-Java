@@ -12,9 +12,9 @@ public class ClientThreadTCP implements Runnable {
 		_clientSocket = clientSocket;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		_clientChatHandle = new ClientChatThreadTCP(this, _clientSocket);
+		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		try {
 			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
-			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		} catch(IOException e) {
 			System.err.println("Could not create client side output stream to server.");
 		}
@@ -25,12 +25,13 @@ public class ClientThreadTCP implements Runnable {
 	public void run() {
 		String userInput = "";
 		while(userInput.compareTo("!") != 0) {
+//			try {
+//				userInput = _inFromUser.readLine();
+//			} catch (IOException e) {
+//				System.err.println("Couldn't recieve user input: " + e.getMessage());
+//			}
 			try {
-				userInput = _inFromUser.readLine();
-			} catch (IOException e) {
-				System.err.println("Couldn't recieve user input: " + e.getMessage());
-			}
-			try {
+				userInput = "HELLO!";
 				_serverOutput.writeBytes(userInput + '\n');
 			} catch (IOException e) {
 				System.err.println("Couldn't send message to server." + e.getMessage());
