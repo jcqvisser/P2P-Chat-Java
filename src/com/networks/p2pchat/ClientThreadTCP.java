@@ -1,10 +1,12 @@
 package com.networks.p2pchat;
 
-import java.io.BufferedReader;
+import java.awt.EventQueue;
+import java.awt.event.WindowAdapter;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
+
+import com.sun.glass.events.WindowEvent;
 
 public class ClientThreadTCP implements Runnable {
 
@@ -14,8 +16,9 @@ public class ClientThreadTCP implements Runnable {
 		_serverIP = _clientSocket.getInetAddress().toString();
 		_serverPort = _clientSocket.getPort();
 		_clientChatHandle = new ClientChatThreadTCP(this, _clientSocket);
+		_messageText = "";
+		launchWindow();
 		try {
-			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
 		} catch(IOException e) {
 			System.err.println("Could not create client side output stream to server.");
@@ -27,20 +30,35 @@ public class ClientThreadTCP implements Runnable {
 	public void run() {
 		String userInput = "";
 		while(_runThread) {
-			try {
-				userInput = _inFromUser.readLine();
-			} catch (IOException ioe) {
-				System.err.println("Couldn't recieve user input in thread: " + _serverIP + " - " + ioe.getMessage());
-			}
-			try {
-				_serverOutput.writeBytes(userInput + '\n');
-			} catch (IOException ioe) {
-				System.err.println("Couldn't send message to server." + ioe.getMessage());
-				passClose();
+//			try {
+//				userInput = _inFromUser.readLine();
+//			} catch (IOException ioe) {
+//				System.err.println("Couldn't recieve user input in thread: " + _serverIP + " - " + ioe.getMessage());
+//			}
+			synchronized(this) {
+				try {
+					this.wait();
+					try {
+						_serverOutput.writeBytes(_messageText + '\n');
+					} catch (IOException ioe) {
+						System.err.println("Couldn't send message to server." + ioe.getMessage());
+						passClose();
+					}
+				} catch(InterruptedException e) {
+					System.out.println("Wait interrupt thrown:" + e.getMessage());
+				}
+				
 			}
 			if(userInput.compareTo("!") == 0) {
 				passClose();
 			}
+		}
+	}
+	
+	public void sendMessage(String message) {
+		synchronized(this) {
+			_messageText = message;
+			this.notify();
 		}
 	}
 	
@@ -50,6 +68,7 @@ public class ClientThreadTCP implements Runnable {
 	
 	public void messageHandle(String message) {
 		System.out.println(message);
+		_chatWindow.displayMessage(message);
 	}
 	
 	public synchronized void passClose() {
@@ -81,14 +100,34 @@ public class ClientThreadTCP implements Runnable {
 	
 	// Private members
 	
+	public void launchWindow() {
+		ClientThreadTCP tempThis = this;
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					_chatWindow = new ClientWindow(tempThis, "title");
+					_chatWindow.setVisible(true);
+					_chatWindow.addWindowListener(new WindowAdapter() {
+						@SuppressWarnings("unused")
+						public void windowClosing(WindowEvent e) {
+							passClose();
+						}
+					});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
 	private Socket _clientSocket;
 	private ClientChatThreadTCP _clientChatHandle;
 	private ConnectionHandleTCP _connectionHandler;
 	private volatile boolean _runThread;
+	private ClientWindow _chatWindow;
 	private Thread _thread;
 	private String _serverIP;
 	private int _serverPort;
 	private DataOutputStream _serverOutput;
-	private BufferedReader _inFromUser;
-	
+	private String _messageText;
 }

@@ -39,7 +39,7 @@ public class Peer2Peer {
 	}
 	
 	public static void createClientConnection() {
-		System.out.println("Enter an ip address for client connection: ");
+		System.out.println("Enter an ip address for client  connection: ");
 		String ipAddr = getUserInput();
 		System.out.println("Enter a port for client connection: ");
 		int port = Integer.parseInt(getUserInput());
