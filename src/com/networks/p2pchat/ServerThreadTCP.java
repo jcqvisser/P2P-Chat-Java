@@ -17,6 +17,7 @@ public class ServerThreadTCP implements Runnable{
 		} catch(IOException ioe) {
 			System.err.println("Error creating stream reader for thread: " + _clientIP + " - " + ioe.getMessage());
 		}
+		_runServerThread = true;
 		start();
 	}
 	
@@ -26,15 +27,15 @@ public class ServerThreadTCP implements Runnable{
 	
 	public void run() {
 		String clientText = "";
-		while(clientText.compareTo("!") !=  0) {
+		while(_runServerThread) {
 			try {
 				clientText = _clientInput.readLine();
 				_connectionHandler.serverHandle(getIPPort(), clientText);
 			} catch( IOException ioe) {
 				System.err.println("Error reading data from socket: " + ioe.getMessage());
+				_connectionHandler.closeServerSocket(getIPPort());
 			}
 		}
-		_connectionHandler.closeSocket(getIPPort());
 	}
 	
 	public void sendMessage(String message) {
@@ -47,6 +48,8 @@ public class ServerThreadTCP implements Runnable{
 	
 	public void close() {
 		try {
+			System.out.println("Closing server socket for: " + getIPPort());
+			_runServerThread = false;
 			_clientInput.close();
 			_serverSocket.close();
 		} catch( IOException e) {
@@ -59,7 +62,7 @@ public class ServerThreadTCP implements Runnable{
 	private void start() {
 		if (_thread == null)
 		{
-			_thread = new Thread (this, _clientIP);
+			_thread = new Thread (this, getIPPort());
 			_thread.start ();
 		}
 	}
@@ -68,6 +71,7 @@ public class ServerThreadTCP implements Runnable{
 	private String _clientIP;
 	private int _clientPort;
 	private Thread _thread;
+	private volatile boolean _runServerThread;
 	private BufferedReader _clientInput;
 	private DataOutputStream _clientOutput;
 	private ConnectionHandleTCP _connectionHandler;

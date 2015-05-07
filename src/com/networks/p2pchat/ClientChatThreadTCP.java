@@ -10,39 +10,38 @@ public class ClientChatThreadTCP implements Runnable {
 		_clientSocket = clientSocket;
 		_clientHandler = clientHandler;
 		_serverIP = _clientSocket.getInetAddress().toString();
-		
+		_serverPort = _clientSocket.getPort();
 		try {
 			_serverInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
 		} catch(IOException e) {
 			System.err.println("Could not create client side output stream to server.");
 		}
+		_runClientChatThread = true;
 		start();
 	}
 	
 	public void start() {
 		if (_thread == null)
 		{
-			_thread = new Thread (this, _serverIP);
+			_thread = new Thread (this, _serverIP + ":" + Integer.toString(_serverPort));
 			_thread.start ();
 		}
 	}
 	
 	public void close() {
-		try {
-			_serverInput.close();
-		} catch (IOException ioe) {
-			System.err.println("Error closing client socket read buffer.");
-		}
+		_runClientChatThread = false;
 	}
 	
 	public void run() {
 		String serverText = "";
-		while(serverText.compareTo("!") != 0) {
+		while(_runClientChatThread) {
 			try {
 				serverText = _serverInput.readLine();
-				_clientHandler.messageHandle(serverText);
-			} catch (IOException e) {
-				System.err.println("Could send message to server.");
+				if(serverText != null)
+					_clientHandler.messageHandle(serverText);
+			} catch (IOException ioe) {
+				System.err.println("Couldn't read message from server: " + ioe.getMessage());
+				_clientHandler.passClose();
 			}
 		}
 	}
@@ -52,6 +51,8 @@ public class ClientChatThreadTCP implements Runnable {
 	private Socket _clientSocket;
 	private BufferedReader _serverInput;
 	private ClientThreadTCP _clientHandler;
+	private volatile boolean _runClientChatThread;
 	private String _serverIP;
+	private int _serverPort;
 	private Thread _thread;
 }

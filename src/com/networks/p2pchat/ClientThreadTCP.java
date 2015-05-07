@@ -8,9 +8,11 @@ import java.net.Socket;
 
 public class ClientThreadTCP implements Runnable {
 
-	public ClientThreadTCP(Socket clientSocket) {
+	public ClientThreadTCP(ConnectionHandleTCP connectionHandler, Socket clientSocket) {
 		_clientSocket = clientSocket;
+		_connectionHandler = connectionHandler;
 		_serverIP = _clientSocket.getInetAddress().toString();
+		_serverPort = _clientSocket.getPort();
 		_clientChatHandle = new ClientChatThreadTCP(this, _clientSocket);
 		try {
 			_inFromUser = new BufferedReader( new InputStreamReader(System.in));
@@ -18,13 +20,13 @@ public class ClientThreadTCP implements Runnable {
 		} catch(IOException e) {
 			System.err.println("Could not create client side output stream to server.");
 		}
-		
+		_runThread = true;
 		start();
 	}
 	
 	public void run() {
 		String userInput = "";
-		while(userInput.compareTo("!") != 0) {
+		while(_runThread) {
 			try {
 				userInput = _inFromUser.readLine();
 			} catch (IOException ioe) {
@@ -34,23 +36,34 @@ public class ClientThreadTCP implements Runnable {
 				_serverOutput.writeBytes(userInput + '\n');
 			} catch (IOException ioe) {
 				System.err.println("Couldn't send message to server." + ioe.getMessage());
-				break;
+				passClose();
+			}
+			if(userInput.compareTo("!") == 0) {
+				passClose();
 			}
 		}
-		close();
+	}
+	
+	public String getClientIPPort() {
+		return _clientSocket.getLocalAddress().toString() + ":" + Integer.toString(_clientSocket.getLocalPort());
 	}
 	
 	public void messageHandle(String message) {
-		if(message.compareTo("!") == 0) {
-			_clientChatHandle.close();
-		} else {
-			System.out.println(message);
-		}
+		System.out.println(message);
+	}
+	
+	public synchronized void passClose() {
+		_connectionHandler.closeClientSocket(getClientIPPort());
 	}
 	
 	public void close() {
 		try {
-			_clientSocket.close();
+			System.out.println("Closing client socket for: " + getClientIPPort());
+			_runThread = false;
+			if(_clientChatHandle != null)
+				_clientChatHandle.close();
+			if(_clientSocket != null)
+				_clientSocket.close();
 		} catch (IOException e) {
 			System.err.println("Could not close client socket");
 		}
@@ -59,7 +72,7 @@ public class ClientThreadTCP implements Runnable {
 	private void start() {
 		if (_thread == null)
 		{
-			System.out.println("Client connected to: " + _serverIP);
+			System.out.println("Client connected to: " + _serverIP + ":" + Integer.toString(_serverPort));
 			_thread = new Thread (this, _serverIP);
 			_thread.start ();
 		}
@@ -70,8 +83,11 @@ public class ClientThreadTCP implements Runnable {
 	
 	private Socket _clientSocket;
 	private ClientChatThreadTCP _clientChatHandle;
+	private ConnectionHandleTCP _connectionHandler;
+	private volatile boolean _runThread;
 	private Thread _thread;
 	private String _serverIP;
+	private int _serverPort;
 	private DataOutputStream _serverOutput;
 	private BufferedReader _inFromUser;
 	
