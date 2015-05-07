@@ -17,23 +17,22 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		}
 		_checkConnections = true;
 		_serverSockets = new ArrayList<ServerThreadTCP>();
-//		_clientSockets = new ArrayList<ClientThreadTCP>();
+		_clientSockets = new ArrayList<ClientThreadTCP>();
 	}
 	
 	public void connect(String ipAddr) {
 		try {
-			_clientSocket = new ClientThreadTCP(new Socket(ipAddr, 1337));
-//			_clientSockets.add(new ClientThreadTCP(clientSocket));
+			_clientSockets.add(new ClientThreadTCP(new Socket(ipAddr, 1337)));
 		} catch(IOException e) {
 			System.err.println("Error - Cannot create client socket");
 		}
 	}
 	
 	public void run() {
+		connect("localhost");
 		while(_checkConnections) {
 			try {
 				_serverSockets.add(new ServerThreadTCP(this, _listenSocket.accept()));
-				connect("localhost");
 			} catch (IOException e) {
 				System.err.println("Error connection TCP socket connection.");
 			}
@@ -42,16 +41,14 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	
 	public synchronized void serverHandle(String IP, String message) {
 		if(message.compareTo("!") == 0) {
-			int socketIP = findServerThreadID(IP);
-			_serverSockets.get(socketIP).close();
-			_serverSockets.remove(socketIP);
+			closeSocket(IP);
 		} else {
 			ListIterator<ServerThreadTCP> itr = _serverSockets.listIterator();
 			while(itr.hasNext()) {
 				ServerThreadTCP serverSocket= itr.next();
-//				if(serverSocket.getIP().compareTo(IP) != 0) {
+				if(serverSocket.getIP().compareTo(IP) != 0) {
 					serverSocket.sendMessage(message);
-//				}
+				}
 			}
 		}
 	}
@@ -66,6 +63,12 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	
 	public void close() {
 		_checkConnections = false;
+	}
+	
+	public synchronized void closeSocket(String ipAddr) {
+		int socketIP = findServerThreadID(ipAddr);
+		_serverSockets.get(socketIP).close();
+		_serverSockets.remove(socketIP);
 	}
 	
 	// Private Members
@@ -85,7 +88,6 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	private Thread _thread;
 	private ServerSocket _listenSocket;
 	private ArrayList<ServerThreadTCP> _serverSockets;
-//	private ArrayList<ClientThreadTCP> _clientSockets;
-	private ClientThreadTCP _clientSocket;
+	private ArrayList<ClientThreadTCP> _clientSockets;
 	private boolean _checkConnections;
 }

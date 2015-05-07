@@ -24,23 +24,20 @@ public class ClientThreadTCP implements Runnable {
 	
 	public void run() {
 		String userInput = "";
-		long jeff = 0;
 		while(userInput.compareTo("!") != 0) {
-			jeff++;
-			if(jeff % 500000000 == 0) {
-				userInput = "hello";
-				try {
-					_serverOutput.writeBytes(userInput + '\n');
-				} catch (IOException ioe) {
-					System.err.println("Couldn't send message to server." + ioe.getMessage());
-				}
+			try {
+				userInput = _inFromUser.readLine();
+			} catch (IOException ioe) {
+				System.err.println("Couldn't recieve user input in thread: " + _serverIP + " - " + ioe.getMessage());
 			}
-//			try {
-//				userInput = _inFromUser.readLine();
-//			} catch (IOException ioe) {
-//				System.err.println("Couldn't recieve user input in thread: " + _serverIP + " - " + ioe.getMessage());
-//			}
+			try {
+				_serverOutput.writeBytes(userInput + '\n');
+			} catch (IOException ioe) {
+				System.err.println("Couldn't send message to server." + ioe.getMessage());
+				break;
+			}
 		}
+		close();
 	}
 	
 	public void messageHandle(String message) {

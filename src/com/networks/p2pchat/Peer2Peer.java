@@ -19,12 +19,6 @@ public class Peer2Peer {
 			_connectionListener = new ConnectionHandleTCP(1337);
 			_connectionListener.start("billeh");
 		}
-		
-		try {
-			_inFromUser.close();
-		} catch(IOException e) {
-			System.out.println("Failed to close stream input");
-		}
 	}
 	
 	public static String getUserInput() {

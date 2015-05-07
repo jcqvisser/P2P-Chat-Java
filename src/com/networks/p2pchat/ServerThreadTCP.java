@@ -24,7 +24,6 @@ public class ServerThreadTCP implements Runnable{
 	}
 	
 	public void run() {
-//		while(!_clientSocket.isClosed()) {
 		String clientText = "";
 		while(clientText.compareTo("!") !=  0) {
 			try {
@@ -34,6 +33,7 @@ public class ServerThreadTCP implements Runnable{
 				System.err.println("Error reading data from socket: " + ioe.getMessage());
 			}
 		}
+		_connectionHandler.closeSocket(_clientIP);
 	}
 	
 	public void sendMessage(String message) {
