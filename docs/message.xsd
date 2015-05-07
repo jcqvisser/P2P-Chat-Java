@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="message">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="mType" type="messageType"/>
-                <xs:element name="ttl" type="xs:positiveInteger"/>
-                <xs:element name="origin" type="peer"/>
-                <xs:element name="source" type="peer"/>
-                <xs:element name="destination" type="peer"/>
-                <xs:element name="channelID" type="xd:string"/>
-                <xs:element name="text" type="xs:string"/>
-                <xs:element name="filename" type="xs:string"/>
-                <xs:element name="data" type="xs:base64Binary"/>
-                <xs:element name="channels" type="channelList"/>
-                <xs:element name="forwardable" type="xs:boolean"/>
-                <xs:element name="peers" type="peerList"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="message">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="mType" type="messageType"/>
+                <xsd:element name="ttl" type="xsd:positiveInteger"/>
+                <xsd:element name="origin" type="peer"/>
+                <xsd:element name="source" type="peer"/>
+                <xsd:element name="destination" type="peer"/>
+                <xsd:element name="channelID" type="xd:string"/>
+                <xsd:element name="text" type="xsd:string"/>
+                <xsd:element name="filename" type="xsd:string"/>
+                <xsd:element name="data" type="xsd:base64Binary"/>
+                <xsd:element name="channels" type="channelList"/>
+                <xsd:element name="forwardable" type="xsd:boolean"/>
+                <xsd:element name="peers" type="peerList"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
                                                   
-    <xs:complexType name="peer">
-        <xs:sequence>
-            <xs:element name="ip" type="xs:string"/>
-            <xs:element name="port" type="xs:positiveInteger"/>
-            <xs:element name="id" type="xs:string"/>
-        </xs:sequence>
-    </xs:complexType>
+    <xsd:complexType name="peer">
+        <xsd:sequence>
+            <xsd:element name="ip" type="xsd:string"/>
+            <xsd:element name="port" type="xsd:positiveInteger"/>
+            <xsd:element name="id" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
     
-    <xs:simpleType name="messageType">
-      <xs:restriction base="xs:string">
-        <xs:enumeration value="HELO"/>
-        <xs:enumeration value="HI"/>
-        <xs:enumeration value="LISTCH"/>
-        <xs:enumeration valie="CH"/>
-        <xs:enumeration value="JOIN"/>
-        <xs:enumeration value="NICK"/>
-        <xs:enumeration value="PASS"/>
-        <xs:enumeration value="LISTUSERS"/>
-        <xs:enumeration value="USERS"/>
-        <xs:enumeration value="MSGCH"/>
-        <xs:enumeration value="FILE"/>
-        <xs:enumeration value="QUIT"/>
-        <xs:enumeration value="MSG"/>
-        <xs:enumeration value="REPEAT"/>
-      </xs:restriction>
-    </xs:simpleType>
+    <xsd:simpleType name="messageType">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="HELO"/>
+        <xsd:enumeration value="HI"/>
+        <xsd:enumeration value="LISTCH"/>
+        <xsd:enumeration valie="CH"/>
+        <xsd:enumeration value="JOIN"/>
+        <xsd:enumeration value="NICK"/>
+        <xsd:enumeration value="PASS"/>
+        <xsd:enumeration value="LISTUSERS"/>
+        <xsd:enumeration value="USERS"/>
+        <xsd:enumeration value="MSGCH"/>
+        <xsd:enumeration value="FILE"/>
+        <xsd:enumeration value="QUIT"/>
+        <xsd:enumeration value="MSG"/>
+        <xsd:enumeration value="REPEAT"/>
+      </xsd:restriction>
+    </xsd:simpleType>
     
-    <xs:simpleType name="channelList">
-        <xs:list itemType="xs:positiveInteger"/>
-    </xs:simpleType>
+    <xsd:simpleType name="channelList">
+        <xsd:list itemType="xsd:string"/>
+    </xsd:simpleType>
     
-    <xs:simpleType name="peerList">
-        <xs:list itemType="peer"/>
-    </xs:simpleType>
+    <xsd:simpleType name="peerList">
+        <xsd:list itemType="peer"/>
+    </xsd:simpleType>
     
-</xs:schema>
+</xsd:schema>
 

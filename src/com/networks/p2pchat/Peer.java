@@ -1,5 +1,8 @@
 package com.networks.p2pchat;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement( name = "peer")
 public class Peer {
 	// Public members.
 	public Peer(String id, String ipAddr, int port) {

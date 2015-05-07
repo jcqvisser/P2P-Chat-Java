@@ -1,12 +1,12 @@
 package com.networks.p2pchat;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
 
-@XmlRootElement(name = "message")
-@XmlType(propOrder = {"mType", "ttl", "origin", "source", "destination", 
-					  "channelID", "text", "filename", "data", "channels", 
-					  "forwardable", "peers"})
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement( namespace = "com.networks.p2pchat")
 public class Message {
 	
 	public enum FileType {
@@ -24,6 +24,7 @@ public class Message {
 			Peer origin,
 			Peer source,
 			Peer destination) {
+		// TODO Implement
 	}	
 	
 	// CH
@@ -31,6 +32,7 @@ public class Message {
 				Peer origin,
 				Peer destination,
 				String[] channels){
+		// TODO Implement
 	}
 	
 	//USERS
@@ -38,7 +40,8 @@ public class Message {
 			Peer origin,
 			Peer destination,
 			Peer[] channels){
-}
+		// TODO Implement
+	}
 	
 	// MSG, PASS
 	public Message(	messageType msgType, 
@@ -46,6 +49,7 @@ public class Message {
 			Peer destination,
 			int channelID,
 			String text) {
+		// TODO Implement
 	}
 	
 	// MSGCH 
@@ -55,6 +59,7 @@ public class Message {
 			Peer destination,
 			int channelID,
 			String text) {
+		// TODO Implement
 	}
 	
 	// JOIN, QUIT, REPEAT
@@ -62,6 +67,7 @@ public class Message {
 			Peer origin,
 			Peer destination,
 			int channelID) {
+		// TODO Implement
 	}
 		
 	
@@ -73,11 +79,13 @@ public class Message {
 			int channelID,
 			byte[] file,
 			FileType fType) {
+		// TODO Implement
 	}	
 	
 	public Message(Message msg, boolean forward) {
 		// forward message constructor
-		// must make sure that original source is intact
+		// TODO must make sure that the msg is forwardable
+		// TODO Implement
 	}
 	
 	// Getters
@@ -90,9 +98,9 @@ public class Message {
 	public String getText() {return _text;}
 	public String getFilename() {return _filename;}
 	public byte[] getData() {return _data;}
-	public String[] getChannels() {return _channels;}
+	public ArrayList<String> getChannels() {return _channels;}
 	public boolean getForwardable() {return _forwardable;}
-	public Peer[] getPeers() {return _peers;}
+	public ArrayList<Peer> getPeers() {return _peers;}
 	
 	// Setters
 	public void setMessageType(messageType a) {_mType = a;}
@@ -104,22 +112,36 @@ public class Message {
 	public void setText(String a) {_text = a;}
 	public void setFilename(String a) {_filename = a;}
 	public void setData(byte[] a) {_data = a;}
-	public void setChannels(String[] a) {_channels = a;}
+	public void setChannels(ArrayList<String> a) {_channels = a;}
 	public void setForwardable(boolean a) {_forwardable = a;}
-	public void setPeers(Peer[] a) {_peers = a;}
-	
+	public void setPeers(ArrayList<Peer> a) {_peers = a;}
+
+	@XmlElement
 	private messageType _mType;
+	@XmlElement
 	private int _ttl;
+	@XmlElement
 	private Peer _origin;
+	@XmlElement
 	private Peer _source;
+	@XmlElement
 	private Peer _destination;
+	@XmlElement
 	private String _channelID;
+	@XmlElement
 	private String _text;
+	@XmlElement
 	private String _filename;
+	@XmlElement
 	private byte[] _data;
-	private String[] _channels;
+	@XmlElementWrapper(name = "channelList")
+	@XmlElement(name = "channel")
+	private ArrayList<String> _channels;
+	@XmlElement
 	private boolean _forwardable;
-	private Peer[] _peers;
+	@XmlElementWrapper(name = "peerList")
+	@XmlElement(name = "peer")
+	private ArrayList<Peer> _peers;
 	
 	
 }
