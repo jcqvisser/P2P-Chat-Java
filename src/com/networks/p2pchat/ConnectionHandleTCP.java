@@ -20,16 +20,15 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		_clientSockets = new ArrayList<ClientThreadTCP>();
 	}
 	
-	public void connect(String ipAddr) {
+	public void connect(String ipAddr, int port) {
 		try {
-			_clientSockets.add(new ClientThreadTCP(new Socket(ipAddr, 1337)));
+			_clientSockets.add(new ClientThreadTCP(new Socket(ipAddr, port)));
 		} catch(IOException e) {
 			System.err.println("Error - Cannot create client socket");
 		}
 	}
 	
 	public void run() {
-		connect("localhost");
 		while(_checkConnections) {
 			try {
 				_serverSockets.add(new ServerThreadTCP(this, _listenSocket.accept()));
@@ -39,15 +38,16 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		}
 	}
 	
-	public synchronized void serverHandle(String IP, String message) {
+	public synchronized void serverHandle(String IPPort, String message) {
+		System.out.println("Server recieved (" + IPPort + "): " + message);
 		if(message.compareTo("!") == 0) {
-			closeSocket(IP);
+			closeSocket(IPPort);
 		} else {
 			ListIterator<ServerThreadTCP> itr = _serverSockets.listIterator();
 			while(itr.hasNext()) {
 				ServerThreadTCP serverSocket= itr.next();
-				if(serverSocket.getIP().compareTo(IP) != 0) {
-					serverSocket.sendMessage(message);
+				if(serverSocket.getIPPort().compareTo(IPPort) != 0) {
+					serverSocket.sendMessage(IPPort + ": " + message);
 				}
 			}
 		}
@@ -65,20 +65,20 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		_checkConnections = false;
 	}
 	
-	public synchronized void closeSocket(String ipAddr) {
-		int socketIP = findServerThreadID(ipAddr);
+	public synchronized void closeSocket(String ipPort) {
+		int socketIP = findServerThreadID(ipPort);
 		_serverSockets.get(socketIP).close();
 		_serverSockets.remove(socketIP);
 	}
 	
 	// Private Members
 	
-	private int findServerThreadID(String ipAddr) {
+	private int findServerThreadID(String ipPort) {
 		ListIterator<ServerThreadTCP> itr = _serverSockets.listIterator();
 		int index = 0;
 		while(itr.hasNext()) {
 			index = itr.nextIndex();
-			if(itr.next().getIP().compareTo(ipAddr) == 0) {
+			if(itr.next().getIPPort().compareTo(ipPort) == 0) {
 				return index;
 			}
 		}

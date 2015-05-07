@@ -9,6 +9,7 @@ public class ServerThreadTCP implements Runnable{
 	public ServerThreadTCP(ConnectionHandleTCP connectionHandler, Socket serverSocket) {
 		_serverSocket = serverSocket;
 		_clientIP = _serverSocket.getInetAddress().toString();
+		_clientPort = _serverSocket.getPort();
 		_connectionHandler = connectionHandler;
 		try {
 			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
@@ -19,8 +20,8 @@ public class ServerThreadTCP implements Runnable{
 		start();
 	}
 	
-	public String getIP() {
-		return _clientIP;
+	public String getIPPort() {
+		return _clientIP + ":" + Integer.toString(_clientPort);
 	}
 	
 	public void run() {
@@ -28,12 +29,12 @@ public class ServerThreadTCP implements Runnable{
 		while(clientText.compareTo("!") !=  0) {
 			try {
 				clientText = _clientInput.readLine();
-				_connectionHandler.serverHandle(_clientIP, clientText);
+				_connectionHandler.serverHandle(getIPPort(), clientText);
 			} catch( IOException ioe) {
 				System.err.println("Error reading data from socket: " + ioe.getMessage());
 			}
 		}
-		_connectionHandler.closeSocket(_clientIP);
+		_connectionHandler.closeSocket(getIPPort());
 	}
 	
 	public void sendMessage(String message) {
@@ -65,6 +66,7 @@ public class ServerThreadTCP implements Runnable{
 	
 	private Socket _serverSocket;
 	private String _clientIP;
+	private int _clientPort;
 	private Thread _thread;
 	private BufferedReader _clientInput;
 	private DataOutputStream _clientOutput;

@@ -59,6 +59,7 @@ public class ClientThreadTCP implements Runnable {
 	private void start() {
 		if (_thread == null)
 		{
+			System.out.println("Client connected to: " + _serverIP);
 			_thread = new Thread (this, _serverIP);
 			_thread.start ();
 		}
