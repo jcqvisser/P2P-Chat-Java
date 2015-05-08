@@ -1,7 +1,12 @@
 package com.networks.p2pchat;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -88,6 +93,17 @@ public class Message {
 		// forward message constructor
 		// TODO must make sure that the msg is forwardable
 		// TODO Implement
+	}
+	
+	public Message(String msgXml) {
+		// TODO Implement
+	}
+	
+	public void send(DataOutputStream outStream) throws IOException, JAXBException {
+	    JAXBContext context = JAXBContext.newInstance(Message.class);
+	    Marshaller m = context.createMarshaller();
+	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+	    m.marshal(this, outStream);
 	}
 	
 	// Getters

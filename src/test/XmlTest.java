@@ -44,6 +44,7 @@ public class XmlTest {
 	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 	    
 	    m.marshal(msg, System.out);
+	    
 		
 		
 	}
