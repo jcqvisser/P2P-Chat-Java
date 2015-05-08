@@ -6,11 +6,11 @@ import java.net.Socket;
 public class ServerThreadTCP implements Runnable{
 	
 	// Public Members:
-	public ServerThreadTCP(ConnectionHandleTCP connectionHandler, Socket serverSocket) {
+	public ServerThreadTCP(ServerHandleTCP serverHandler, Socket serverSocket) {
 		_serverSocket = serverSocket;
 		_clientIP = _serverSocket.getInetAddress().toString();
 		_clientPort = _serverSocket.getPort();
-		_connectionHandler = connectionHandler;
+		_serverHandler = serverHandler;
 		try {
 			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
 			_clientOutput = new DataOutputStream(_serverSocket.getOutputStream());
@@ -31,14 +31,14 @@ public class ServerThreadTCP implements Runnable{
 			try {
 				clientText = _clientInput.readLine();
 				if(clientText != null) {
-					_connectionHandler.serverHandle(getIPPort(), clientText);
+					_serverHandler.serverHandle(getIPPort(), clientText);
 				} else {
-					_connectionHandler.closeServerSocket(getIPPort());
+					_serverHandler.closeServerSocket(getIPPort());
 				}
 				
 			} catch( IOException ioe) {
 				System.err.println("Error reading data from socket: " + ioe.getMessage());
-				_connectionHandler.closeServerSocket(getIPPort());
+				_serverHandler.closeServerSocket(getIPPort());
 			}
 		}
 	}
@@ -79,5 +79,5 @@ public class ServerThreadTCP implements Runnable{
 	private volatile boolean _runServerThread;
 	private BufferedReader _clientInput;
 	private DataOutputStream _clientOutput;
-	private ConnectionHandleTCP _connectionHandler;
+	private ServerHandleTCP _serverHandler;
 }

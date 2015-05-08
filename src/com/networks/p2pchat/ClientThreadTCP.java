@@ -9,9 +9,9 @@ import java.net.Socket;
 
 public class ClientThreadTCP implements Runnable {
 
-	public ClientThreadTCP(ConnectionHandleTCP connectionHandler, Socket clientSocket) {
+	public ClientThreadTCP(ClientHandleTCP clientHandler, Socket clientSocket) {
 		_clientSocket = clientSocket;
-		_connectionHandler = connectionHandler;
+		_clientHandler = clientHandler;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		_serverPort = _clientSocket.getPort();
 		_clientChatHandle = new ClientChatThreadTCP(this, _clientSocket);
@@ -64,7 +64,7 @@ public class ClientThreadTCP implements Runnable {
 	}
 	
 	public synchronized void passClose() {
-		_connectionHandler.closeClientSocket(getClientIPPort());
+		_clientHandler.closeClientSocket(getClientIPPort());
 	}
 	
 	public void close() {
@@ -116,7 +116,7 @@ public class ClientThreadTCP implements Runnable {
 	
 	private Socket _clientSocket;
 	private ClientChatThreadTCP _clientChatHandle;
-	private ConnectionHandleTCP _connectionHandler;
+	private ClientHandleTCP _clientHandler;
 	private volatile boolean _runThread;
 	private ClientWindow _chatWindow;
 	private Thread _thread;
