@@ -1,5 +1,6 @@
 package com.networks.p2pchat;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -95,8 +97,31 @@ public class Message {
 		// TODO Implement
 	}
 	
-	public Message(String msgXml) {
-		// TODO Implement
+	public Message(Message msg)
+	{
+		this.setMessageType(msg.getMessageType());
+		this.setChannelID(msg.getChannelID());
+		this.setChannels(msg.getChannels());
+		this.setData(msg.getData());
+		this.setDestination(msg.getDestination());
+		this.setFilename(msg.getFilename());
+		this.setForwardable(msg.getForwardable());
+		this.setOrigin(msg.getOrigin());
+		this.setSource(msg.getSource());
+		this.setText(msg.getText());
+		this.setTtl(msg.getTtl());
+		this.setUsers(msg.getUsersList());
+	}
+	
+	public Message(BufferedReader reader) throws JAXBException{
+        this(readMessage(reader));
+	}
+	
+	private static Message readMessage(BufferedReader reader) throws JAXBException {
+		JAXBContext context;
+        context = JAXBContext.newInstance(Message.class);
+        Unmarshaller um = context.createUnmarshaller();
+        return (Message) um.unmarshal(reader);
 	}
 	
 	public void send(DataOutputStream outStream) throws IOException, JAXBException {
