@@ -33,32 +33,46 @@ public class Message {
 			Peer origin,
 			Peer source,
 			Peer destination) {
-		// TODO Implement
+		this.setMessageType(msgType);
+		this.setTtl(ttl);
+		this.setOrigin(origin);
+		this.setSource(source);
+		this.setDestination(destination);
 	}	
 	
 	// CH
 	public Message(messageType msgType,
 				Peer origin,
 				Peer destination,
-				String[] channels){
-		// TODO Implement
+				ArrayList<String> channels){
+		this.setMessageType(msgType);
+		this.setOrigin(origin);
+		this.setDestination(destination);
+		this.setChannels(channels);
 	}
 	
 	//USERS
 	public Message(messageType msgType,
 			Peer origin,
 			Peer destination,
-			Peer[] channels){
-		// TODO Implement
+			ArrayList<Peer> peers){
+		this.setMessageType(msgType);
+		this.setOrigin(origin);
+		this.setDestination(destination);
+		this.setUsers(peers);
 	}
 	
 	// MSG, PASS
 	public Message(	messageType msgType, 
 			Peer origin,
 			Peer destination,
-			int channelID,
+			String channelID,
 			String text) {
-		// TODO Implement
+		this.setMessageType(msgType);
+		this.setOrigin(origin);
+		this.setDestination(destination);
+		this.setChannelID(channelID);
+		this.setText(text);
 	}
 	
 	// MSGCH 
@@ -66,17 +80,24 @@ public class Message {
 			Peer source,
 			Peer origin,
 			Peer destination,
-			int channelID,
+			String channelID,
 			String text) {
-		// TODO Implement
+		this.setMessageType(msgType);
+		this.setSource(source);
+		this.setOrigin(origin);
+		this.setDestination(destination);
+		this.setChannelID(channelID);
 	}
 	
 	// JOIN, QUIT, REPEAT
 	public Message(	messageType msgType, 
 			Peer origin,
 			Peer destination,
-			int channelID) {
-		// TODO Implement
+			String channelID) {
+		this.setMessageType(msgType);
+		this.setOrigin(origin);
+		this.setDestination(destination);
+		this.setChannelID(channelID);
 	}
 		
 	
@@ -85,10 +106,17 @@ public class Message {
 			Peer origin,
 			Peer source,
 			Peer destination,
-			int channelID,
+			String channelID,
 			byte[] file,
-			FileType fType) {
-		// TODO Implement
+			String filename) {
+		this.setMessageType(msgType);
+		this.setOrigin(origin);
+		this.setSource(source);
+		this.setDestination(destination);
+		this.setChannelID(channelID);
+		this.setData(file);
+		this.setFilename(filename);
+		// TODO add file type enum thing
 	}	
 	
 	public Message(Message msg, boolean forward) {
