@@ -1,5 +1,6 @@
 package com.networks.p2pchat;
 
+import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,11 +17,12 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		_checkConnections = true;
 		_serverHandler = new ServerHandleTCP(this);
 		_clientHandler = new ClientHandleTCP(this);
+		initializeWindow();
 	}
 	
-	public void connect(String ipAddr, int port) {
+	public void connect(String ipAddr, int port, String channel) {
 		try {
-			_clientHandler.connect(new Socket(ipAddr, port));
+			_clientHandler.connect(new Socket(ipAddr, port), channel);
 		} catch(IOException e) {
 			System.err.println("Error - Cannot create client socket");
 		}
@@ -49,6 +51,20 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	}
 	
 	// Private Members
+	private void initializeWindow() {
+		ConnectionHandleTCP tempThis = this;
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ConnectWindow frame = new ConnectWindow(tempThis);
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
 	private Thread _thread;
 	private ServerSocket _listenSocket;
 	private ClientHandleTCP _clientHandler;

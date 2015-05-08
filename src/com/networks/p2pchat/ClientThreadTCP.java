@@ -9,7 +9,8 @@ import java.net.Socket;
 
 public class ClientThreadTCP implements Runnable {
 
-	public ClientThreadTCP(ClientHandleTCP clientHandler, Socket clientSocket) {
+	public ClientThreadTCP(ClientHandleTCP clientHandler, Socket clientSocket, String channel) {
+		_channel = channel;
 		_clientSocket = clientSocket;
 		_clientHandler = clientHandler;
 		_serverIP = _clientSocket.getInetAddress().toString();
@@ -32,7 +33,7 @@ public class ClientThreadTCP implements Runnable {
 				try {
 					this.wait();
 					try {
-						_serverOutput.writeBytes(_messageText + '\n');
+						_serverOutput.writeBytes(createSendMessage(_messageText) + '\n');
 					} catch (IOException ioe) {
 						System.err.println("Couldn't send message to server." + ioe.getMessage());
 						passClose();
@@ -82,6 +83,8 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
+	// Private members
+	
 	private void start() {
 		if (_thread == null)
 		{
@@ -91,15 +94,19 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
+	private String createSendMessage(String message) {
+		String sendMessage = "";
+		sendMessage += "{channel:" + _channel + ",message:" + message + "}";
+		return sendMessage;
+	}
 	
-	// Private members
 	
 	public void launchWindow() {
 		ClientThreadTCP tempThis = this;
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					_chatWindow = new ClientWindow(tempThis, _serverIP + ":" + Integer.toString(_serverPort));
+					_chatWindow = new ClientWindow(tempThis, _channel + "-" + _serverIP + ":" + Integer.toString(_serverPort));
 					_chatWindow.addWindowListener(new WindowAdapter() {
 						@Override
 						public void windowClosing(WindowEvent e) {
@@ -119,6 +126,7 @@ public class ClientThreadTCP implements Runnable {
 	private ClientHandleTCP _clientHandler;
 	private volatile boolean _runThread;
 	private ClientWindow _chatWindow;
+	private String _channel;
 	private Thread _thread;
 	private String _serverIP;
 	private int _serverPort;

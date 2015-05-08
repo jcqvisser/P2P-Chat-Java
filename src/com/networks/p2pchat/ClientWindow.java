@@ -2,6 +2,7 @@ package com.networks.p2pchat;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 
@@ -18,16 +19,18 @@ public class ClientWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textField;
-	private JTextArea txtrTextarea;
 	private ClientThreadTCP _clientHandler;
 	private String _title;
+	private JTextArea txtrDisplayArea;
+	private JScrollPane scrollPaneDisplayArea;
 	
 	/**
 	 *	Display message strings on the screen
 	 */
 	
 	public void displayMessage(String message) {
-		txtrTextarea.append(message + '\n');
+		txtrDisplayArea.append(message + '\n');
+		txtrDisplayArea.setCaretPosition(txtrDisplayArea.getDocument().getLength());
 	}
 
 	/**
@@ -60,10 +63,13 @@ public class ClientWindow extends JFrame {
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
-		txtrTextarea = new JTextArea();
-		txtrTextarea.setText("");
-		txtrTextarea.setEditable(false);
-		txtrTextarea.setBounds(10, 11, 482, 263);
-		contentPane.add(txtrTextarea);
+		scrollPaneDisplayArea = new JScrollPane();
+		scrollPaneDisplayArea.setBounds(10, 10, 482, 264);
+		contentPane.add(scrollPaneDisplayArea);
+		
+		txtrDisplayArea = new JTextArea();
+		txtrDisplayArea.setText("");
+		txtrDisplayArea.setEditable(false);
+		scrollPaneDisplayArea.setViewportView(txtrDisplayArea);
 	}
 }

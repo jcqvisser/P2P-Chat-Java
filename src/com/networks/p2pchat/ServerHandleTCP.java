@@ -50,5 +50,6 @@ public class ServerHandleTCP {
 	}
 	
 	private ArrayList<ServerThreadTCP> _serverSockets;
+	@SuppressWarnings("unused")
 	private ConnectionHandleTCP _connectionHandler;
 }

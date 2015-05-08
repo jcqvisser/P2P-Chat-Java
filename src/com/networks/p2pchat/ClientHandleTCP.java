@@ -11,8 +11,8 @@ public class ClientHandleTCP {
 		_clientSockets = new ArrayList<ClientThreadTCP>();
 	}
 	
-	public void connect(Socket clientSocket) {
-		_clientSockets.add(new ClientThreadTCP(this, clientSocket));
+	public void connect(Socket clientSocket, String channel) {
+		_clientSockets.add(new ClientThreadTCP(this, clientSocket, channel));
 	}
 	
 	public synchronized void closeClientSocket(String ipPort) {
@@ -21,6 +21,10 @@ public class ClientHandleTCP {
 			_clientSockets.get(socketID).close();
 			_clientSockets.remove(socketID);
 		}
+	}
+	
+	public void handshakeServer(Socket clientSocket, String channel) {
+		
 	}
 	
 	// Private Members:
@@ -38,6 +42,7 @@ public class ClientHandleTCP {
 	}
 	
 	
-	private ConnectionHandleTCP _connectionHandler;
 	private ArrayList<ClientThreadTCP> _clientSockets;
+	@SuppressWarnings("unused")
+	private ConnectionHandleTCP _connectionHandler;
 }
