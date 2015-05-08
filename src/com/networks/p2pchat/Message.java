@@ -3,6 +3,8 @@ package com.networks.p2pchat;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import javax.xml.bind.JAXBContext;
@@ -54,8 +56,8 @@ public class Message {
 	//USERS
 	public Message(messageType msgType,
 			Peer origin,
-			Peer destination,
-			ArrayList<Peer> peers){
+			ArrayList<Peer> peers,
+			Peer destination){
 		this.setMessageType(msgType);
 		this.setOrigin(origin);
 		this.setDestination(destination);
@@ -141,18 +143,18 @@ public class Message {
 		this.setUsers(msg.getUsersList());
 	}
 	
-	public Message(BufferedReader reader) throws JAXBException{
-        this(readMessage(reader));
+	public Message(InputStream stream) throws JAXBException{
+        this(readMessage(stream));
 	}
 	
-	private static Message readMessage(BufferedReader reader) throws JAXBException {
+	private static Message readMessage(InputStream stream) throws JAXBException {
 		JAXBContext context;
         context = JAXBContext.newInstance(Message.class);
         Unmarshaller um = context.createUnmarshaller();
-        return (Message) um.unmarshal(reader);
+        return (Message) um.unmarshal(stream);
 	}
 	
-	public void send(DataOutputStream outStream) throws IOException, JAXBException {
+	public void send(OutputStream outStream) throws IOException, JAXBException {
 	    JAXBContext context = JAXBContext.newInstance(Message.class);
 	    Marshaller m = context.createMarshaller();
 	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
