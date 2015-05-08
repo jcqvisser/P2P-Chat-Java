@@ -1,7 +1,5 @@
 package com.networks.p2pchat;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,10 +17,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Message {
 	
 	public enum FileType {
-		JPG, PNG
+		JPG, PNG, GIF, TIFF, BMP
 	}	
 	
-	public enum messageType {
+	public enum MessageType {
 		HELO, HI, LISTCH, CH, JOIN, NICK, PASS, LISTUSERS, USERS, MSGCH, FILE,
 		QUIT, MSG, REPEAT
 	}
@@ -30,7 +28,7 @@ public class Message {
 	public Message(){}
 	
 	// HELO, HI, LISTCH, NICK, LISTUSERS
-	public Message(	messageType msgType, 
+	public Message(	MessageType msgType, 
 			int ttl, 
 			Peer origin,
 			Peer source,
@@ -43,7 +41,7 @@ public class Message {
 	}	
 	
 	// CH
-	public Message(messageType msgType,
+	public Message(MessageType msgType,
 				Peer origin,
 				Peer destination,
 				ArrayList<String> channels){
@@ -54,7 +52,7 @@ public class Message {
 	}
 	
 	//USERS
-	public Message(messageType msgType,
+	public Message(MessageType msgType,
 			Peer origin,
 			ArrayList<Peer> peers,
 			Peer destination){
@@ -65,7 +63,7 @@ public class Message {
 	}
 	
 	// MSG, PASS
-	public Message(	messageType msgType, 
+	public Message(	MessageType msgType, 
 			Peer origin,
 			Peer destination,
 			String channelID,
@@ -78,7 +76,7 @@ public class Message {
 	}
 	
 	// MSGCH 
-	public Message(	messageType msgType, 
+	public Message(	MessageType msgType, 
 			Peer source,
 			Peer origin,
 			Peer destination,
@@ -92,7 +90,7 @@ public class Message {
 	}
 	
 	// JOIN, QUIT, REPEAT
-	public Message(	messageType msgType, 
+	public Message(	MessageType msgType, 
 			Peer origin,
 			Peer destination,
 			String channelID) {
@@ -104,13 +102,14 @@ public class Message {
 		
 	
 	// FILE
-	public Message(	messageType msgType, 
+	public Message(	MessageType msgType, 
 			Peer origin,
 			Peer source,
 			Peer destination,
 			String channelID,
 			byte[] file,
-			String filename) {
+			String filename,
+			FileType fType) {
 		this.setMessageType(msgType);
 		this.setOrigin(origin);
 		this.setSource(source);
@@ -118,6 +117,7 @@ public class Message {
 		this.setChannelID(channelID);
 		this.setData(file);
 		this.setFilename(filename);
+		this.setFileType(fType);
 		// TODO add file type enum thing
 	}	
 	
@@ -131,7 +131,7 @@ public class Message {
 	{
 		this.setMessageType(msg.getMessageType());
 		this.setChannelID(msg.getChannelID());
-		this.setChannels(msg.getChannels());
+		this.setChannels(msg.getChannelList());
 		this.setData(msg.getData());
 		this.setDestination(msg.getDestination());
 		this.setFilename(msg.getFilename());
@@ -141,6 +141,7 @@ public class Message {
 		this.setText(msg.getText());
 		this.setTtl(msg.getTtl());
 		this.setUsers(msg.getUsersList());
+		this.setFileType(msg.getFileType());
 	}
 	
 	public Message(InputStream stream) throws JAXBException{
@@ -162,7 +163,7 @@ public class Message {
 	}
 	
 	// Getters
-	public messageType getMessageType() {return _mType;}
+	public MessageType getMessageType() {return _mType;}
 	public int getTtl() {return _ttl;}
 	public Peer getOrigin() {return _origin;}
 	public Peer getSource() {return _source;}
@@ -171,12 +172,13 @@ public class Message {
 	public String getText() {return _text;}
 	public String getFilename() {return _filename;}
 	public byte[] getData() {return _data;}
-	public ArrayList<String> getChannels() {return _channels;}
+	public ArrayList<String> getChannelList() {return _channels;}
 	public boolean getForwardable() {return _forwardable;}
+	public FileType getFileType() {return _fType;}
 	public ArrayList<Peer> getUsersList() {return _users;}
 	
 	// Setters
-	public void setMessageType(messageType a) {_mType = a;}
+	public void setMessageType(MessageType a) {_mType = a;}
 	public void setTtl(int a) {_ttl = a;}
 	public void setOrigin(Peer a) {_origin = a;}
 	public void setSource(Peer a) {_source = a;}
@@ -187,10 +189,11 @@ public class Message {
 	public void setData(byte[] a) {_data = a;}
 	public void setChannels(ArrayList<String> a) {_channels = a;}
 	public void setForwardable(boolean a) {_forwardable = a;}
+	public void setFileType(FileType a) {_fType = a;}
 	public void setUsers(ArrayList<Peer> a) {_users = a;}
 	
 
-	private messageType _mType;
+	private MessageType _mType;
 	private int _ttl;
 	private Peer _origin;
 	private Peer _source;
@@ -199,8 +202,11 @@ public class Message {
 	private String _text;
 	private String _filename;
 	private byte[] _data;
+	@XmlElementWrapper(name = "channels")
+	@XmlElement(name = "channel")
 	private ArrayList<String> _channels;
 	private boolean _forwardable;
+	private FileType _fType;
 	@XmlElementWrapper(name = "users")
 	@XmlElement(name = "peer")
 	private ArrayList<Peer> _users;
