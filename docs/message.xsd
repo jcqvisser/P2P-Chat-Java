@@ -14,7 +14,7 @@
                 <xsd:element name="data" type="xsd:base64Binary"/>
                 <xsd:element name="channels" type="channelList"/>
                 <xsd:element name="forwardable" type="xsd:boolean"/>
-                <xsd:element name="peers" type="peerList"/>
+                <xsd:element name="users" type="userList"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>

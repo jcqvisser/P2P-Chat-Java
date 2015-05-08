@@ -11,6 +11,8 @@ public class Peer {
 		_port = port;
 	}
 	
+	public Peer() {}
+	
 	public String getId() {
 		return _id;
 	}
