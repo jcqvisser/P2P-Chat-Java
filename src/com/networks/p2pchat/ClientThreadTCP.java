@@ -99,7 +99,7 @@ public class ClientThreadTCP implements Runnable {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					_chatWindow = new ClientWindow(tempThis, "title");
+					_chatWindow = new ClientWindow(tempThis, _serverIP + ":" + Integer.toString(_serverPort));
 					_chatWindow.addWindowListener(new WindowAdapter() {
 						@Override
 						public void windowClosing(WindowEvent e) {
