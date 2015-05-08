@@ -25,7 +25,6 @@ public class XmlTest {
 	private static final String MESSAGE_XML = "./message-jaxb.xml";
 
 	public XmlTest() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public static void main(String[] args) throws JAXBException, IOException  {

@@ -118,14 +118,7 @@ public class Message {
 		this.setData(file);
 		this.setFilename(filename);
 		this.setFileType(fType);
-		// TODO add file type enum thing
 	}	
-	
-	public Message(Message msg, boolean forward) {
-		// forward message constructor
-		// TODO must make sure that the msg is forwardable
-		// TODO Implement
-	}
 	
 	public Message(Message msg)
 	{
@@ -161,6 +154,17 @@ public class Message {
 	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 	    m.marshal(this, outStream);
 	}
+	
+	public Message forward(Peer destination) throws IOException {
+		if (!this.getForwardable()) throw new IOException();
+		
+		Message fwd =  new Message(this);
+		fwd.setSource(fwd.getDestination());
+		fwd.setDestination(destination);
+		return fwd;
+	}
+	
+	// TODO Reply function
 	
 	// Getters
 	public MessageType getMessageType() {return _mType;}
