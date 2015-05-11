@@ -18,8 +18,9 @@ public class ClientThreadTCP implements Runnable {
 		_clientHandler = clientHandler;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		_serverPort = _clientSocket.getPort();
-		_clientListenThread = new ClientChatThreadTCP(this, _clientSocket);
-		_messageText = "";
+		_messageService = new MessageService(_clientSocket);
+		_clientListenThread = new ClientChatThreadTCP(this, _messageService);
+		_message = null;
 		launchWindow();
 		_runThread = true;
 		start();
@@ -31,26 +32,27 @@ public class ClientThreadTCP implements Runnable {
 				try {
 					this.wait();
 					try {
-						createSendMessage(_messageText).send(_clientSocket.getOutputStream());
-					} catch (IOException ioe) {
-						System.err.println("Couldn't send message to server." + ioe.getMessage());
-						passClose();
+						_messageService.sendMessage(_message);
 					} catch (JAXBException e) {
-						System.err.println("Error sending XML data");
+						System.err.println("Error sending XML data: " + e);
 					}
 				} catch(InterruptedException e) {
 					System.out.println("Wait interrupt thrown:" + e.getMessage());
 				}
 			}
-//			if(_messageText.compareTo("QUIT") == 0) {
-//				passClose();
-//			}
 		}
 	}
 	
 	public void sendMessage(String message) {
 		synchronized(this) {
-			_messageText = message;
+			_message = createSendMessage(message);
+			this.notify();
+		}
+	}
+	
+	public void sendMessage(Message message) {
+		synchronized(this) {
+			_message = message;
 			this.notify();
 		}
 	}
@@ -103,7 +105,6 @@ public class ClientThreadTCP implements Runnable {
 						_serverPort),
 				"TestChannel",
 				message);
-		
 	}
 	
 	
@@ -116,7 +117,14 @@ public class ClientThreadTCP implements Runnable {
 					_chatWindow.addWindowListener(new WindowAdapter() {
 						@Override
 						public void windowClosing(WindowEvent e) {
-							sendMessage("QUIT");
+							sendMessage(new Message(MessageType.QUIT,
+									new Peer("TestId",
+											_clientSocket.getLocalAddress().toString(),
+											_clientSocket.getLocalPort()),
+									new Peer("TestDestination",
+											_serverIP,
+											_serverPort),
+									"TestChannelID"));
 						}
 					});
 					_chatWindow.setVisible(true);
@@ -130,11 +138,12 @@ public class ClientThreadTCP implements Runnable {
 	private Socket _clientSocket;
 	private ClientChatThreadTCP _clientListenThread;
 	private ClientHandleTCP _clientHandler;
+	private MessageService _messageService;
 	private volatile boolean _runThread;
 	private ClientWindow _chatWindow;
 	private String _channel;
 	private Thread _thread;
 	private String _serverIP;
 	private int _serverPort;
-	private String _messageText;
+	private Message _message;
 }

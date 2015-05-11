@@ -14,6 +14,7 @@ public class ServerThreadTCP implements Runnable{
 		_clientPort = _serverSocket.getPort();
 		_serverHandler = serverHandler;
 		_runServerThread = true;
+		_messageService = new MessageService(serverSocket);
 		start();
 	}
 	
@@ -22,9 +23,10 @@ public class ServerThreadTCP implements Runnable{
 	}
 	
 	public void run() {
+		Message message;
 		while(_runServerThread) {
 			try {
-				Message message = new Message(_serverSocket.getInputStream());
+				message = _messageService.receiveMessage();
 				_serverHandler.serverHandle(getIPPort(), message);
 			} catch( IOException ioe) {
 				System.err.println("Error reading data from socket: " + ioe.getMessage());
@@ -38,11 +40,9 @@ public class ServerThreadTCP implements Runnable{
 	
 	public void sendMessage(Message message) {
 		try {
-			message.send(_serverSocket.getOutputStream());
-		} catch (IOException ioe) {
-			System.err.println("Error sending message to IP: " + _clientIP + " - " + ioe.getMessage());
+			_messageService.sendMessage(message);
 		} catch (JAXBException e) {
-			System.err.println("Error parsing XML object");
+			System.err.println("Error sending XML object: " + e);
 		}
 	}
 	
@@ -67,6 +67,7 @@ public class ServerThreadTCP implements Runnable{
 	}
 	
 	private Socket _serverSocket;
+	private MessageService _messageService;
 	private String _clientIP;
 	private int _clientPort;
 	private Thread _thread;

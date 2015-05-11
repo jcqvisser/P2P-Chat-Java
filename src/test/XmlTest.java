@@ -61,12 +61,12 @@ public class XmlTest {
 	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 	    
 	    OutputStream out = new FileOutputStream("C:\\Users\\jcqvi_000\\Desktop\\billeh.txt");
-	    msg0.send(out);
-	    msg0.send(System.out);
-	    
-	    InputStream in = new FileInputStream("C:\\Users\\jcqvi_000\\Desktop\\billeh.txt");
-	    
-	    Message msg1 = new Message(in);
-	    msg1.send(System.out);
+//	    msg0.send(out);
+//	    msg0.send(System.out);
+//	    
+//	    InputStream in = new FileInputStream("C:\\Users\\jcqvi_000\\Desktop\\billeh.txt");
+//	    
+//	    Message msg1 = new Message(in);
+//	    msg1.send(System.out);
 	}
 }

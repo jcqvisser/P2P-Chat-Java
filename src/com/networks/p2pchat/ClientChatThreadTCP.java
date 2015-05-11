@@ -1,16 +1,13 @@
 package com.networks.p2pchat;
 
 import java.io.IOException;
-import java.net.Socket;
 
 import javax.xml.bind.JAXBException;
 
 public class ClientChatThreadTCP implements Runnable {
-	public ClientChatThreadTCP(ClientThreadTCP clientHandler, Socket clientSocket) {
-		_clientSocket = clientSocket;
+	public ClientChatThreadTCP(ClientThreadTCP clientHandler, MessageService messageService) {
+		_messageService = messageService;
 		_clientHandler = clientHandler;
-		_serverIP = _clientSocket.getInetAddress().toString();
-		_serverPort = _clientSocket.getPort();
 		_runClientChatThread = true;
 		start();
 	}
@@ -18,7 +15,7 @@ public class ClientChatThreadTCP implements Runnable {
 	public void start() {
 		if (_thread == null)
 		{
-			_thread = new Thread (this, _serverIP + ":" + Integer.toString(_serverPort));
+			_thread = new Thread (this);
 			_thread.start ();
 		}
 	}
@@ -28,9 +25,10 @@ public class ClientChatThreadTCP implements Runnable {
 	}
 	
 	public void run() {
+		Message message;
 		while(_runClientChatThread) {
 			try {
-				Message message = new Message(_clientSocket.getInputStream());
+				message = _messageService.receiveMessage();
 				_clientHandler.messageHandle(message);
 			} catch (IOException ioe) {
 				System.err.println("Couldn't read message from server: " + ioe.getMessage());
@@ -43,10 +41,8 @@ public class ClientChatThreadTCP implements Runnable {
 	
 	// Private
 	
-	private Socket _clientSocket;
 	private ClientThreadTCP _clientHandler;
 	private volatile boolean _runClientChatThread;
-	private String _serverIP;
-	private int _serverPort;
+	private MessageService _messageService;
 	private Thread _thread;
 }

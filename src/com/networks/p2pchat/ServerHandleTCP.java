@@ -4,6 +4,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import com.networks.p2pchat.Message.MessageType;
+
 public class ServerHandleTCP {
 	public ServerHandleTCP(ConnectionHandleTCP connectionHandler) {
 		_connectionHandler = connectionHandler;
@@ -16,7 +18,7 @@ public class ServerHandleTCP {
 	
 	public synchronized void serverHandle(String IPPort, Message message) {
 		System.out.println("Server recieved (" + IPPort + "): " + message.getText());
-		if(message.getText().compareTo("QUIT") == 0) {
+		if(message.getMessageType() == MessageType.QUIT) {
 			closeServerSocket(IPPort);
 		} else {
 			ListIterator<ServerThreadTCP> itr = _serverSockets.listIterator();

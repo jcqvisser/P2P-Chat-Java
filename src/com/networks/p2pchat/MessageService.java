@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBContext;
 public class MessageService {
 
 	public MessageService(Socket socket) {
+		_socket = socket;
 		try {
 			_outputStream = socket.getOutputStream();
 			_inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -27,14 +28,16 @@ public class MessageService {
 	public Message receiveMessage() throws JAXBException, IOException {
 		String xml = "";
 		String line = "";
+		
 		while (line.compareTo("</ns2:message>") != 0) {
-			line = _inputReader.readLine().toString();
+			if(_inputReader.ready()) 
+				line = _inputReader.readLine().toString();
 			xml = xml + line;
 		}
-        StringReader reader1 = new StringReader(xml);
-        
-		JAXBContext context;
-        Unmarshaller um = null;
+	    StringReader reader1 = new StringReader(xml);
+	       
+	    JAXBContext context;
+	    Unmarshaller um = null;
 		context = JAXBContext.newInstance(com.networks.p2pchat.Message.class);
 		um = context.createUnmarshaller();	
 		return (Message) um.unmarshal(reader1);
@@ -59,5 +62,5 @@ public class MessageService {
 	
 	private BufferedReader _inputReader;
 	private OutputStream _outputStream;
-	
+	private Socket _socket;
 }
