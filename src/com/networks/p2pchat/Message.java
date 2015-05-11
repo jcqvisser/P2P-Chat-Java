@@ -140,36 +140,6 @@ public class Message {
 		this.setFileType(msg.getFileType());
 	}
 	
-	public Message(InputStream stream) throws JAXBException{
-        this(readMessage(stream));
-	}
-	
-	private static Message readMessage(InputStream stream) throws JAXBException {
-		BufferedReader reader = new BufferedReader( new InputStreamReader(stream));
-		String xml = "";
-		String line = "";
-		while (line.compareTo("</ns2:message>") != 0) {
-			try {
-				line = reader.readLine().toString();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			xml = xml + line;
-		}
-		JAXBContext context;
-        context = JAXBContext.newInstance(Message.class);
-        Unmarshaller um = context.createUnmarshaller();
-        StringReader reader1 = new StringReader(xml);
-        return (Message) um.unmarshal(reader1);
-	}
-	
-	public void send(OutputStream outStream) throws IOException, JAXBException {
-	    JAXBContext context = JAXBContext.newInstance(Message.class);
-	    Marshaller m = context.createMarshaller();
-	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-	    m.marshal(this, outStream);
-	}
-	
 	public Message forward(Peer destination) throws IOException {
 		if (!this.getForwardable()) throw new IOException();
 		
