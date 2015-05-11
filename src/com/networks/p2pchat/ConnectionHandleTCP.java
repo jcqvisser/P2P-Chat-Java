@@ -21,12 +21,12 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 //		
 	}
 	
-	public String getMyIDUsername() {
-		return _myIdUsername;
+	public String getMyUsername() {
+		return _myUsername;
 	}
 	
-	public void setMyIDUsername(String username){
-		_myIdUsername = username;
+	public void setMyUsername(String username){
+		_myUsername = username;
 		_loginWindow.dispose();
 		initializeWindow();
 	}
@@ -91,7 +91,7 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	}
 	
 	private Thread _thread;
-	private String _myIdUsername;
+	private String _myUsername;
 	private ServerSocket _listenSocket;
 	private ClientHandleTCP _clientHandler;
 	private ServerHandleTCP _serverHandler;

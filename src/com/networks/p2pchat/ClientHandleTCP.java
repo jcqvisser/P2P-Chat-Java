@@ -9,17 +9,10 @@ public class ClientHandleTCP {
 	public ClientHandleTCP(ConnectionHandleTCP connectionHandler) {
 		_connectionHandler = connectionHandler;
 		_clientSockets = new ArrayList<ClientThreadTCP>();
-		String IDUsername = _connectionHandler.getMyIDUsername();
-		_myID = null;
 	}
 	
 	public void connect(Socket clientSocket, String channel) {
 		_clientSockets.add(new ClientThreadTCP(this, clientSocket, channel));
-		if (_myID == null) {
-			_myID = new Peer(_connectionHandler.getMyIDUsername(), 
-					clientSocket.getLocalAddress().toString(),
-					clientSocket.getLocalPort());
-		}
 	}
 	
 	public synchronized void closeClientSocket(String ipPort) {
@@ -34,8 +27,8 @@ public class ClientHandleTCP {
 		
 	}
 	
-	public Peer getMyId() {
-		return _myID;
+	public String getMyUsername() {
+		return _connectionHandler.getMyUsername();
 	}
 	
 	// Private Members:
@@ -54,7 +47,5 @@ public class ClientHandleTCP {
 	
 	
 	private ArrayList<ClientThreadTCP> _clientSockets;
-	@SuppressWarnings("unused")
 	private ConnectionHandleTCP _connectionHandler;
-	private Peer _myID;
 }

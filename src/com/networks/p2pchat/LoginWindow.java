@@ -43,7 +43,7 @@ public class LoginWindow extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-					_connectionHandler.setMyIDUsername(textField.getText());
+					_connectionHandler.setMyUsername(textField.getText());
 				}
 			}
 		});

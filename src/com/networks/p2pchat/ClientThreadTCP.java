@@ -60,8 +60,8 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
-	public Peer getMyId() {
-		return _clientHandler.getMyId();
+	public String getMyUsername() {
+		return _clientHandler.getMyUsername();
 	}
 	
 	public String getClientIPPort() {
@@ -69,7 +69,8 @@ public class ClientThreadTCP implements Runnable {
 	}
 	
 	public void messageHandle(Message message) {
-		_chatWindow.displayMessage(message.getOrigin().getIp() + ":" + message.getOrigin().getPort() + ": " + message.getText());
+		_chatWindow.displayMessage(message.getOrigin().getId() + " (" + message.getOrigin().getIp() + ":" + 
+				message.getOrigin().getPort()  + "): " + message.getText());
 	}
 	
 	public synchronized void passClose() {
@@ -104,7 +105,9 @@ public class ClientThreadTCP implements Runnable {
 	
 	private Message createSendMessage(String message) {
 		return new Message(MessageType.MSG,
-				getMyId(),
+				new Peer(getMyUsername(),
+						_clientSocket.getLocalAddress().toString(),
+						_clientSocket.getLocalPort()),
 				new Peer("TestDest",
 						_serverIP,
 						_serverPort),
