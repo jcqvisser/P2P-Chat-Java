@@ -1,8 +1,11 @@
 package com.networks.p2pchat;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 
 import javax.xml.bind.JAXBContext;
@@ -142,10 +145,22 @@ public class Message {
 	}
 	
 	private static Message readMessage(InputStream stream) throws JAXBException {
+		BufferedReader reader = new BufferedReader( new InputStreamReader(stream));
+		String xml = "";
+		String line = "";
+		while (line.compareTo("</ns2:message>") != 0) {
+			try {
+				line = reader.readLine().toString();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			xml = xml + line;
+		}
 		JAXBContext context;
         context = JAXBContext.newInstance(Message.class);
         Unmarshaller um = context.createUnmarshaller();
-        return (Message) um.unmarshal(stream);
+        StringReader reader1 = new StringReader(xml);
+        return (Message) um.unmarshal(reader1);
 	}
 	
 	public void send(OutputStream outStream) throws IOException, JAXBException {
