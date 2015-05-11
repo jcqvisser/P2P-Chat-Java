@@ -40,6 +40,9 @@ public class ClientThreadTCP implements Runnable {
 					System.out.println("Wait interrupt thrown:" + e.getMessage());
 				}
 			}
+			if(_message.getMessageType() == MessageType.QUIT) {
+				passClose();
+			}
 		}
 	}
 	
@@ -72,13 +75,13 @@ public class ClientThreadTCP implements Runnable {
 	public void close() {
 		try {
 			System.out.println("Closing client socket for: " + getClientIPPort());
+			_runThread = false;
 			if(_clientListenThread != null)
 				_clientListenThread.close();
 			if(_clientSocket != null)
 				_clientSocket.close();
 			if(_chatWindow != null)
 				_chatWindow.dispose();
-			_runThread = false;
 		} catch (IOException e) {
 			System.err.println("Could not close client socket");
 		}

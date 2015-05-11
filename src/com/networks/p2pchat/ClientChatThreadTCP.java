@@ -37,6 +37,7 @@ public class ClientChatThreadTCP implements Runnable {
 				System.err.println("Could not parse XML: " + jaxbe);
 			}
 		}
+		System.out.println("Client thread closing");
 	}
 	
 	// Private
