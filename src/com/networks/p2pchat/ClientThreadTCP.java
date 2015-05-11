@@ -7,6 +7,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import javax.xml.bind.JAXBException;
+
+import com.networks.p2pchat.Message.MessageType;
+
 public class ClientThreadTCP implements Runnable {
 
 	public ClientThreadTCP(ClientHandleTCP clientHandler, Socket clientSocket, String channel) {
@@ -16,7 +20,7 @@ public class ClientThreadTCP implements Runnable {
 		_serverIP = _clientSocket.getInetAddress().toString();
 		_serverPort = _clientSocket.getPort();
 		_clientChatHandle = new ClientChatThreadTCP(this, _clientSocket);
-		_messageText = "";
+//		_messageText = "";
 		launchWindow();
 		try {
 			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
@@ -33,17 +37,23 @@ public class ClientThreadTCP implements Runnable {
 				try {
 					this.wait();
 					try {
-						_serverOutput.writeBytes(createSendMessage(_messageText) + '\n');
+						//_serverOutput.writeBytes(createSendMessage(_messageText) + '\n');
+// added next line
+// TODO handle JAXB Exception
+						_msg.send(_serverOutput);
 					} catch (IOException ioe) {
 						System.err.println("Couldn't send message to server." + ioe.getMessage());
 						passClose();
+					} catch (JAXBException e) {
+						System.err.println("something went wrong with JAXB: " + e.getMessage());
 					}
 				} catch(InterruptedException e) {
 					System.out.println("Wait interrupt thrown:" + e.getMessage());
 				}
 				
 			}
-			if(_messageText.compareTo("QUIT") == 0) {
+//			if(_messageText.compareTo("QUIT") == 0) {
+			if(_msg.getText().compareTo("QUIT") == 0){
 				passClose();
 			}
 		}
@@ -51,7 +61,19 @@ public class ClientThreadTCP implements Runnable {
 	
 	public void sendMessage(String message) {
 		synchronized(this) {
-			_messageText = message;
+			//_messageText = message;
+// added next 10 lines
+// TODO this should be in create send message
+			_msg = new Message(MessageType.MSG,
+				new Peer("name",
+						_clientSocket.getLocalAddress().toString(),
+						_clientSocket.getLocalPort()),
+				new Peer("servername",
+						_serverIP,
+						_serverPort),
+				"ChannelID123",
+				message
+				);
 			this.notify();
 		}
 	}
@@ -131,5 +153,6 @@ public class ClientThreadTCP implements Runnable {
 	private String _serverIP;
 	private int _serverPort;
 	private DataOutputStream _serverOutput;
-	private String _messageText;
+	//private String _messageText;
+	private Message _msg;
 }
