@@ -60,6 +60,10 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
+	public Peer getMyId() {
+		return _clientHandler.getMyId();
+	}
+	
 	public String getClientIPPort() {
 		return _clientSocket.getLocalAddress().toString() + ":" + Integer.toString(_clientSocket.getLocalPort());
 	}
@@ -100,13 +104,11 @@ public class ClientThreadTCP implements Runnable {
 	
 	private Message createSendMessage(String message) {
 		return new Message(MessageType.MSG,
-				new Peer("Test",
-						_clientSocket.getLocalAddress().toString(),
-						_clientSocket.getLocalPort()),
+				getMyId(),
 				new Peer("TestDest",
 						_serverIP,
 						_serverPort),
-				"TestChannel",
+				_channel,
 				message);
 	}
 	
