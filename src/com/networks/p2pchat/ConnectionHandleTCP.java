@@ -17,6 +17,17 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		_checkConnections = true;
 		_serverHandler = new ServerHandleTCP(this);
 		_clientHandler = new ClientHandleTCP(this);
+		initializeLoginWindow();
+//		
+	}
+	
+	public String getMyIDUsername() {
+		return _myIdUsername;
+	}
+	
+	public void setMyIDUsername(String username){
+		_myIdUsername = username;
+		_loginWindow.dispose();
 		initializeWindow();
 	}
 	
@@ -65,9 +76,25 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		});
 	}
 	
+	private void initializeLoginWindow() {
+		ConnectionHandleTCP connectionHandle = this;
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					_loginWindow = new LoginWindow(connectionHandle);
+					_loginWindow.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
 	private Thread _thread;
+	private String _myIdUsername;
 	private ServerSocket _listenSocket;
 	private ClientHandleTCP _clientHandler;
 	private ServerHandleTCP _serverHandler;
 	private boolean _checkConnections;
+	private LoginWindow _loginWindow;
 }

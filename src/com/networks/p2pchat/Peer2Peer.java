@@ -9,8 +9,8 @@ public class Peer2Peer {
 	public static void main(String[] args) {
 		// Initialize input streams.
 		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
+		// Creating the server listening object.
 		setupServerListener();
-		_connectionListener.connect("localhost", 1337, "test");
 	}
 	
 	// Get input from the user.
@@ -25,12 +25,6 @@ public class Peer2Peer {
 	public static void setupServerListener() {
 		_connectionListener = new ConnectionHandleTCP(1337);
 		_connectionListener.start("listenThread");
-	}
-	
-	public static void createClientConnection() {
-		System.out.println("Enter an ip address for client  connection: ");
-		String ipAddr = getUserInput();
-		_connectionListener.connect(ipAddr, 1337, "test");
 	}
 	
 	// Private Members:
