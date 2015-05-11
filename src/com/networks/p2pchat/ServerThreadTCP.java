@@ -14,11 +14,6 @@ public class ServerThreadTCP implements Runnable{
 		_clientPort = _serverSocket.getPort();
 		_serverHandler = serverHandler;
 		_runServerThread = true;
-		try {
-			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		start();
 	}
 	
@@ -30,10 +25,7 @@ public class ServerThreadTCP implements Runnable{
 		while(_runServerThread) {
 			try {
 				Message message = new Message(_serverSocket.getInputStream());
-//				String message = _clientInput.readLine();
-				System.out.println("Recieved: " + message.getText());
-//				System.out.println("Recieved: " + message);
-//				_serverHandler.serverHandle(getIPPort(), message);
+				_serverHandler.serverHandle(getIPPort(), message);
 			} catch( IOException ioe) {
 				System.err.println("Error reading data from socket: " + ioe.getMessage());
 				_serverHandler.closeServerSocket(getIPPort());
@@ -47,7 +39,6 @@ public class ServerThreadTCP implements Runnable{
 	public void sendMessage(Message message) {
 		try {
 			message.send(_serverSocket.getOutputStream());
-//			_clientOutput.writeBytes(message + "\n");
 		} catch (IOException ioe) {
 			System.err.println("Error sending message to IP: " + _clientIP + " - " + ioe.getMessage());
 		} catch (JAXBException e) {
@@ -76,7 +67,6 @@ public class ServerThreadTCP implements Runnable{
 	}
 	
 	private Socket _serverSocket;
-	private BufferedReader _clientInput;
 	private String _clientIP;
 	private int _clientPort;
 	private Thread _thread;

@@ -1,9 +1,9 @@
 package com.networks.p2pchat;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
+
+import javax.xml.bind.JAXBException;
 
 public class ClientChatThreadTCP implements Runnable {
 	public ClientChatThreadTCP(ClientThreadTCP clientHandler, Socket clientSocket) {
@@ -11,11 +11,6 @@ public class ClientChatThreadTCP implements Runnable {
 		_clientHandler = clientHandler;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		_serverPort = _clientSocket.getPort();
-		try {
-			_serverInput = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
-		} catch(IOException e) {
-			System.err.println("Could not create client side output stream to server.");
-		}
 		_runClientChatThread = true;
 		start();
 	}
@@ -33,15 +28,15 @@ public class ClientChatThreadTCP implements Runnable {
 	}
 	
 	public void run() {
-		String serverText = "";
 		while(_runClientChatThread) {
 			try {
-				serverText = _serverInput.readLine();
-				if(serverText != null)
-					_clientHandler.messageHandle(serverText);
+				Message message = new Message(_clientSocket.getInputStream());
+				_clientHandler.messageHandle(message);
 			} catch (IOException ioe) {
 				System.err.println("Couldn't read message from server: " + ioe.getMessage());
 				_clientHandler.passClose();
+			} catch (JAXBException jaxbe) {
+				System.err.println("Could not parse XML: " + jaxbe);
 			}
 		}
 	}
@@ -49,7 +44,6 @@ public class ClientChatThreadTCP implements Runnable {
 	// Private
 	
 	private Socket _clientSocket;
-	private BufferedReader _serverInput;
 	private ClientThreadTCP _clientHandler;
 	private volatile boolean _runClientChatThread;
 	private String _serverIP;

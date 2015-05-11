@@ -59,8 +59,8 @@ public class ClientThreadTCP implements Runnable {
 		return _clientSocket.getLocalAddress().toString() + ":" + Integer.toString(_clientSocket.getLocalPort());
 	}
 	
-	public void messageHandle(String message) {
-		_chatWindow.displayMessage(message);
+	public void messageHandle(Message message) {
+		_chatWindow.displayMessage(message.getOrigin().getIp() + ":" + message.getOrigin().getPort() + ": " + message.getText());
 	}
 	
 	public synchronized void passClose() {
@@ -96,13 +96,13 @@ public class ClientThreadTCP implements Runnable {
 	private Message createSendMessage(String message) {
 		return new Message(MessageType.MSG,
 				new Peer("Test",
-						"123",
-						123),
+						_clientSocket.getLocalAddress().toString(),
+						_clientSocket.getLocalPort()),
 				new Peer("TestDest",
-						"1234",
-						1234),
+						_serverIP,
+						_serverPort),
 				"TestChannel",
-				"test");
+				message);
 		
 	}
 	
