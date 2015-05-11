@@ -3,9 +3,12 @@ package com.networks.p2pchat;
 import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+
+import javax.xml.bind.JAXBException;
+
+import com.networks.p2pchat.Message.MessageType;
 
 public class ClientThreadTCP implements Runnable {
 
@@ -15,14 +18,9 @@ public class ClientThreadTCP implements Runnable {
 		_clientHandler = clientHandler;
 		_serverIP = _clientSocket.getInetAddress().toString();
 		_serverPort = _clientSocket.getPort();
-		_clientChatHandle = new ClientChatThreadTCP(this, _clientSocket);
+		_clientListenThread = new ClientChatThreadTCP(this, _clientSocket);
 		_messageText = "";
 		launchWindow();
-		try {
-			_serverOutput = new DataOutputStream(_clientSocket.getOutputStream());
-		} catch(IOException e) {
-			System.err.println("Could not create client side output stream to server.");
-		}
 		_runThread = true;
 		start();
 	}
@@ -33,19 +31,20 @@ public class ClientThreadTCP implements Runnable {
 				try {
 					this.wait();
 					try {
-						_serverOutput.writeBytes(createSendMessage(_messageText) + '\n');
+						createSendMessage(_messageText).send(_clientSocket.getOutputStream());
 					} catch (IOException ioe) {
 						System.err.println("Couldn't send message to server." + ioe.getMessage());
 						passClose();
+					} catch (JAXBException e) {
+						System.err.println("Error sending XML data");
 					}
 				} catch(InterruptedException e) {
 					System.out.println("Wait interrupt thrown:" + e.getMessage());
 				}
-				
 			}
-			if(_messageText.compareTo("QUIT") == 0) {
-				passClose();
-			}
+//			if(_messageText.compareTo("QUIT") == 0) {
+//				passClose();
+//			}
 		}
 	}
 	
@@ -71,8 +70,8 @@ public class ClientThreadTCP implements Runnable {
 	public void close() {
 		try {
 			System.out.println("Closing client socket for: " + getClientIPPort());
-			if(_clientChatHandle != null)
-				_clientChatHandle.close();
+			if(_clientListenThread != null)
+				_clientListenThread.close();
 			if(_clientSocket != null)
 				_clientSocket.close();
 			if(_chatWindow != null)
@@ -94,10 +93,17 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
-	private String createSendMessage(String message) {
-		String sendMessage = "";
-		sendMessage += "{channel:" + _channel + ",message:" + message + "}";
-		return sendMessage;
+	private Message createSendMessage(String message) {
+		return new Message(MessageType.MSG,
+				new Peer("Test",
+						"123",
+						123),
+				new Peer("TestDest",
+						"1234",
+						1234),
+				"TestChannel",
+				"test");
+		
 	}
 	
 	
@@ -122,7 +128,7 @@ public class ClientThreadTCP implements Runnable {
 	}
 	
 	private Socket _clientSocket;
-	private ClientChatThreadTCP _clientChatHandle;
+	private ClientChatThreadTCP _clientListenThread;
 	private ClientHandleTCP _clientHandler;
 	private volatile boolean _runThread;
 	private ClientWindow _chatWindow;
@@ -130,6 +136,5 @@ public class ClientThreadTCP implements Runnable {
 	private Thread _thread;
 	private String _serverIP;
 	private int _serverPort;
-	private DataOutputStream _serverOutput;
 	private String _messageText;
 }

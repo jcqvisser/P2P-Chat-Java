@@ -14,15 +14,15 @@ public class ServerHandleTCP {
 		_serverSockets.add(new ServerThreadTCP(this, serverSocket));
 	}
 	
-	public synchronized void serverHandle(String IPPort, String message) {
-		System.out.println("Server recieved (" + IPPort + "): " + message);
-		if(message.compareTo("QUIT") == 0) {
+	public synchronized void serverHandle(String IPPort, Message message) {
+		System.out.println("Server recieved (" + IPPort + "): " + message.getText());
+		if(message.getText().compareTo("QUIT") == 0) {
 			closeServerSocket(IPPort);
 		} else {
 			ListIterator<ServerThreadTCP> itr = _serverSockets.listIterator();
 			while(itr.hasNext()) {
 				ServerThreadTCP serverSocket= itr.next();
-				serverSocket.sendMessage(IPPort + ": " + message);
+				serverSocket.sendMessage(message);
 			}
 		}
 	}

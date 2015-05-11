@@ -3,6 +3,8 @@ package com.networks.p2pchat;
 import java.io.*;
 import java.net.Socket;
 
+import javax.xml.bind.JAXBException;
+
 public class ServerThreadTCP implements Runnable{
 	
 	// Public Members:
@@ -11,13 +13,12 @@ public class ServerThreadTCP implements Runnable{
 		_clientIP = _serverSocket.getInetAddress().toString();
 		_clientPort = _serverSocket.getPort();
 		_serverHandler = serverHandler;
+		_runServerThread = true;
 		try {
 			_clientInput = new BufferedReader(new InputStreamReader(_serverSocket.getInputStream()));
-			_clientOutput = new DataOutputStream(_serverSocket.getOutputStream());
-		} catch(IOException ioe) {
-			System.err.println("Error creating stream reader for thread: " + _clientIP + " - " + ioe.getMessage());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		_runServerThread = true;
 		start();
 	}
 	
@@ -26,28 +27,31 @@ public class ServerThreadTCP implements Runnable{
 	}
 	
 	public void run() {
-		String clientText = "";
 		while(_runServerThread) {
 			try {
-				clientText = _clientInput.readLine();
-				if(clientText != null) {
-					_serverHandler.serverHandle(getIPPort(), clientText);
-				} else {
-					_serverHandler.closeServerSocket(getIPPort());
-				}
-				
+				Message message = new Message(_serverSocket.getInputStream());
+//				String message = _clientInput.readLine();
+				System.out.println("Recieved: " + message.getText());
+//				System.out.println("Recieved: " + message);
+//				_serverHandler.serverHandle(getIPPort(), message);
 			} catch( IOException ioe) {
 				System.err.println("Error reading data from socket: " + ioe.getMessage());
 				_serverHandler.closeServerSocket(getIPPort());
+			} catch (JAXBException e) {
+				System.err.println("Could not parse XML data when reading from client : " + e);
+				e.printStackTrace();
 			}
 		}
 	}
 	
-	public void sendMessage(String message) {
+	public void sendMessage(Message message) {
 		try {
-			_clientOutput.writeBytes(message + "\n");
+			message.send(_serverSocket.getOutputStream());
+//			_clientOutput.writeBytes(message + "\n");
 		} catch (IOException ioe) {
 			System.err.println("Error sending message to IP: " + _clientIP + " - " + ioe.getMessage());
+		} catch (JAXBException e) {
+			System.err.println("Error parsing XML object");
 		}
 	}
 	
@@ -55,7 +59,6 @@ public class ServerThreadTCP implements Runnable{
 		try {
 			System.out.println("Closing server socket for: " + getIPPort());
 			_runServerThread = false;
-			_clientInput.close();
 			_serverSocket.close();
 		} catch( IOException e) {
 			System.err.println("Error closing socket.");
@@ -73,11 +76,10 @@ public class ServerThreadTCP implements Runnable{
 	}
 	
 	private Socket _serverSocket;
+	private BufferedReader _clientInput;
 	private String _clientIP;
 	private int _clientPort;
 	private Thread _thread;
 	private volatile boolean _runServerThread;
-	private BufferedReader _clientInput;
-	private DataOutputStream _clientOutput;
 	private ServerHandleTCP _serverHandler;
 }
