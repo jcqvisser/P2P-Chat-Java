@@ -1,19 +1,16 @@
 package test;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+//import javax.xml.bind.Unmarshaller;
 
 import com.networks.p2pchat.Message;
 import com.networks.p2pchat.Message.FileType;
@@ -22,13 +19,13 @@ import com.networks.p2pchat.Peer;
 
 public class XmlTest {
 	
-	private static final String MESSAGE_XML = "./message-jaxb.xml";
+//	private static final String MESSAGE_XML = "./message-jaxb.xml";
 
 	public XmlTest() {
 	}
 
 	public static void main(String[] args) throws JAXBException, IOException  {
-// TODO More testing is neccesary
+// TODO More testing is necessary
 		ArrayList<Peer> peers = new ArrayList<Peer>();
 		
 		Peer peer0 = new Peer("Jeff", "192.168.0.1", 1337);
@@ -59,14 +56,17 @@ public class XmlTest {
 	    JAXBContext context = JAXBContext.newInstance(Message.class);
 	    Marshaller m = context.createMarshaller();
 	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-	    
+
 	    OutputStream out = new FileOutputStream("C:\\Users\\jcqvi_000\\Desktop\\billeh.txt");
 //	    msg0.send(out);
 //	    msg0.send(System.out);
 //	    
-//	    InputStream in = new FileInputStream("C:\\Users\\jcqvi_000\\Desktop\\billeh.txt");
+	    InputStream in = new FileInputStream("C:\\Users\\jcqvi_000\\Desktop\\billeh.txt");
 //	    
 //	    Message msg1 = new Message(in);
 //	    msg1.send(System.out);
+	    
+	    in.close();
+	    out.close();
 	}
 }
