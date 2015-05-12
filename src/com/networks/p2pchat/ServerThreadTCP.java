@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 public class ServerThreadTCP implements Runnable{
 	
 	// Public Members:
+	// Constructor, takes the holding class object and the socket for a server.
 	public ServerThreadTCP(ServerHandleTCP serverHandler, Socket serverSocket) {
 		_serverSocket = serverSocket;
 		_clientIP = _serverSocket.getInetAddress().toString();
@@ -18,10 +19,14 @@ public class ServerThreadTCP implements Runnable{
 		start();
 	}
 	
+	// Return the IP address and port that the socket is connected to, unique
+	// for a particular client.
 	public String getIPPort() {
 		return _clientIP + ":" + Integer.toString(_clientPort);
 	}
 	
+	// Thread run loop for the server object, listens for incoming messages
+	// and handles them accordingly (e.g send on to rest of the clients in the channel).
 	public void run() {
 		Message message;
 		while(_runServerThread) {
@@ -38,6 +43,7 @@ public class ServerThreadTCP implements Runnable{
 		}
 	}
 	
+	// Function that notifies the particular server socket to send a message to the client.
 	public void sendMessage(Message message) {
 		try {
 			_messageService.sendMessage(message);
@@ -46,6 +52,7 @@ public class ServerThreadTCP implements Runnable{
 		}
 	}
 	
+	// Close the socket and the thread for the server socket object.
 	public void close() {
 		try {
 			System.out.println("Closing server socket for: " + getIPPort());
@@ -57,7 +64,7 @@ public class ServerThreadTCP implements Runnable{
 	}
 	
 	// Private Members:
-	
+	// Start the thread loop, called when the constructor is done initializing.
 	private void start() {
 		if (_thread == null)
 		{
@@ -66,6 +73,7 @@ public class ServerThreadTCP implements Runnable{
 		}
 	}
 	
+	// Private data members.
 	private Socket _serverSocket;
 	private MessageService _messageService;
 	private String _clientIP;

@@ -1,5 +1,6 @@
 package com.networks.p2pchat;
 
+// UDP connection handle class.
 public class ConnectionHandleUDP implements ConnectionHandle {
 	
 	// Public Members:

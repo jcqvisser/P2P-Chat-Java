@@ -7,30 +7,36 @@ import java.net.Socket;
 
 public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 	// Public Members
-	
+	// Public constructor, intializes listen server on a particular port.
 	public ConnectionHandleTCP(int port) {
 		try {
 			_listenSocket = new ServerSocket(port);
 		} catch (IOException e) {
 			System.err.println("Error creating TCP socket");
 		}
+		// Thread run loop operational.
 		_checkConnections = true;
+		// Initialize server and client handler objects.
 		_serverHandler = new ServerHandleTCP(this);
 		_clientHandler = new ClientHandleTCP(this);
 		initializeLoginWindow();
-//		
 	}
 	
+	// Return the username of the current user.
 	public String getMyUsername() {
 		return _myUsername;
 	}
 	
+	// Set the username for a particular object.
+	// Warning - only call at start of code, will initialize gui.
 	public void setMyUsername(String username){
 		_myUsername = username;
-		_loginWindow.dispose();
+		if(_loginWindow != null)
+			_loginWindow.dispose();
 		initializeWindow();
 	}
 	
+	// Create a client connection to a particular IP/Port/Channel
 	public void connect(String ipAddr, int port, String channel) {
 		try {
 			_clientHandler.connect(new Socket(ipAddr, port), channel);
@@ -39,6 +45,7 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		}
 	}
 	
+	// Listen loop for the connection handler, listens for new connections.
 	public void run() {
 		while(_checkConnections) {
 			try {
@@ -49,6 +56,7 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		}
 	}
 	
+	// Initialize the listen thread.
 	public void start(String threadName) {
 		if (_thread == null)
 		{
@@ -57,11 +65,13 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		}
 	}
 	
+	// Close the listen thread.
 	public void close() {
 		_checkConnections = false;
 	}
 	
 	// Private Members
+	// Initialize the gui window for normal functionality.
 	private void initializeWindow() {
 		ConnectionHandleTCP tempThis = this;
 		EventQueue.invokeLater(new Runnable() {
@@ -76,6 +86,7 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		});
 	}
 	
+	// Initialize the gui window for logon (Enter username).
 	private void initializeLoginWindow() {
 		ConnectionHandleTCP connectionHandle = this;
 		EventQueue.invokeLater(new Runnable() {
@@ -90,6 +101,7 @@ public class ConnectionHandleTCP implements ConnectionHandle, Runnable {
 		});
 	}
 	
+	// Private members.
 	private Thread _thread;
 	private String _myUsername;
 	private ServerSocket _listenSocket;

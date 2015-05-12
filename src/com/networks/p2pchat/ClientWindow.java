@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
 public class ClientWindow extends JFrame {
 
 	/**
-	 * 
+	 * 	Private data members.
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;

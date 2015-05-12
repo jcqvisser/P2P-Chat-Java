@@ -15,7 +15,7 @@ import javax.swing.JTextPane;
 public class LoginWindow extends JFrame {
 
 	/**
-	 * 
+	 * Private data members
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -39,6 +39,8 @@ public class LoginWindow extends JFrame {
 		textField = new JTextField();
 		textField.setBounds(120, 11, 358, 24);
 		contentPane.add(textField);
+		// Listens for when the Enter key is pressed to notify that an
+			// username has been entered.
 		textField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {

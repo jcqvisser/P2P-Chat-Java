@@ -22,6 +22,7 @@ public class Peer2Peer {
 		}
 	}
 	
+	// Initial setup for listening server.
 	public static void setupServerListener() {
 		_connectionListener = new ConnectionHandleTCP(1337);
 		_connectionListener.start("listenThread");

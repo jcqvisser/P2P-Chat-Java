@@ -12,6 +12,7 @@ import com.networks.p2pchat.Message.MessageType;
 
 public class ClientThreadTCP implements Runnable {
 
+	// Initialize Client thread object, taking in the Holding class, client socket and channel.
 	public ClientThreadTCP(ClientHandleTCP clientHandler, Socket clientSocket, String channel) {
 		_channel = channel;
 		_clientSocket = clientSocket;
@@ -26,6 +27,7 @@ public class ClientThreadTCP implements Runnable {
 		start();
 	}
 	
+	// Thread run loop, waits until a message is ready to be sent, then sends it.
 	public void run() {
 		while(_runThread) {
 			synchronized(this) {
@@ -46,6 +48,7 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
+	// Creates the sendable message for the run loop and notifies the loop.
 	public void sendMessage(String message) {
 		synchronized(this) {
 			_message = createSendMessage(message);
@@ -53,6 +56,7 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
+	// Creates the sendable message for the run loop and notifies the loop.
 	public void sendMessage(Message message) {
 		synchronized(this) {
 			_message = message;
@@ -60,23 +64,29 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
+	// Get the username of the current user.
 	public String getMyUsername() {
 		return _clientHandler.getMyUsername();
 	}
 	
+	// Get the ip address and port of this user, is unique for the particular user.
 	public String getClientIPPort() {
 		return _clientSocket.getLocalAddress().toString() + ":" + Integer.toString(_clientSocket.getLocalPort());
 	}
 	
+	// Handle received messages from the client chat thread object.
 	public void messageHandle(Message message) {
 		_chatWindow.displayMessage(message.getOrigin().getId() + " (" + message.getOrigin().getIp() + ":" + 
 				message.getOrigin().getPort()  + "): " + message.getText());
 	}
 	
+	// Call to close the thread entirely, must be called instead of close() 
+	// This closes the thread and also removes the object from the list.
 	public synchronized void passClose() {
 		_clientHandler.closeClientSocket(getClientIPPort());
 	}
 	
+	// Close all relevant threads for the client object and closes the socket.
 	public void close() {
 		try {
 			System.out.println("Closing client socket for: " + getClientIPPort());
@@ -94,6 +104,7 @@ public class ClientThreadTCP implements Runnable {
 	
 	// Private members
 	
+	// Start the thread, is called by this class when it is initialized.
 	private void start() {
 		if (_thread == null)
 		{
@@ -103,6 +114,7 @@ public class ClientThreadTCP implements Runnable {
 		}
 	}
 	
+	// Create a sendable message from a message string.
 	private Message createSendMessage(String message) {
 		return new Message(MessageType.MSG,
 				new Peer(getMyUsername(),
@@ -115,7 +127,7 @@ public class ClientThreadTCP implements Runnable {
 				message);
 	}
 	
-	
+	// Launch the client GUI window where messages are sent and received for the user.
 	public void launchWindow() {
 		ClientThreadTCP tempThis = this;
 		EventQueue.invokeLater(new Runnable() {
@@ -143,6 +155,7 @@ public class ClientThreadTCP implements Runnable {
 		});
 	}
 	
+	// Private data members.
 	private Socket _clientSocket;
 	private ClientChatThreadTCP _clientListenThread;
 	private ClientHandleTCP _clientHandler;
