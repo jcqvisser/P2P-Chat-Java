@@ -40,7 +40,7 @@ public class AddressBook {
 	/* Get the Peer for the relevant address key-value pair. */
 	public Peer getAddress(String AddrIp) {
 		if(_addresses.get(AddrIp) != null) {
-			return new Peer(AddrIp, _addresses.get(AddrIp));
+			return new Peer(_addresses.get(AddrIp), AddrIp);
 		} else {
 			return null;
 		}
