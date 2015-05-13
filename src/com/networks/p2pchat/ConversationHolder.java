@@ -2,6 +2,15 @@ package com.networks.p2pchat;
 
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.ListIterator;
+
+/**
+ * Conversation holding class, handles logic of which conversation
+ * a particular message should be sent to.
+ * 
+ * @author Anthony
+ *
+ */
 
 public class ConversationHolder {
 	// Takes in a post office object for passing messages.
@@ -12,15 +21,26 @@ public class ConversationHolder {
 	// Send a message on to a peer in the list of conversations
 	// Or start a new conversation if necessary.
 	public synchronized boolean sendMessage(Message message) {
+		int index = findConversationID(message.getDestination().getIp());
+		if(index == -1) {
+			// Logic if the conversation does not exist.
+		} else {
+			// Send the message on to the target converstation.
+			_conversations.get(index).sendMessage(message);
+		}
 		return false;
 	}
 	
 	// Handle the received message.
-	public synchronized boolean handleMessage(Message message) {
-		return false;
+	public synchronized void handleMessage(Message message) {
+		_postOffice.handleMessage(message);
 	}
 	
 	public synchronized boolean addConversation(Socket connectionSocket) {
+		if(findConversationID(connectionSocket.getInetAddress().toString()) == -1) {
+			_conversations.add(new Conversation(this, connectionSocket));
+			return true;
+		} 
 		return false;
 	}
 	
@@ -31,7 +51,7 @@ public class ConversationHolder {
 		int index = 0;
 		while(itr.hasNext()) {
 			index = itr.nextIndex();
-			if(itr.next().getIP().compareTo(ip) == 0) {
+			if(itr.next().getRecipientIp().compareTo(ip) == 0) {
 				return index;
 			}
 		}
