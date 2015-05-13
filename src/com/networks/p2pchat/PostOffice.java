@@ -141,6 +141,12 @@ public class PostOffice implements Runnable {
 	/* handleMSG Function deals with the logic of incoming MSG type Messages.*/
 	void handleMSG(Message message) {
 		if (message.getDestination().getIp().compareTo(_ip) == 0) {
+			if (! _addressBook.addressExists(message.getOrigin().getIp())) {
+				_addressBook.addAddress(message.getOrigin());
+			}
+			if (!_addressBook.addressExists(message.getSource().getIp())) {
+				_addressBook.addAddress(message.getSource());
+			}
 			_graphicInterface.displayMessage(message.getText(), 
 					message.getOrigin().getIp(), 
 					message.getChannelID());
@@ -162,10 +168,13 @@ public class PostOffice implements Runnable {
 
 	/* handleNICK function deals with NICK messages used to change a user's Nickname (ID)*/
 	void handleNICK(Message message) {
-		if ()
-		Peer updatedContact = message.getOrigin();
-		updatedContact.setId(message.getText());
-		_addressBook.changeAddress(updatedContact);
+		if (message.getDestination().getIp().compareTo(_ip) == 0){
+			
+		} else {
+			Peer updatedContact = message.getOrigin();
+			updatedContact.setId(message.getText());
+			_addressBook.addAddress(updatedContact);
+		}
 	}
 	
 	void handleHELO(Message message) {
