@@ -26,7 +26,7 @@ public class ConversationHolder {
 			// Logic if the conversation does not exist.
 		} else {
 			// Send the message on to the target converstation.
-			_conversations.get(index).sendMessage(message);
+			_conversations.get(index).Send(message);
 		}
 		return false;
 	}
