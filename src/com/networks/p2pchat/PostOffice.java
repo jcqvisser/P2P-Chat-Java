@@ -24,6 +24,7 @@ public class PostOffice implements Runnable {
 		_ip = Inet4Address.getLocalHost().getHostAddress().toString();
 		_id = "testId";
 		_addressBook = AddressBook.getInstance();
+		_inbox = new ArrayList<Message>();
 		
 		start();
 	}
