@@ -1,6 +1,8 @@
 package com.networks.p2pchat;
 
 import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Peer2Peer {
 	
@@ -9,6 +11,11 @@ public class Peer2Peer {
 	public static void main(String[] args) {
 		// Initialize input streams.
 		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
+		try {
+			_postOffice = new PostOffice(1337);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// Get input from the user.
@@ -21,5 +28,6 @@ public class Peer2Peer {
 	}
 
 	private static BufferedReader _inFromUser;
+	private static PostOffice _postOffice;
 
 }
