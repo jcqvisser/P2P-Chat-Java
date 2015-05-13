@@ -1,5 +1,6 @@
 package com.networks.p2pchat;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -38,7 +39,12 @@ public class ConversationHolder {
 	
 	public synchronized boolean addConversation(Socket connectionSocket) {
 		if(findConversationID(connectionSocket.getInetAddress().toString()) == -1) {
-			_conversations.add(new Conversation(this, connectionSocket));
+			try{ 
+				_conversations.add(new Conversation(this, connectionSocket));
+			} catch(IOException ioe) {
+				System.err.println("Error creating new conversation: " + ioe);
+			}
+			
 			return true;
 		} 
 		return false;

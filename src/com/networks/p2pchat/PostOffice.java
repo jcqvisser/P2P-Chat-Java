@@ -1,13 +1,18 @@
 package com.networks.p2pchat;
 
+import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 public class PostOffice implements Runnable {
 	// Create the postoffice object.
-	public PostOffice() {
+	public PostOffice(int port) throws IOException {
 		_conversationHolder = new ConversationHolder(this);
+		_connectionListener = new ConnectionListener(this, port);
+		_graphicInterface = new GraphicInterface(this);
+		_ip = Inet4Address.getLocalHost().getHostAddress().toString();
 		
 		start();
 	}
@@ -30,11 +35,18 @@ public class PostOffice implements Runnable {
 	}
 	
 	public void start() {
+		_runThread = true;
 		if (_thread == null)
 		{
 			_thread = new Thread (this, "ListenThread");
 			_thread.start ();
 		}
+	}
+	
+	public void close() {
+		_runThread = false;
+		_graphicInterface.close();
+		_connectionListener.close();
 	}
 	
 	// Add a new conversation object for a particular socket.
@@ -62,8 +74,10 @@ public class PostOffice implements Runnable {
 	
 	// Private member variables:
 	private ConversationHolder _conversationHolder;
-	private Thread _thread;
-	private ArrayList<Message> _inbox;
-	private volatile boolean _runThread;
 	private GraphicInterface _graphicInterface;
+	private ConnectionListener _connectionListener;
+	private String _ip;
+	private Thread _thread;
+	private volatile boolean _runThread;
+	private ArrayList<Message> _inbox;
 }

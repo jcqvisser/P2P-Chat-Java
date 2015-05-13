@@ -24,11 +24,16 @@ public class GraphicInterface implements Runnable {
 	}
 	
 	public void start() {
+		_runThread = true;
 		if (_thread == null)
 		{
 			_thread = new Thread (this, "ListenThread");
 			_thread.start ();
 		}
+	}
+	
+	public void addWindow(String targetIp, String targetChannel) {
+		
 	}
 	
 	public void close() {

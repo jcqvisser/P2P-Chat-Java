@@ -14,15 +14,11 @@ import java.net.ServerSocket;
 
 public class ConnectionListener implements Runnable {
 	// Constructor - takes in the holding class and the listening port.
-	public ConnectionListener(PostOffice postOffice, int port) {
+	public ConnectionListener(PostOffice postOffice, int port) throws IOException {
 		_postOffice = postOffice;
 		
 		// Create the server listen socket object.
-		try {
-			_listenSocket = new ServerSocket(port);
-		} catch(IOException ioe) {
-			System.err.println("Error creating listening socket: " + ioe);
-		}
+		_listenSocket = new ServerSocket(port);
 		start();
 	}
 	
@@ -50,6 +46,7 @@ public class ConnectionListener implements Runnable {
 	
 	// Start the thread.
 	public void start() {
+		_runThread = true;
 		if (_thread == null)
 		{
 			_thread = new Thread (this, "ListenThread");
