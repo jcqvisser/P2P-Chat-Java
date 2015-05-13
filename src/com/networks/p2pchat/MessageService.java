@@ -12,7 +12,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.JAXBContext;
 
-
+/**
+ * 
+ * @author jcqvi_000
+ * @deprecated use {@link #Sender} and {@link #Receiver} instead.
+ */
+@Deprecated
 public class MessageService {
 
 	public MessageService(Socket socket) {
@@ -24,6 +29,14 @@ public class MessageService {
 		}
 	}
 	
+	/**
+	 * function moved
+	 * @return
+	 * @throws JAXBException
+	 * @throws IOException
+	 * @deprecated use {@link #com.networks.p2pchat.Sender} instead
+	 */
+	@Deprecated
 	public Message receiveMessage() throws JAXBException, IOException {
 		String xml = "";
 		String line = "";
@@ -41,7 +54,14 @@ public class MessageService {
 		um = context.createUnmarshaller();	
 		return (Message) um.unmarshal(reader1);
 	}
-	
+		
+	/**
+	 * Function moved
+	 * @param message
+	 * @throws JAXBException
+	 * @deprecated use {@link #com.networks.p2pchat.Receiver} instead
+	 */
+	@Deprecated
 	public void sendMessage(Message message) throws JAXBException {
 	    JAXBContext context;
 		context = JAXBContext.newInstance(Message.class);
@@ -50,6 +70,15 @@ public class MessageService {
 	    m.marshal(message, _outputStream);
 	}
 	
+	/**
+	 * Function must be moved, this class is gonna be ditched...
+	 * @param msg
+	 * @param destination
+	 * @return
+	 * @throws IllegalStateException
+	 * @deprecated needs to be moved to post-office, or something. I dont know.
+	 */
+	@Deprecated
 	public Message forward(Message msg, Peer destination) throws IllegalStateException{
 		if (!msg.getForwardable()) throw new IllegalStateException();
 		
