@@ -1,6 +1,7 @@
 package com.networks.p2pchat;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -17,6 +18,7 @@ public class ConversationHolder {
 	// Takes in a post office object for passing messages.
 	public ConversationHolder(PostOffice postOffice) {
 		_postOffice = postOffice;
+		_conversations = new ArrayList<Conversation>();
 	}
 	
 	// Send a message on to a peer in the list of conversations
@@ -38,14 +40,18 @@ public class ConversationHolder {
 	}
 	
 	public synchronized boolean addConversation(Socket connectionSocket) {
-		if(findConversationID(connectionSocket.getInetAddress().toString()) == -1) {
-			try{ 
-				_conversations.add(new Conversation(this, connectionSocket));
-			} catch(IOException ioe) {
-				System.err.println("Error creating new conversation: " + ioe);
+		try {
+			if(findConversationID(new String(connectionSocket.getInetAddress().getAddress(), "UTF-8")) == -1) {
+				try{ 
+					_conversations.add(new Conversation(this, connectionSocket));
+				} catch(IOException ioe) {
+					System.err.println("Error creating new conversation: " + ioe);
+				}
+				
+				return true;
 			}
-			
-			return true;
+		} catch (UnsupportedEncodingException e) {
+			System.err.println("Error error errror.");
 		} 
 		return false;
 	}
