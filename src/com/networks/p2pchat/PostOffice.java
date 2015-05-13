@@ -5,6 +5,9 @@ import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
+import java.util.Map;
+
+import org.omg.CORBA._PolicyStub;
 
 import com.networks.p2pchat.Message.MessageType;
 
@@ -18,11 +21,10 @@ import com.networks.p2pchat.Message.MessageType;
 public class PostOffice implements Runnable {
 	// Create the postoffice object.
 	public PostOffice(int port) throws IOException {
-		_conversationHolder = new ConversationHolder(this);
+		_conversationHolder = new ConversationHolder(this, port);
 		_connectionListener = new ConnectionListener(this, port);
 		_graphicInterface = new GraphicInterface(this);
-		_ip = Inet4Address.getLocalHost().getHostAddress().toString();
-		_id = "testId";
+		_me = new Peer("testID", Inet4Address.getLocalHost().getHostAddress().toString());
 		_addressBook = AddressBook.getInstance();
 		_inbox = new ArrayList<Message>();
 		
@@ -82,7 +84,7 @@ public class PostOffice implements Runnable {
 		synchronized(this) {
 			_inbox.add(new Message(
 				MessageType.MSG,
-				new Peer(_id, _ip),
+				_me,
 				new Peer("targetId", targetIp),
 				targetChannel,
 				message));
@@ -141,12 +143,9 @@ public class PostOffice implements Runnable {
 
 	/* handleMSG Function deals with the logic of incoming MSG type Messages.*/
 	void handleMSG(Message message) {
-		if (message.getDestination().getIp().compareTo(_ip) == 0) {
+		if (message.getDestination().getIp().compareTo(_me.getIp()) == 0) {
 			if (! _addressBook.addressExists(message.getOrigin().getIp())) {
 				_addressBook.addAddress(message.getOrigin());
-			}
-			if (!_addressBook.addressExists(message.getSource().getIp())) {
-				_addressBook.addAddress(message.getSource());
 			}
 			_graphicInterface.displayMessage(message.getText(), 
 					message.getOrigin().getIp(), 
@@ -169,7 +168,7 @@ public class PostOffice implements Runnable {
 
 	/* handleNICK function deals with NICK messages used to change a user's Nickname (ID)*/
 	void handleNICK(Message message) {
-		if (message.getDestination().getIp().compareTo(_ip) == 0){
+		if (message.getDestination().getIp().compareTo(_me.getIp()) == 0){
 			
 		} else {
 			Peer updatedContact = message.getOrigin();
@@ -179,10 +178,35 @@ public class PostOffice implements Runnable {
 	}
 	
 	void handleHELO(Message message) {
-		
+		Message messageFwd = new Message(message);
+		if (message.getTtl() > 0){
+			messageFwd.setSource(_me);
+			for (Map.Entry<String, Peer> entry : _addressBook.getMap.entrySet()) {
+				messageFwd.setDestination(entry.getValue());
+				messageFwd.setTtl(message.getTtl() - 1);
+				_conversationHolder.sendMessage(messageFwd);
+			}
+			if (!_addressBook.addressExists(message.getOrigin().getIp())) {
+				_addressBook.addAddress(message.getOrigin());
+			}	
+		}
+		Message messageHI = new Message(MessageType.HI,
+						_messageTtl - message.getTtl(),
+						_me,
+						_me,
+						message.getOrigin());
+		_conversationHolder.sendMessage(messageHI);
 	}
 	
 	void handleHI(Message message) {
+		_addressBook.addAddress(message.getOrigin());
+		_addressBook.addAddress(message.getSource());
+		
+		if (message.getDestination().getIp().compareTo(_me.getIp()) != 0) {
+			Message messageFwd = new Message(message);
+			messageFwd.setSource(_me);
+			_conversationHolder.sendMessage(messageFwd);
+		}
 		
 	}
 	
@@ -190,10 +214,10 @@ public class PostOffice implements Runnable {
 	private ConversationHolder _conversationHolder;
 	private GraphicInterface _graphicInterface;
 	private ConnectionListener _connectionListener;
-	private String _ip;
-	private String _id;
+	private Peer _me;
 	private Thread _thread;
 	private volatile boolean _runThread;
 	private ArrayList<Message> _inbox;
 	private AddressBook _addressBook;
+	private int _messageTtl = 4;
 }
