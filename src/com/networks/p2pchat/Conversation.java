@@ -4,7 +4,6 @@
 package com.networks.p2pchat;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
 /**
@@ -47,11 +46,13 @@ public class Conversation implements Runnable{
 			synchronized(this) {
 				try {
 					wait();
-					_sender.sendMessage(_msg);	
 				}
 				catch (InterruptedException ie){
 					System.err.println("Thread loop interrupted, " + ie);
 				}		
+				if(_runThread) {
+					_sender.sendMessage(_msg);
+				}
 			}
 		}
 	}
@@ -84,12 +85,20 @@ public class Conversation implements Runnable{
 		}
 	}
 	
+	public void passClose() {
+		_convHolder.closeConversation(getRecipientIp());
+	}
+	
 	public void close() {
 		_runThread = false;
+		_receiver.close();
+		synchronized(this) {
+			notify();
+		}
 		try {
 			_socket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Error closing socket (" + getRecipientIp() + "): " + e);
 		}
 	}
 	

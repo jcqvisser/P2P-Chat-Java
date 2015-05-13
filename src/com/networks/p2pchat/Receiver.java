@@ -44,7 +44,6 @@ public class Receiver implements Runnable{
 	 */
 	@Override
 	public void run() {
-		_runThread = true;
 		while (_runThread) {
 			String xml = "";
 			String line = "";
@@ -53,7 +52,10 @@ public class Receiver implements Runnable{
 				try {
 					line = _inputReader.readLine().toString();
 				} catch (IOException e) {
-					e.printStackTrace();
+					if(e.getMessage().compareTo("Socket closed") != 0){
+						System.err.println("Error reading message: " + e);
+					}
+					_conv.passClose();
 				}
 				xml = xml + line;
 			}

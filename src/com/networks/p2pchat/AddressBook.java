@@ -46,6 +46,11 @@ public class AddressBook {
 		}
 	}
 	
+	/* Returns the full map (for iterating through and getting all entries) */
+	public Map<String, String> getMap() {
+		return _addresses;
+	}
+	
 	/* Check if the IP address exists in the hash table, i.e. does it have a value assigned */
 	public boolean addressExists(String AddrIp) {
 		return (_addresses.get(AddrIp) != null);
