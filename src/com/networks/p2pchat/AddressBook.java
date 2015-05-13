@@ -5,7 +5,8 @@ import java.util.Map;
 
 /**
  * The addressbook contains all known people on the network, holding the
- * ip address and id of each person.
+ * ip address and id of each person. This class is a singleton so that 
+ * only one set of addresses can be accessed within the code.
  * The objects are stored as peers.
  * @author Anthony
  *
@@ -13,9 +14,17 @@ import java.util.Map;
 
 public class AddressBook {
 	
-	/* Default constructor, initializes the map object */
-	public AddressBook() {
+	/* Protected constructor, initializes the map object, cannot be called */
+	protected AddressBook() {
 		_addresses = new HashMap<String, String>();
+	}
+	
+	/* return an instance of the static address book singleton */
+	public AddressBook getInstance() {
+		if(_addressBookInstance == null) {
+			_addressBookInstance = new AddressBook();
+		}
+		return _addressBookInstance;
 	}
 	
 	/* Add a new key-value pair to the map, takes a Peer object */
@@ -46,4 +55,7 @@ public class AddressBook {
 	
 	/* Stores a map of IP addresses related to the ID's of the users. */
 	Map<String, String> _addresses;
+	
+	/* Private static object for the addressbook instance singleton */
+	private static AddressBook _addressBookInstance;
 }
