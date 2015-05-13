@@ -40,19 +40,15 @@ public class ConversationHolder {
 	}
 	
 	public synchronized boolean addConversation(Socket connectionSocket) {
-		try {
-			if(findConversationID(new String(connectionSocket.getInetAddress().getAddress(), "UTF-8")) == -1) {
-				try{ 
-					_conversations.add(new Conversation(this, connectionSocket));
-				} catch(IOException ioe) {
-					System.err.println("Error creating new conversation: " + ioe);
-				}
-				
-				return true;
+		if(findConversationID(connectionSocket.getInetAddress().getHostAddress()) == -1) {
+			try{ 
+				_conversations.add(new Conversation(this, connectionSocket));
+			} catch(IOException ioe) {
+				System.err.println("Error creating new conversation: " + ioe);
 			}
-		} catch (UnsupportedEncodingException e) {
-			System.err.println("Error error errror.");
-		} 
+			
+			return true;
+		}
 		return false;
 	}
 	
