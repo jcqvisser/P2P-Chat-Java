@@ -2,6 +2,7 @@ package com.networks.p2pchat;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -15,11 +16,14 @@ import java.util.ListIterator;
 
 public class ConversationHolder {
 	/*
-	 *  Takes in a post office object for passing messages.
+	 *  Takes in a post office object for passing messages,
+	 *  and the port that listen servers are running on.  
 	 */
-	public ConversationHolder(PostOffice postOffice) {
+	public ConversationHolder(PostOffice postOffice, int port) {
 		_postOffice = postOffice;
 		_conversations = new ArrayList<Conversation>();
+		_addressBook = AddressBook.getInstance();
+		_port = port;
 	}
 	
 	/*
@@ -28,16 +32,32 @@ public class ConversationHolder {
 	 */
 	public synchronized boolean sendMessage(Message message) {
 		int index = findConversationID(message.getDestination().getIp());
-		if(index == -1) {
-			// Logic if the conversation does not exist.
-		} else {
+		if(index != -1) {
 			// Send the message on to the target conversation.
 			_conversations.get(index).Send(message);
+			return true;
+		} else {
+			// Logic if the conversation does not exist.
+			if(_addressBook.addressExists(message.getDestination().getIp())) {
+				try {
+					addConversation(new Socket(message.getDestination().getIp(), _port));
+					_conversations.get(findConversationID(message.getDestination().getIp())).Send(message);
+					return true;
+				} catch (UnknownHostException e) {
+					System.err.println("Error creating connection, host is unknown: " + e);
+					return false;
+				} catch (IOException e) {
+					System.err.println("Error creating connection, io error: " + e);
+					return false;
+				}
+			}
 		}
 		return false;
 	}
 	
-	/* Close the conversation on a particular socket */
+	/* 
+	 * Close the conversation on a particular socket 
+	 */
 	public synchronized void closeConversation(String ipAddr) {
 		int index = findConversationID(ipAddr);
 		if(index != -1 && _conversations.get(index) != null) {
@@ -91,4 +111,12 @@ public class ConversationHolder {
 	 * List of active conversations.
 	 */
 	private ArrayList<Conversation> _conversations;
+	/*
+	 * Address book singleton, allows for a new conversation to opened if the address is known.
+	 */
+	private AddressBook _addressBook;
+	/*
+	 * Port that the server connections will be listening on.
+	 */
+	private int _port;
 }
