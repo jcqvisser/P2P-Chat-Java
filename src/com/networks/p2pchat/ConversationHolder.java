@@ -2,7 +2,6 @@ package com.networks.p2pchat;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
