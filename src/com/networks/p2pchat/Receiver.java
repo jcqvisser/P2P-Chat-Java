@@ -30,8 +30,9 @@ public class Receiver implements Runnable{
 	public Receiver(InputStream inStream, Conversation conv) {
 		_conv = conv;
 		_inStream = inStream;
-		_runThread = false;
 		_inputReader = new BufferedReader(new InputStreamReader(_inStream));	
+		
+		start();
 	}
 	
 	/* 
@@ -70,6 +71,16 @@ public class Receiver implements Runnable{
 		}
 	}
 	
+	/* Star the thread */
+	public void start() {
+		_runThread = true;
+		if (_thread == null)
+		{
+			_thread = new Thread (this, "PostOfficeThread");
+			_thread.start ();
+		}
+	}
+	
 	public void close(){
 		_runThread = false;
 	}
@@ -85,4 +96,7 @@ public class Receiver implements Runnable{
 	
 	/* BufferedReader for reading from InputStream line-by-line*/
 	private BufferedReader _inputReader;
+	
+	/* Thread object */
+	private Thread _thread;
 }
