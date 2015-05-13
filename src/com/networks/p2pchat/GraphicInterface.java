@@ -16,7 +16,7 @@ public class GraphicInterface implements Runnable {
 		while(_runThread) {
 			try {
 				String input = _inFromUser.readLine();
-				_postOffice.handleMessage(input, "localhost", "test");
+				_postOffice.handleMessage(input, "192.168.0.4", "test");
 			} catch (IOException ioe) {
 				System.err.println("Error reading user input: " + ioe);
 			}

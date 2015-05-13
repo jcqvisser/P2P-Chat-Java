@@ -13,6 +13,7 @@ import com.networks.p2pchat.Message.MessageType;
  * Primary Post office class, will determine where messages must be sent
  * as well as any logic behind particular message types.
  * @author Anthony
+ * @author Jacques
  *
  */
 
@@ -57,7 +58,6 @@ public class PostOffice implements Runnable {
 	
 	public void close() {
 		_runThread = false;
-		_graphicInterface.close();
 		_connectionListener.close();
 	}
 	
@@ -164,7 +164,8 @@ public class PostOffice implements Runnable {
 		
 	}
 
-	/* handleNICK function deals with NICK messages used to change a user's Nickname (ID)*/
+	/* handleNICK function deals with NICK messages used to change a user's 
+	 * Nickname (ID)*/
 	void handleNICK(Message message) {
 		if (message.getDestination().getIp().compareTo(_me.getIp()) == 0){
 			
@@ -174,9 +175,21 @@ public class PostOffice implements Runnable {
 			_addressBook.addAddress(updatedContact);
 		}
 	}
-	
+
+	/* handleHELO function deals with messages of type HELO,
+	 * HELO messages have an Origin, Source and Destination (Peer objects)
+	 * When a HELO message is received, source is changed to you (PostOffice._me)
+	 * then it is sent on to all your contacts after decrementing the message's
+	 * ttl. 
+	 * 
+	 * If the message's ttl is at 0 it is not sent on.
+	 * 
+	 * Whenever a HELO is received, the origin is saved in your addressbook,
+	 * also a HI message is sent back to the Source (not origin).
+	 */
 	void handleHELO(Message message) {
 		Message messageFwd = new Message(message);
+		addToHeloLog(message);
 		if (message.getTtl() > 0){
 			messageFwd.setSource(_me);
 			for (Map.Entry<String, String> entry : _addressBook.getMap().entrySet()) {
@@ -203,9 +216,29 @@ public class PostOffice implements Runnable {
 		if (message.getDestination().getIp().compareTo(_me.getIp()) != 0) {
 			Message messageFwd = new Message(message);
 			messageFwd.setSource(_me);
+			Peer newDestination = getHeloSource(message);
+			if (newDestination == null) {return;}
+			messageFwd.setDestination(newDestination);
 			_conversationHolder.sendMessage(messageFwd);
 		}
-		
+	}
+	
+	private Peer getHeloSource(Message message) {
+		String heloOriginIp = message.getDestination().getIp(); 
+		for (Message msg : _heloMessages) {
+			if (msg.getOrigin().getIp().compareTo(heloOriginIp) == 0){
+				return msg.getSource();
+			}
+		}
+		return null;
+	}
+	
+	private void addToHeloLog(Message message) {
+		for (Message msg : _heloMessages) {
+			if (msg.getOrigin().getIp().compareTo(message.getOrigin().getIp()) == 0) {
+				_heloMessages.remove(msg);
+			}
+		}
 	}
 	
 	// Private member variables:
@@ -218,4 +251,5 @@ public class PostOffice implements Runnable {
 	private ArrayList<Message> _inbox;
 	private AddressBook _addressBook;
 	private int _messageTtl = 4;
+	private ArrayList<Message> _heloMessages;
 }
