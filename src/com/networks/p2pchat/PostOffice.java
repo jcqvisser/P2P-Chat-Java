@@ -20,10 +20,14 @@ import com.networks.p2pchat.Message.MessageType;
 public class PostOffice implements Runnable {
 	// Create the postoffice object.
 	public PostOffice(int port) throws IOException {
+		_graphicInterface = new GraphicInterface(this);
+		
+		// Initialize user id.
+		_me = new Peer(_graphicInterface.getMyUsername(), 
+				Inet4Address.getLocalHost().getHostAddress().toString());
+		
 		_conversationHolder = new ConversationHolder(this, port);
 		_connectionListener = new ConnectionListener(this, port);
-		_graphicInterface = new GraphicInterface(this);
-		_me = new Peer("testID", Inet4Address.getLocalHost().getHostAddress().toString());
 		_addressBook = AddressBook.getInstance();
 		_inbox = new ArrayList<Message>();
 		_heloMessages = new ArrayList<Message>();
