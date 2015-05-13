@@ -4,6 +4,7 @@
 package com.networks.p2pchat;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
 /**
@@ -62,7 +63,12 @@ public class Conversation implements Runnable{
 	
 	/*get the IP address of the person with which the conversation is*/
 	public String getRecipientIp() {
-		return _socket.getInetAddress().toString();
+		try {
+			return new String(_socket.getInetAddress().getAddress(), "UTF-8");
+		} catch (UnsupportedEncodingException uee) {
+			System.err.println("Error converting socket address to string: " + uee);
+			return null;
+		}
 	}
 	
 	/* HandleMessage passes the message upwards to the ConversationHolder class that holds this conversation*/

@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import com.networks.p2pchat.Message.MessageType;
+
 public class PostOffice implements Runnable {
 	// Create the postoffice object.
 	public PostOffice(int port) throws IOException {
@@ -69,6 +71,40 @@ public class PostOffice implements Runnable {
 	
 	// Once a message has been recieved, handle it accordingly.
 	private void messenger(Message message) {
+		switch(message.getMessageType()){
+		case MSG: 
+			handleMSG(message);
+			break;
+		case FILE:
+			break;
+		case LISTCH:
+			break;
+		case NICK:
+			break;
+		case HELO:
+			break;
+		case HI:
+			break;
+		case QUIT:
+			break;
+		case USERS:
+			break;
+		case PASS:
+			break;
+		case MSGCH:
+			break;
+		case REPEAT: 
+			break;
+		case CH:
+			break;
+		case LISTUSERS:
+			break;
+		case JOIN: 
+			break;
+		}
+	}
+	
+	void handleMSG(Message message) {
 		
 	}
 	
