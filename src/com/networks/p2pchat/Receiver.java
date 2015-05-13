@@ -48,27 +48,27 @@ public class Receiver implements Runnable{
 			String xml = "";
 			String line = "";
 			
-			while (line.compareTo("</ns2:message>") != 0) {
+			while (line.compareTo("</ns2:message>") != 0 && _runThread) {
 				try {
 					line = _inputReader.readLine().toString();
 				} catch (IOException e) {
-					if(e.getMessage().compareTo("Socket closed") != 0){
-						System.err.println("Error reading message: " + e);
-					}
+					System.err.println("Error reading message: " + e);
 					_conv.passClose();
-				}
+				} 
 				xml = xml + line;
 			}
-		    StringReader reader1 = new StringReader(xml);
-		       
-		    JAXBContext context;
-		    Unmarshaller um = null;
-			try {
-				context = JAXBContext.newInstance(com.networks.p2pchat.Message.class);
-                um = context.createUnmarshaller();	
-				_conv.handleMessage((Message) um.unmarshal(reader1));			
-			} catch (JAXBException e) {
-				e.printStackTrace();
+			if(_runThread) {
+				StringReader reader1 = new StringReader(xml);
+			       
+			    JAXBContext context;
+			    Unmarshaller um = null;
+				try {
+					context = JAXBContext.newInstance(com.networks.p2pchat.Message.class);
+	                um = context.createUnmarshaller();	
+					_conv.handleMessage((Message) um.unmarshal(reader1));			
+				} catch (JAXBException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
