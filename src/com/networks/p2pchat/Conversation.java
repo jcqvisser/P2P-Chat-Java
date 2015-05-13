@@ -3,6 +3,8 @@
  */
 package com.networks.p2pchat;
 
+import java.net.Socket;
+
 /**
  * Embodies a conversation
  * Holds sender and receiver objects
@@ -25,29 +27,46 @@ public class Conversation implements Runnable{
 	public Conversation(ConversationHolder convHolder, Socket socket) {
 		_convHolder = convHolder;
 		_socket = socket;
+		_receiver = new Receiver(_socket.getInputStream(), this);
+		_sender = new Sender(_socket.getOutputSocket());
 		
-		// TODO more things need to be  created 
+		(new Thread(_receiver)).start();
 	}
 	
 	@Override
 	public void run() {
-		// TODO implement
-		
+		while (_runthread){
+			
+		}
 	}
 	
 	public String getRecipientIp() {
 	// TODO implement	
 	}
 	
+	/* Handlemessage passes the message upwards to the conversationholder class that holds this conversation*/
+	public void handleMessage(Message msg) {
+		_convHolder.handleMessage(msg);
+	}
+	
+	/* Send makes use of the sender object to send a message passed down by the conversationholder class*/
+	public void Send(Message msg) {
+		_sender.send(msg);
+	}
+	
 	/* holder class for conversations, conv's need to interact with it.*/
-	ConversationHolder _convHolder;
+	private ConversationHolder _convHolder;
 	
 	/*Socket object, used to create sender and receiver, might need to be closed at some point*/
-	Socket _socket;
+	private Socket _socket;
 	
 	/*Sender object, not threaded, holds outputstream object pointed at a socket, called to send messsages */
-	Sender _sender;
+	private Sender _sender;
 	
-	/*Receiver object, threaded, holds inputstream object pointed at _socket, receives messages*/
+	/*Receiver object, threaded, holds inputstream object pointed at _socket, receives messages and notifies the conversation object holding it*/
+	private Receiver _receiver;
+	
+	/* boolean value to see whether this thread must be closed*/
+	private boolean _runThread; 
 	
 }
