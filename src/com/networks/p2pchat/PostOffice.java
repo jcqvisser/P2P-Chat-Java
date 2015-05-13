@@ -49,7 +49,7 @@ public class PostOffice implements Runnable {
 		_runThread = true;
 		if (_thread == null)
 		{
-			_thread = new Thread (this, "ListenThread");
+			_thread = new Thread (this, "PostOfficeThread");
 			_thread.start ();
 		}
 	}
