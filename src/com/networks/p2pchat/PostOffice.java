@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.omg.CORBA._PolicyStub;
-
 import com.networks.p2pchat.Message.MessageType;
 
 /**
