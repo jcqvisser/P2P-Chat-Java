@@ -76,8 +76,10 @@ public class Conversation implements Runnable{
 			_msg = msg;
 			this.notify();
 		}
-		
-		
+	}
+	
+	public void close() {
+		_runThread = false;
 	}
 	
 	/* holder class for conversations, conv's need to interact with it.*/

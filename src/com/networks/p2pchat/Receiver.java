@@ -68,8 +68,11 @@ public class Receiver implements Runnable{
 			} catch (JAXBException e) {
 				e.printStackTrace();
 			}
-
 		}
+	}
+	
+	public void close(){
+		_runThread = false;
 	}
 	
 	/*The Conversation object to pass received mssages to. This object is also intended to hold this Receiver. */
