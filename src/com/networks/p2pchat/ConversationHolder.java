@@ -43,11 +43,10 @@ public class ConversationHolder {
 					addConversation(new Socket(message.getDestination().getIp(), _port));
 					_conversations.get(findConversationID(message.getDestination().getIp())).Send(message);
 					return true;
-				} catch (UnknownHostException e) {
-					System.err.println("Error creating connection, host is unknown: " + e);
-					return false;
-				} catch (IOException e) {
-					System.err.println("Error creating connection, io error: " + e);
+				} catch ( IOException e ) {
+					System.err.println("Error creating connection: " + e);
+					// Remove connections from the address book that are unreachable.
+					_addressBook.removeAddress(message.getDestination().getIp());
 					return false;
 				}
 			}
