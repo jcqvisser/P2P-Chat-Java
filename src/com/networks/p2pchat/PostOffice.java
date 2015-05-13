@@ -8,6 +8,13 @@ import java.util.ListIterator;
 
 import com.networks.p2pchat.Message.MessageType;
 
+/**
+ * Primary Post office class, will determine where messages must be sent
+ * as well as any logic behind particular message types.
+ * @author Anthony
+ *
+ */
+
 public class PostOffice implements Runnable {
 	// Create the postoffice object.
 	public PostOffice(int port) throws IOException {
@@ -15,6 +22,7 @@ public class PostOffice implements Runnable {
 		_connectionListener = new ConnectionListener(this, port);
 		_graphicInterface = new GraphicInterface(this);
 		_ip = Inet4Address.getLocalHost().getHostAddress().toString();
+		_id = "testId";
 		
 		start();
 	}
@@ -66,7 +74,16 @@ public class PostOffice implements Runnable {
 	}
 	
 	public synchronized void handleMessage(String message, String targetIp, String targetChannel) {
-		
+		// Create new message object.
+		synchronized(this) {
+			_inbox.add(new Message(
+				MessageType.MSG,
+				new Peer(_id, _ip),
+				new Peer("targetId", targetIp),
+				targetChannel,
+				message));
+			notify();
+		}
 	}
 	
 	// Once a message has been recieved, handle it accordingly.
@@ -76,6 +93,7 @@ public class PostOffice implements Runnable {
 			handleMSG(message);
 			break;
 		case FILE:
+			handleFILE(message);
 			break;
 		case LISTCH:
 			break;
@@ -108,11 +126,32 @@ public class PostOffice implements Runnable {
 		
 	}
 	
+	void handleFILE(Message message) {
+		
+	}
+	
+	void handleLISTCH(Message message) {
+		
+	}
+	
+	void handleNICK(Message message) {
+		
+	}
+	
+	void handleHELO(Message message) {
+		
+	}
+	
+	void handleHI(Message message) {
+		
+	}
+	
 	// Private member variables:
 	private ConversationHolder _conversationHolder;
 	private GraphicInterface _graphicInterface;
 	private ConnectionListener _connectionListener;
 	private String _ip;
+	private String _id;
 	private Thread _thread;
 	private volatile boolean _runThread;
 	private ArrayList<Message> _inbox;
