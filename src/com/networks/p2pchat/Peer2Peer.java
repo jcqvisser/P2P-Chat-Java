@@ -1,8 +1,6 @@
 package com.networks.p2pchat;
 
 import java.io.*;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Peer2Peer {
 	
