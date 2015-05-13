@@ -3,6 +3,7 @@
  */
 package com.networks.p2pchat;
 
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -23,25 +24,27 @@ public class Conversation implements Runnable{
 	 * Standard constructor.
 	 * Takes a conversationholder object which holds this conversation
 	 * Created from within a conversationholder
+	 * @throws IOException 
 	 */
-	public Conversation(ConversationHolder convHolder, Socket socket) {
+	public Conversation(ConversationHolder convHolder, Socket socket) throws IOException {
 		_convHolder = convHolder;
 		_socket = socket;
 		_receiver = new Receiver(_socket.getInputStream(), this);
-		_sender = new Sender(_socket.getOutputSocket());
-		
+		_sender = new Sender(_socket.getOutputStream());
+	
 		(new Thread(_receiver)).start();
 	}
 	
 	@Override
 	public void run() {
-		while (_runthread){
+		while (_runThread){
 			
 		}
 	}
 	
+	/*get the IP address of the person with which the conversation is*/
 	public String getRecipientIp() {
-	// TODO implement	
+		return _socket.getInetAddress().toString();
 	}
 	
 	/* Handlemessage passes the message upwards to the conversationholder class that holds this conversation*/
@@ -51,7 +54,7 @@ public class Conversation implements Runnable{
 	
 	/* Send makes use of the sender object to send a message passed down by the conversationholder class*/
 	public void Send(Message msg) {
-		_sender.send(msg);
+		_sender.sendMessage(msg);
 	}
 	
 	/* holder class for conversations, conv's need to interact with it.*/
@@ -67,6 +70,8 @@ public class Conversation implements Runnable{
 	private Receiver _receiver;
 	
 	/* boolean value to see whether this thread must be closed*/
-	private boolean _runThread; 
+	private volatile boolean _runThread; 
+	
+	//TODO close sockets when done
 	
 }
