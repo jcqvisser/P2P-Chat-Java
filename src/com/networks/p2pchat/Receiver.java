@@ -52,7 +52,6 @@ public class Receiver implements Runnable{
 				try {
 					line = _inputReader.readLine().toString();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				xml = xml + line;
