@@ -39,6 +39,8 @@ public class ConversationHolder {
 			// Logic if the conversation does not exist.
 			if(_addressBook.addressExists(message.getDestination().getIp())) {
 				try {
+					System.out.println(message.getDestination().getIp());
+					System.out.println(findConversationID(message.getDestination().getIp()));
 					addConversation(new Socket(message.getDestination().getIp(), _port));
 					_conversations.get(findConversationID(message.getDestination().getIp())).Send(message);
 					return true;
