@@ -147,7 +147,7 @@ public class PostOffice implements Runnable {
 		} else if (_addressBook.addressExists(message.getDestination().getIp())) {
 			_conversationHolder.sendMessage(message);
 		} else {
-			_addressBook.addAddress(message.getData());
+			_addressBook.addAddress(message.getDestination());
 			_conversationHolder.sendMessage(message);
 		}
 	}
@@ -162,6 +162,7 @@ public class PostOffice implements Runnable {
 
 	/* handleNICK function deals with NICK messages used to change a user's Nickname (ID)*/
 	void handleNICK(Message message) {
+		if ()
 		Peer updatedContact = message.getOrigin();
 		updatedContact.setId(message.getText());
 		_addressBook.changeAddress(updatedContact);

@@ -20,7 +20,7 @@ public class AddressBook {
 	}
 	
 	/* return an instance of the static address book singleton */
-	public AddressBook getInstance() {
+	public static AddressBook getInstance() {
 		if(_addressBookInstance == null) {
 			_addressBookInstance = new AddressBook();
 		}
