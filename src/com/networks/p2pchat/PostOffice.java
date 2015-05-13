@@ -26,6 +26,7 @@ public class PostOffice implements Runnable {
 		_me = new Peer("testID", Inet4Address.getLocalHost().getHostAddress().toString());
 		_addressBook = AddressBook.getInstance();
 		_inbox = new ArrayList<Message>();
+		_heloMessages = new ArrayList<Message>();
 		
 		start();
 	}
@@ -154,6 +155,7 @@ public class PostOffice implements Runnable {
 			_addressBook.addAddress(message.getDestination());
 			_conversationHolder.sendMessage(message);
 		}
+		// TODO pass to GUI
 	}
 	
 	void handleFILE(Message message) {

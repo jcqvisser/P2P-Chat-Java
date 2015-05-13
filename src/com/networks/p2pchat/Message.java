@@ -140,8 +140,6 @@ public class Message {
 		return fwd;
 	}
 	
-	// TODO Reply function
-	
 	// Getters
 	public MessageType getMessageType() {return _mType;}
 	public int getTtl() {return _ttl;}
