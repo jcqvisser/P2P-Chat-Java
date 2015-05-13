@@ -35,8 +35,7 @@ public class GraphicInterface {
 		if(windowID != -1) {
 			_clientWindows.get(windowID).displayMessage(message);
 		} else {
-			addWindow(targetIp, targetChannel);
-			_clientWindows.get(findClientWindow(targetIp, targetChannel)).displayMessage(message);
+			addWindow(targetIp, targetChannel, message);
 		}
 	}
 	
@@ -56,6 +55,32 @@ public class GraphicInterface {
 						}
 					});
 					chatWindow.setVisible(true);
+					_clientWindows.add(chatWindow);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	/*
+	 * Create a new client window for displaying messages.
+	 * Overloaded to take message and display when window is initialized.
+	 */
+	private void addWindow(String ip, String channel, String message) {
+		GraphicInterface tempThis = this;
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ClientWindow chatWindow = new ClientWindow(tempThis, ip, channel);
+					chatWindow.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosing(WindowEvent e) {
+							// Handle window closing event.
+						}
+					});
+					chatWindow.setVisible(true);
+					chatWindow.displayMessage(message);
 					_clientWindows.add(chatWindow);
 				} catch (Exception e) {
 					e.printStackTrace();
