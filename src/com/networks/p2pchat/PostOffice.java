@@ -181,8 +181,8 @@ public class PostOffice implements Runnable {
 		Message messageFwd = new Message(message);
 		if (message.getTtl() > 0){
 			messageFwd.setSource(_me);
-			for (Map.Entry<String, Peer> entry : _addressBook.getMap.entrySet()) {
-				messageFwd.setDestination(entry.getValue());
+			for (Map.Entry<String, String> entry : _addressBook.getMap().entrySet()) {
+				messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
 				messageFwd.setTtl(message.getTtl() - 1);
 				_conversationHolder.sendMessage(messageFwd);
 			}
