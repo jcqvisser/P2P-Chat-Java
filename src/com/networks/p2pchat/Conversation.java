@@ -11,7 +11,7 @@ import java.net.Socket;
  * Holds sender and receiver objects
  * Senders are not threaded, receivers are
  * 
- * Takes a conversationholder object in the constructor (this also holds the conversation object)
+ * Takes a ConversationHolder object in the constructor (this also holds the conversation object)
  * 
  * Takes a Socket object, from which input and output streams are created.
  * The input and outmut streams are used in constructing the sender and receiver objects.
@@ -35,10 +35,28 @@ public class Conversation implements Runnable{
 		(new Thread(_receiver)).start();
 	}
 	
+	/*
+	 * Main run function
+	 * @see java.lang.Runnable#run()
+	 * 
+	 */
 	@Override
 	public void run() {
 		while (_runThread){
-			
+			synchronized(this) {
+				try {
+					wait();
+				}
+				catch (InterruptedException ie){
+					System.err.println("Thread loop interrupted, " + ie);
+				}
+				_sender.sendMessage(_msg);			
+			}
+		}
+		try {
+			_socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -47,14 +65,19 @@ public class Conversation implements Runnable{
 		return _socket.getInetAddress().toString();
 	}
 	
-	/* Handlemessage passes the message upwards to the conversationholder class that holds this conversation*/
+	/* HandleMessage passes the message upwards to the ConversationHolder class that holds this conversation*/
 	public void handleMessage(Message msg) {
 		_convHolder.handleMessage(msg);
 	}
 	
-	/* Send makes use of the sender object to send a message passed down by the conversationholder class*/
+	/* Send makes use of the sender object to send a message passed down by the conversationHolder class*/
 	public void Send(Message msg) {
-		_sender.sendMessage(msg);
+		synchronized(this){
+			_msg = msg;
+			this.notify();
+		}
+		
+		
 	}
 	
 	/* holder class for conversations, conv's need to interact with it.*/
@@ -63,15 +86,17 @@ public class Conversation implements Runnable{
 	/*Socket object, used to create sender and receiver, might need to be closed at some point*/
 	private Socket _socket;
 	
-	/*Sender object, not threaded, holds outputstream object pointed at a socket, called to send messsages */
+	/*Sender object, not threaded, holds OutputStream object pointed at a socket, called to send Message objects*/
 	private Sender _sender;
 	
-	/*Receiver object, threaded, holds inputstream object pointed at _socket, receives messages and notifies the conversation object holding it*/
+	/*Receiver object, threaded, holds InputStream object pointed at _socket, receives messages and notifies the conversation object holding it*/
 	private Receiver _receiver;
 	
 	/* boolean value to see whether this thread must be closed*/
 	private volatile boolean _runThread; 
 	
-	//TODO close sockets when done
+	/*Message to be sent by the sendMessage function */
+	private Message _msg;
+	
 	
 }
