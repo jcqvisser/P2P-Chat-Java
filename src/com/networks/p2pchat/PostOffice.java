@@ -23,6 +23,7 @@ public class PostOffice implements Runnable {
 		_graphicInterface = new GraphicInterface(this);
 		_ip = Inet4Address.getLocalHost().getHostAddress().toString();
 		_id = "testId";
+		_addressBook = AddressBook.getInstance();
 		
 		start();
 	}
@@ -73,6 +74,8 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
+	/*This version of the handleMessage Function creates a Message object from the information supplied
+	 * by the user and sends it to it's destination by placing it in the inbox.*/
 	public synchronized void handleMessage(String message, String targetIp, String targetChannel) {
 		// Create new message object.
 		synchronized(this) {
@@ -86,7 +89,8 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
-	// Once a message has been recieved, handle it accordingly.
+	/* The Messenger Function classifies message in the inbox (incoming or outgoing) by it's type and
+	 * calls the appropriate function on it to send it to it's destination*/
 	private void messenger(Message message) {
 		switch(message.getMessageType()){
 		case MSG: 
@@ -96,34 +100,56 @@ public class PostOffice implements Runnable {
 			handleFILE(message);
 			break;
 		case LISTCH:
+			handleLISTCH(message);
 			break;
 		case NICK:
+			handleNICK(message);
 			break;
 		case HELO:
+			handleHELO(message);	
 			break;
 		case HI:
+			handleHI(message);	
 			break;
 		case QUIT:
+//			handleQUIT(message);	
 			break;
 		case USERS:
+//			handleUSERS(message);	
 			break;
 		case PASS:
+//			handlePASS(message);	
 			break;
 		case MSGCH:
+//			handleMSGCH(message);	
 			break;
 		case REPEAT: 
+//			handleREPEAT(message);	
 			break;
 		case CH:
+//			handleCH(message);	
 			break;
 		case LISTUSERS:
+//			handleLISTUSERS(message);	
 			break;
 		case JOIN: 
+//			handleJOIN(message);	
 			break;
 		}
 	}
-	
+
+	/* handleMSG Function deals with the logic of incoming MSG type Messages.*/
 	void handleMSG(Message message) {
-		
+		if (message.getDestination().getIp().compareTo(_ip) == 0) {
+			_graphicInterface.displayMessage(message.getText(), 
+					message.getOrigin().getIp(), 
+					message.getChannelID());
+		} else if (_addressBook.addressExists(message.getDestination().getIp())) {
+			_conversationHolder.sendMessage(message);
+		} else {
+			_addressBook.addAddress(message.getData());
+			_conversationHolder.sendMessage(message);
+		}
 	}
 	
 	void handleFILE(Message message) {
@@ -133,9 +159,12 @@ public class PostOffice implements Runnable {
 	void handleLISTCH(Message message) {
 		
 	}
-	
+
+	/* handleNICK function deals with NICK messages used to change a user's Nickname (ID)*/
 	void handleNICK(Message message) {
-		
+		Peer updatedContact = message.getOrigin();
+		updatedContact.setId(message.getText());
+		_addressBook.changeAddress(updatedContact);
 	}
 	
 	void handleHELO(Message message) {
@@ -155,4 +184,5 @@ public class PostOffice implements Runnable {
 	private Thread _thread;
 	private volatile boolean _runThread;
 	private ArrayList<Message> _inbox;
+	private AddressBook _addressBook;
 }
