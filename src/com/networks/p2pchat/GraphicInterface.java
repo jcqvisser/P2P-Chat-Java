@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -13,13 +14,16 @@ public class GraphicInterface {
 	public GraphicInterface(PostOffice postOffice) {
 		_postOffice = postOffice;
 		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
+		_me = new Peer();
 		_clientWindows = new ArrayList<ClientWindow>();
 	}
 	
-	public String getMyUsername() {
+	public Peer getMyUsername() {
 		System.out.println("Please enter a username: ");
 		try {
-			return _inFromUser.readLine();
+			String username = _inFromUser.readLine();
+			_me = new Peer(username, Inet4Address.getLocalHost().getHostAddress().toString());
+			return _me;
 		} catch (IOException e) {
 			System.err.println("Error reading user input: " + e);
 			return null;
@@ -28,14 +32,15 @@ public class GraphicInterface {
 	
 	public synchronized void handleMessage(String message, String ip, String channel) {
 		_postOffice.handleMessage(message, ip, channel);
+		displayMessage(message, _me, ip, channel);
 	}
 	
-	public void displayMessage(String message, String targetIp, String targetChannel) {
+	public void displayMessage(String message, Peer fromWho, String targetIp, String targetChannel) {
 		int windowID = findClientWindow(targetIp, targetChannel);
 		if(windowID != -1) {
-			_clientWindows.get(windowID).displayMessage(message);
+			_clientWindows.get(windowID).displayMessage(message, fromWho);
 		} else {
-			addWindow(targetIp, targetChannel, message);
+			addWindow(targetIp, targetChannel, message, fromWho);
 		}
 	}
 	
@@ -67,7 +72,7 @@ public class GraphicInterface {
 	 * Create a new client window for displaying messages.
 	 * Overloaded to take message and display when window is initialized.
 	 */
-	private void addWindow(String ip, String channel, String message) {
+	private void addWindow(String ip, String channel, String message, Peer fromWho) {
 		GraphicInterface tempThis = this;
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -80,7 +85,7 @@ public class GraphicInterface {
 						}
 					});
 					chatWindow.setVisible(true);
-					chatWindow.displayMessage(message);
+					chatWindow.displayMessage(message, fromWho);
 					_clientWindows.add(chatWindow);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -117,6 +122,7 @@ public class GraphicInterface {
 	
 	// Private member variables.
 	private PostOffice _postOffice;
-	BufferedReader _inFromUser;
-	ArrayList<ClientWindow> _clientWindows;
+	private BufferedReader _inFromUser;
+	private ArrayList<ClientWindow> _clientWindows;
+	private Peer _me;
 }

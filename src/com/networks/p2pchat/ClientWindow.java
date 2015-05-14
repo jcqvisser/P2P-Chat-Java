@@ -30,8 +30,8 @@ public class ClientWindow extends JFrame {
 	 *	Display message strings on the screen
 	 */
 	
-	public void displayMessage(String message) {
-		txtrDisplayArea.append(message + '\n');
+	public void displayMessage(String message, Peer fromWho) {
+		txtrDisplayArea.append(fromWho.getId() + "(" + fromWho.getIp() + "): " + message + '\n');
 		txtrDisplayArea.setCaretPosition(txtrDisplayArea.getDocument().getLength());
 	}
 	

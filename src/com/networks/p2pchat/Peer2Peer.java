@@ -26,6 +26,7 @@ public class Peer2Peer {
 	}
 
 	private static BufferedReader _inFromUser;
+	@SuppressWarnings("unused")
 	private static PostOffice _postOffice;
 
 }

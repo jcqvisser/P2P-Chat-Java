@@ -1,7 +1,6 @@
 package com.networks.p2pchat;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -23,8 +22,7 @@ public class PostOffice implements Runnable {
 		_graphicInterface = new GraphicInterface(this);
 		
 		// Initialize user id.
-		_me = new Peer(_graphicInterface.getMyUsername(), 
-				Inet4Address.getLocalHost().getHostAddress().toString());
+		_me =_graphicInterface.getMyUsername();
 		
 		_conversationHolder = new ConversationHolder(this, port);
 		_connectionListener = new ConnectionListener(this, port);
@@ -151,6 +149,7 @@ public class PostOffice implements Runnable {
 				_addressBook.addAddress(message.getOrigin());
 			}
 			_graphicInterface.displayMessage(message.getText(), 
+					message.getOrigin(),
 					message.getOrigin().getIp(), 
 					message.getChannelID());
 		} else if (_addressBook.addressExists(message.getDestination().getIp())) {
