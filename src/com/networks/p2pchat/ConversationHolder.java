@@ -25,7 +25,7 @@ public class ConversationHolder {
 		_port = port;
 	}
 	
-	/*
+	/**
 	 * Send a message on to a peer in the list of conversations
 	 * Or start a new conversation if necessary.
 	 */
