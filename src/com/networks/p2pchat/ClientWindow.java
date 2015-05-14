@@ -58,7 +58,6 @@ public class ClientWindow extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				// Handle window closing event.
-				System.out.println("Window closed: ");
 				_graphicInterface.removeClientWindow(getIpChannel());
 			}
 		});

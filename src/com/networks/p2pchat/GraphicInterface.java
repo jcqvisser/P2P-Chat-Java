@@ -92,10 +92,8 @@ public class GraphicInterface {
 	 * Remove a client window from the list (and display).
 	 */
 	public synchronized void removeClientWindow(String ipAndChannel) {
-		System.out.println("Finding client window to remove");
 		int windowID = findClientWindow(ipAndChannel);
 		if(windowID != -1 && _clientWindows.get(windowID) != null) {
-			System.out.println("Removing client window");
 			_clientWindows.get(windowID).dispose();
 			_clientWindows.remove(windowID);
 		}
