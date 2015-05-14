@@ -8,6 +8,8 @@ import javax.swing.JTextField;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JTextArea;
 
@@ -31,7 +33,7 @@ public class ClientWindow extends JFrame {
 	 */
 	
 	public void displayMessage(String message, Peer fromWho) {
-		txtrDisplayArea.append(fromWho.getId() + "(" + fromWho.getIp() + "): " + message + '\n');
+		txtrDisplayArea.append(fromWho.getId() + " (" + fromWho.getIp() + "):- " + message + '\n');
 		txtrDisplayArea.setCaretPosition(txtrDisplayArea.getDocument().getLength());
 	}
 	
@@ -52,6 +54,15 @@ public class ClientWindow extends JFrame {
 		_channel = channel;
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// Handle window closing event.
+				System.out.println("Window closed: ");
+				_graphicInterface.removeClientWindow(getIpChannel());
+			}
+		});
+
 		setBounds(100, 100, 518, 365);
 		setTitle(_title);
 		contentPane = new JPanel();

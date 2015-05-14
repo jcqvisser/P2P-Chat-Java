@@ -36,7 +36,7 @@ public class GraphicInterface {
 	}
 	
 	public void displayMessage(String message, Peer fromWho, String targetIp, String targetChannel) {
-		int windowID = findClientWindow(targetIp, targetChannel);
+		int windowID = findClientWindow(targetIp + targetChannel);
 		if(windowID != -1) {
 			_clientWindows.get(windowID).displayMessage(message, fromWho);
 		} else {
@@ -78,12 +78,6 @@ public class GraphicInterface {
 			public void run() {
 				try {
 					ClientWindow chatWindow = new ClientWindow(tempThis, ip, channel);
-					chatWindow.addWindowListener(new WindowAdapter() {
-						@Override
-						public void windowClosing(WindowEvent e) {
-							// Handle window closing event.
-						}
-					});
 					chatWindow.setVisible(true);
 					chatWindow.displayMessage(message, fromWho);
 					_clientWindows.add(chatWindow);
@@ -97,9 +91,11 @@ public class GraphicInterface {
 	/*
 	 * Remove a client window from the list (and display).
 	 */
-	public synchronized void removeClientWindow(String ip, String channel) {
-		int windowID = findClientWindow(ip, channel);
+	public synchronized void removeClientWindow(String ipAndChannel) {
+		System.out.println("Finding client window to remove");
+		int windowID = findClientWindow(ipAndChannel);
 		if(windowID != -1 && _clientWindows.get(windowID) != null) {
+			System.out.println("Removing client window");
 			_clientWindows.get(windowID).dispose();
 			_clientWindows.remove(windowID);
 		}
@@ -108,12 +104,12 @@ public class GraphicInterface {
 	/*
 	 * Search for a particular client window in the array list of client windows.
 	 */
-	private int findClientWindow(String ip, String channel) {
+	private int findClientWindow(String ipAndChannel) {
 		ListIterator<ClientWindow> itr = _clientWindows.listIterator();
 		int index = 0;
 		while(itr.hasNext()) {
 			index = itr.nextIndex();
-			if(itr.next().getIpChannel().compareTo(ip + channel) == 0) {
+			if(itr.next().getIpChannel().compareTo(ipAndChannel) == 0) {
 				return index;
 			}
 		}

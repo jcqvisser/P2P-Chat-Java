@@ -30,6 +30,9 @@ public class PostOffice implements Runnable {
 		_inbox = new ArrayList<Message>();
 		_heloMessages = new ArrayList<Message>();
 		
+		addConversation(new Socket("192.168.0.3", port));
+		_graphicInterface.addWindow("192.168.0.3", "test");
+		
 		start();
 	}
 	
