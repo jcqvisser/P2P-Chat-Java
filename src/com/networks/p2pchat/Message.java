@@ -16,7 +16,7 @@ public class Message {
 	
 	public enum MessageType {
 		HELO, HI, LISTCH, CH, JOIN, NICK, PASS, LISTUSERS, USERS, MSGCH, FILE,
-		QUIT, MSG, REPEAT, INVALIDPASS
+		QUIT, MSG, REPEAT, INVALIDPASS, NOTAMEMBER
 	}
 
 	public Message(){}
@@ -83,7 +83,7 @@ public class Message {
 		this.setChannelID(channelID);
 	}
 	
-	// JOIN, QUIT, REPEAT, INVALIDPASS
+	// JOIN, QUIT, REPEAT, INVALIDPASS, NOTAMEMBER
 	public Message(	MessageType msgType, 
 			Peer origin,
 			Peer destination,

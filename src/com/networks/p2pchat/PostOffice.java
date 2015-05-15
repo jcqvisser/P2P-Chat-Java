@@ -194,7 +194,7 @@ public class PostOffice implements Runnable {
 //			handlePASS(message);	
 			break;
 		case MSGCH:
-//			handleMSGCH(message);	
+			handleMSGCH(message);	
 			break;
 		case REPEAT: 
 //			handleREPEAT(message);	
@@ -320,6 +320,13 @@ public class PostOffice implements Runnable {
 				_heloMessages.remove(msg);
 			}
 		}
+	}
+	
+	private void handleMSGCH(Message message) {
+		// TODO check if channel exists
+		
+		// TODO check if person is listed in the channel
+		// TODO forward message to all channel participants 
 	}
 	
 	/**
