@@ -329,13 +329,12 @@ public class PostOffice implements Runnable {
 	}
 	
 	private void handleMSGCH(Message message) {
-		// TODO check if channel exists
 		if (!channelExists(message.getChannelID())) {
 			return; 
 		}
 		
 		if (!_channelList.get(message.getChannelID()).hasUser(message.getOrigin())) {
-			// TODO send appropriate msg to user.
+			// TODO channel doesn't exist message
 			return;
 		}
 		
@@ -375,7 +374,7 @@ public class PostOffice implements Runnable {
 			return;
 		}
 		if (!channelExists(message.getChannelID())) {
-			// TODO some message saying the guy is stupid
+			// TODO channel doesn't exist message
 			return;
 		}
 		
@@ -405,7 +404,11 @@ public class PostOffice implements Runnable {
 	}
 	
 	private void handleUSERS(Message message) {
-		// TODO implement
+		for (Peer user : message.getUsersList()) {
+			if (user.getIp().compareTo(_me.getIp()) != 0) {
+				_addressBook.addAddress(user);
+			}
+		}
 	}
 	
 	/**
