@@ -200,6 +200,8 @@ public class PostOffice implements Runnable {
 //			handleREPEAT(message);	
 			break;
 		case CH:
+	// TODO LISTCH can be called from outside
+	// TODO Arraylist of strings with channelnames and a string ip of the owner, passed back to fromt
 //			handleCH(message);	
 			break;
 		case LISTUSERS:
@@ -208,6 +210,7 @@ public class PostOffice implements Runnable {
 		case JOIN: 
 //			handleJOIN(message);	
 // needs to be passed to the channel object and the return must be looked at
+// must be passed to gui
 			break;
 		case INVALIDPASS:
 //			handleINVALIDPASS(message);
@@ -247,6 +250,15 @@ public class PostOffice implements Runnable {
 	}
 	
 	void handleLISTCH(Message message) {
+		ArrayList<String> channelIDs= new ArrayList<String>();
+		for (String key : _channelList.keySet()) {
+			channelIDs.add(key);
+		}	
+		Message messageCH = new Message(MessageType.CH,
+									_me,
+									message.getOrigin(),
+									channelIDs);
+		_conversationHolder.sendMessage(messageCH);
 		
 	}
 
