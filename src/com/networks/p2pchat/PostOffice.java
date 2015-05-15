@@ -39,6 +39,7 @@ public class PostOffice implements Runnable {
 		_addressBook = AddressBook.getInstance();
 		_inbox = new ArrayList<Message>();
 		_heloMessages = new ArrayList<Message>();
+		_messageBuilder = new MessageBuilder(_conversationHolder);
 		
 		start();
 	}
@@ -462,6 +463,10 @@ public class PostOffice implements Runnable {
 		_graphicInterface.updateUserList();
 	}
 	
+	public sendLISTCH(String IP) {
+		_messageBuilder.sendLISTCH();
+	}
+	
 	/**
 	 * Private member variables:
 	 */
@@ -520,4 +525,6 @@ public class PostOffice implements Runnable {
 	 * hosts. keyed by their name and ip
 	 */
 	private HashMap<String, Channel> _channelList;
+	
+	private MessageBuilder _messageBuilder;
 }
