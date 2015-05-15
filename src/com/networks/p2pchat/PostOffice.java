@@ -324,9 +324,32 @@ public class PostOffice implements Runnable {
 	
 	private void handleMSGCH(Message message) {
 		// TODO check if channel exists
+		if (!channelExists(message.getChannelID())) {
+			return; 
+		}
 		
-		// TODO check if person is listed in the channel
-		// TODO forward message to all channel participants 
+		if (!_channelList.get(message.getChannelID()).hasUser(message.getOrigin())) {
+			// TODO send appropriate msg to user.
+			return;
+		}
+		
+		for (Map.Entry<String, String> entry : _channelList.get(message.getChannelID()).getUsers().entrySet()) {
+			Message messageFwd = new Message(message);
+			messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
+			messageFwd.setSource(_me);
+			_conversationHolder.sendMessage(messageFwd);
+			return;
+		}
+				
+	}
+	
+	private boolean channelExists(String channelID) {
+		for (String key : _channelList.keySet()) {
+			if (channelID.compareTo(key) == 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
