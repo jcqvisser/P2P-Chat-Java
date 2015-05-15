@@ -40,118 +40,121 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		
 		setBounds(100, 100, 518, 347);
 		setTitle("Connection Window");
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		_contentPane = new JPanel();
+		_contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(_contentPane);
+		_contentPane.setLayout(null);
 		
 		/*
 		 * Initialize the text panes.
 		 */
 		
-		txtpnUser = new JTextPane();
-		StyledDocument doc = txtpnUser.getStyledDocument();
+		_txtpnUser = new JTextPane();
+		StyledDocument doc = _txtpnUser.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		doc.setParagraphAttributes(0, doc.getLength(), center, false);
-		txtpnUser.setText("Username (IP Address):");
-		txtpnUser.setEditable(false);
-		txtpnUser.setBounds(10, 11, 236, 20);
-		contentPane.add(txtpnUser);
+		_txtpnUser.setText("Username (IP Address):");
+		_txtpnUser.setEditable(false);
+		_txtpnUser.setBounds(10, 11, 236, 20);
+		_contentPane.add(_txtpnUser);
 		
-		txtpnChannel = new JTextPane();
-		StyledDocument docCh = txtpnChannel.getStyledDocument();
+		_txtpnChannel = new JTextPane();
+		StyledDocument docCh = _txtpnChannel.getStyledDocument();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		docCh.setParagraphAttributes(0, docCh.getLength(), center, false);
-		txtpnChannel.setText("Channel:");
-		txtpnChannel.setEditable(false);
-		txtpnChannel.setBounds(256, 11, 236, 20);
-		contentPane.add(txtpnChannel);
+		_txtpnChannel.setText("Channel:");
+		_txtpnChannel.setEditable(false);
+		_txtpnChannel.setBounds(256, 11, 236, 20);
+		_contentPane.add(_txtpnChannel);
 		
-		txtpnAddChannel = new JTextPane();
-		StyledDocument docACh = txtpnAddChannel.getStyledDocument();
+		_txtpnAddChannel = new JTextPane();
+		StyledDocument docACh = _txtpnAddChannel.getStyledDocument();
 		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 		docACh.setParagraphAttributes(0, docACh.getLength(), center, false);
-		txtpnAddChannel.setText("Create Channel:");
-		txtpnAddChannel.setEditable(false);
-		txtpnAddChannel.setBounds(10, 280, 136, 20);
-		contentPane.add(txtpnAddChannel);
+		_txtpnAddChannel.setText("Create Channel:");
+		_txtpnAddChannel.setEditable(false);
+		_txtpnAddChannel.setBounds(10, 280, 136, 20);
+		_contentPane.add(_txtpnAddChannel);
 		
 		/*
 		 * Initialize the scroll pane objects.
 		 */
 		
-		scrollPaneUser = new JScrollPane();
-		scrollPaneUser.setBounds(10, 42, 236, 227);
-		contentPane.add(scrollPaneUser);
+		_scrollPaneUser = new JScrollPane();
+		_scrollPaneUser.setBounds(10, 42, 236, 227);
+		_contentPane.add(_scrollPaneUser);
 		
-		scrollPaneChannel = new JScrollPane();
-		scrollPaneChannel.setBounds(256, 42, 236, 187);
-		contentPane.add(scrollPaneChannel);
+		_scrollPaneChannel = new JScrollPane();
+		_scrollPaneChannel.setBounds(256, 42, 236, 187);
+		_contentPane.add(_scrollPaneChannel);
 		
 		/*
 		 * Initialize the list objects.
 		 */
 		
-		lstChannel = new JList<String>();
-		lstChannel.addMouseListener(new MouseAdapter() {
+		_lstChannel = new JList<String>();
+		_lstChannel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				System.out.println("Test " + lstChannel.getSelectedIndex()) ;
+				System.out.println("Test " + _lstChannel.getSelectedIndex()) ;
 			}
 		});
-		lstChannel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrollPaneChannel.setViewportView(lstChannel);
+		_lstChannel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		_scrollPaneChannel.setViewportView(_lstChannel);
 		
-		lstUser = new JList<String>();
-		lstUser.addMouseListener(new MouseAdapter() {
+		_lstUser = new JList<String>();
+		_lstUser.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				System.out.println("test2 " + lstUser.getSelectedIndex());
+				System.out.println("Selected user: " + _lstUser.getSelectedValue());
+				_lstChannel.setModel(_channels.get(_lstUser.getSelectedValue()));
 			}
 		});
-		lstUser.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		modelUser = new DefaultListModel<String>();
-		lstUser.setModel(modelUser);
-		scrollPaneUser.setViewportView(lstUser);
+		_lstUser.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		_modelUser = new DefaultListModel<String>();
+		_lstUser.setModel(_modelUser);
+		_scrollPaneUser.setViewportView(_lstUser);
 		
 		/*
 		 * Initialize the button.
 		 */
 		
-		btnAddChannel = new JButton("Private Conversation");
-		btnAddChannel.addActionListener(new ActionListener() {
+		_btnAddChannel = new JButton("Private Conversation");
+		_btnAddChannel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				_graphicInterface.sendJoin(_modelUser.get(_lstUser.getSelectedIndex()), "private");
 			}
 		});
-		btnAddChannel.setBounds(256, 240, 236, 29);
-		contentPane.add(btnAddChannel);
+		_btnAddChannel.setBounds(256, 240, 236, 29);
+		_contentPane.add(_btnAddChannel);
 		
 		/*
 		 * Initialize the new channel text field.
 		 */
 		
-		textField = new JTextField();
-		textField.setText("");
-		textField.addKeyListener(new KeyAdapter() {
+		_textField = new JTextField();
+		_textField.setText("");
+		_textField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					// Handle enter command.
+					
 				}
 			}
 		});
-		textField.setBounds(156, 280, 336, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		_textField.setBounds(156, 280, 336, 20);
+		_contentPane.add(_textField);
+		_textField.setColumns(10);
 		
 		start();
 	}
 	
 	public void updateUserList() {
-		modelUser.clear();
+		_modelUser.clear();
 		for(Entry<String, String> user : _addressBook.getMap().entrySet()) {
-			modelUser.addElement(user.getValue() + " (" + user.getKey() + ")");
+			_modelUser.addElement(user.getValue() + " (" + user.getKey() + ")");
 			if(!_channels.containsKey(user.getKey())) {
 				_channels.put(user.getKey(), new DefaultListModel<String>());
 			}
@@ -192,7 +195,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	/**
 	 * The content pane holds all of the other displayable content.
 	 */
-	private JPanel contentPane;
+	private JPanel _contentPane;
 	/**
 	 * The thread object is used for threading the connection window.
 	 */
@@ -209,40 +212,40 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	/**
 	 * The text pane shows the user information.
 	 */
-	private JTextPane txtpnUser;
+	private JTextPane _txtpnUser;
 	/**
 	 * The text pane shows the channel information.
 	 */
-	private JTextPane txtpnChannel;
+	private JTextPane _txtpnChannel;
 	/**
 	 * 
 	 */
-	private JTextPane txtpnAddChannel;
+	private JTextPane _txtpnAddChannel;
 	/**
 	 * Scrollpane for user view.
 	 */
-	private JScrollPane scrollPaneUser;
+	private JScrollPane _scrollPaneUser;
 	/**
 	 * Scrollpane for channel view.
 	 */
-	private JScrollPane scrollPaneChannel;
+	private JScrollPane _scrollPaneChannel;
 	/**
 	 * List of users.
 	 */
-	private JList<String> lstUser;
-	private DefaultListModel<String> modelUser;
+	private JList<String> _lstUser;
+	private DefaultListModel<String> _modelUser;
 	/**
 	 * List of channels.
 	 */
-	private JList<String> lstChannel;
+	private JList<String> _lstChannel;
 	/**
 	 * The text input for creating new channels.
 	 */
-	private JTextField textField;
+	private JTextField _textField;
 	/**
 	 * 
 	 */
-	private JButton btnAddChannel;
+	private JButton _btnAddChannel;
 	/**
 	 * 
 	 */

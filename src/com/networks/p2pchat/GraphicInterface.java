@@ -55,6 +55,31 @@ public class GraphicInterface {
 	}
 	
 	/**
+	 * Update the list of users for display on the connection window.
+	 */
+	public synchronized void updateUserList() {
+		_connectionWindow.updateUserList();
+	}
+	
+	public synchronized void sendJoin(String ip, String channel) {
+		System.out.println("Connect to " + ip + " - " + channel);
+	}
+	
+	public synchronized void sendLISTCH(String ip) {
+		_postOffice.sendLISTCH(ip);
+	}
+	
+	/**
+	 * Call this function once the list of channels has been received to 
+	 * update the list of channels for a particular user.
+	 * @param ip
+	 * @param channels
+	 */
+	public synchronized void updateChannelList(String ip, ArrayList<String> channels) {
+		_connectionWindow.updateChannelList(ip, channels);
+	}
+	
+	/**
 	 * Display message takes in the message, who the message is from and the target
 	 * window to display it in.
 	 * @param message
