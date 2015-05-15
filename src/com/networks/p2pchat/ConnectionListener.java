@@ -13,7 +13,12 @@ import java.net.ServerSocket;
  */
 
 public class ConnectionListener implements Runnable {
-	// Constructor - takes in the holding class and the listening port.
+	/**
+	 * Constructor - takes in the holding class and the listening port.
+	 * @param postOffice
+	 * @param port
+	 * @throws IOException
+	 */
 	public ConnectionListener(PostOffice postOffice, int port) throws IOException {
 		_postOffice = postOffice;
 		
@@ -22,8 +27,10 @@ public class ConnectionListener implements Runnable {
 		start();
 	}
 	
-	// Run loop for the listen thread, listens for new connections and passes
-	// the sockets of new connections back to post office.
+	/**
+	 * Run loop for the listen thread, listens for new connections and passes
+	 * the sockets of new connections back to post office.
+	 */
 	public void run() {
 		while(_runThread) {
 			try {
@@ -34,7 +41,9 @@ public class ConnectionListener implements Runnable {
 		}
 	}
 	
-	// Close the listening socket, and the thread that is running.
+	/**
+	 * Close the listening socket, and the thread that is running.
+	 */
 	public void close() {
 		_runThread = false;
 		try {
@@ -44,7 +53,9 @@ public class ConnectionListener implements Runnable {
 		}
 	}
 	
-	// Start the thread.
+	/**
+	 * Start the thread.
+	 */
 	public void start() {
 		_runThread = true;
 		if (_thread == null)
@@ -54,9 +65,24 @@ public class ConnectionListener implements Runnable {
 		}
 	}
 	
-	// Private member variables.
+	/**
+	 * Private member variables.
+	 */
+	/**
+	 * The thread for this class will run as long as run thread is true.
+	 */
 	private volatile boolean _runThread;
+	/**
+	 * Instance of the holding class used to pass sockets back when incoming
+	 * connections are made.
+	 */
 	private PostOffice _postOffice;
+	/**
+	 * The listen socket will listen for incoming connections.
+	 */
 	private ServerSocket _listenSocket;
+	/**
+	 * The thread object determines thread operations of the class.
+	 */
 	private Thread _thread;
 }
