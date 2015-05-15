@@ -207,12 +207,15 @@ public class PostOffice implements Runnable {
 			break;
 		case JOIN: 
 //			handleJOIN(message);	
+// needs to be passed to the channel object and the return must be looked at
 			break;
 		case INVALIDPASS:
 //			handleINVALIDPASS(message);
+// send to gui
 			break;
 		case NOTAMEMBER:
 //			handleNOTAMEMBER(message);
+// send to gui
 			break;
 		}
 	}
@@ -330,11 +333,12 @@ public class PostOffice implements Runnable {
 	
 	private void handleMSGCH(Message message) {
 		if (!channelExists(message.getChannelID())) {
+			// TODO channel doesn't exist message
 			return; 
 		}
 		
 		if (!_channelList.get(message.getChannelID()).hasUser(message.getOrigin())) {
-			// TODO channel doesn't exist message
+			// TODO user is not part of channel message
 			return;
 		}
 		
@@ -379,6 +383,8 @@ public class PostOffice implements Runnable {
 		}
 		
 		_channelList.get(message.getChannelID()).removeUser(message.getOrigin());
+		// TODO send to gui
+		// TODO send userhasquit message to channel users
 	}
 	
 	private void handleLISTUSERS(Message message) {
@@ -386,7 +392,7 @@ public class PostOffice implements Runnable {
 			return;
 		}
 		if (!channelExists(message.getChannelID())) {
-			// TODO channel doesnt exist message  
+			// TODO channel doesn't exist message  
 			return;
 		}	
 		
@@ -409,6 +415,7 @@ public class PostOffice implements Runnable {
 				_addressBook.addAddress(user);
 			}
 		}
+		//TODO Send to gui
 	}
 	
 	/**
