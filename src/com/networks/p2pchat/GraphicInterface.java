@@ -31,6 +31,7 @@ public class GraphicInterface {
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			System.err.println("Error setting interface look and feel: " + e);
 		}
+		_connectionWindow = new ConnectionWindow(this);
 	}
 	
 	/**
@@ -144,4 +145,8 @@ public class GraphicInterface {
 	 * The login window is used to get the users id and initial connection ip.
 	 */
 	private LoginWindow _loginWindow;
+	/**
+	 * The connection window object displays the connected clients.
+	 */
+	private ConnectionWindow _connectionWindow;
 }

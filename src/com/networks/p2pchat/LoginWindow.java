@@ -27,8 +27,10 @@ public class LoginWindow extends JFrame implements Runnable  {
 	public LoginWindow(GraphicInterface graphicInterface) {
 		_graphicInterface = graphicInterface;
 		
+		// Set what happens when the window is closed.
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		// Initialize the JFrame window for display.
 		setBounds(100, 100, 504, 114);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -39,8 +41,10 @@ public class LoginWindow extends JFrame implements Runnable  {
 		textField = new JTextField();
 		textField.setBounds(120, 11, 358, 24);
 		contentPane.add(textField);
-		// Listens for when the Enter key is pressed to notify that an
-			// Username has been entered.
+		/*
+		 *  Listens for when the Enter key is pressed to notify 
+		 *  that a Username has been entered.
+		 */
 		textField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
@@ -51,6 +55,7 @@ public class LoginWindow extends JFrame implements Runnable  {
 		});
 		textField.setColumns(10);
 		
+		// Initialize windows inside the JFrame object.
 		txtpnUser = new JTextPane();
 		StyledDocument doc = txtpnUser.getStyledDocument();
 		SimpleAttributeSet center = new SimpleAttributeSet();
@@ -65,8 +70,10 @@ public class LoginWindow extends JFrame implements Runnable  {
 		textFieldIP = new JTextField();
 		textFieldIP.setBounds(120, 46, 358, 24);
 		contentPane.add(textFieldIP);
-		// Listens for when the Enter key is pressed to notify that an
-			// IP address has been entered.
+		/*
+		 *  Listens for when the Enter key is pressed to notify 
+		 *  that an IP address has been entered.
+		 */
 		textFieldIP.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
@@ -89,6 +96,9 @@ public class LoginWindow extends JFrame implements Runnable  {
 		start();
 	}
 	
+	/**
+	 * Initialize the thread for the login window object.
+	 */
 	public void start() {
 		if (_thread == null)
 		{
@@ -97,6 +107,9 @@ public class LoginWindow extends JFrame implements Runnable  {
 		}
 	}
 	
+	/**
+	 * The threads run function, is called when the thread is initialized.
+	 */
 	public void run() {
 		try {
 			setVisible(true);
@@ -121,12 +134,37 @@ public class LoginWindow extends JFrame implements Runnable  {
 	/**
 	 * Private data members
 	 */
+	/**
+	 * Serial for the window.
+	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * The jpanel is the frame that the window is built into.
+	 */
 	private JPanel contentPane;
+	/**
+	 * The graphic interface object is stored so it can be called once the
+	 * user has entered their login credentials.
+	 */
 	private GraphicInterface _graphicInterface;
+	/**
+	 * The text field object takes in the users id
+	 */
 	private JTextField textField;
+	/**
+	 * The text pane shows the user information.
+	 */
 	private JTextPane txtpnUser;
+	/**
+	 * The text field object takes in the users ip
+	 */
 	private JTextField textFieldIP;
+	/**
+	 * The text pane shows the user information.
+	 */
 	private JTextPane txtpnIpAddress;
+	/**
+	 * The thread object is used for handling the threading of the class.
+	 */
 	private Thread _thread;
 }
