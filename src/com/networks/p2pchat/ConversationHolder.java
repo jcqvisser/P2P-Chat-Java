@@ -10,13 +10,16 @@ import java.util.ListIterator;
  * a particular message should be sent to.
  * 
  * @author Anthony
+ * @author Jacques
  *
  */
 
 public class ConversationHolder {
-	/*
-	 *  Takes in a post office object for passing messages,
-	 *  and the port that listen servers are running on.  
+	/**
+	 * Takes in a post office object for passing messages,
+	 * and the port that listen servers are running on. 
+	 * @param postOffice
+	 * @param port
 	 */
 	public ConversationHolder(PostOffice postOffice, int port) {
 		_postOffice = postOffice;
@@ -28,6 +31,8 @@ public class ConversationHolder {
 	/**
 	 * Send a message on to a peer in the list of conversations
 	 * Or start a new conversation if necessary.
+	 * @param message
+	 * @return
 	 */
 	public synchronized boolean sendMessage(Message message) {
 		int index = findConversationID(message.getDestination().getIp());
@@ -55,8 +60,9 @@ public class ConversationHolder {
 		return false;
 	}
 	
-	/* 
+	/**
 	 * Close the conversation on a particular socket 
+	 * @param ipAddr
 	 */
 	public synchronized void closeConversation(String ipAddr) {
 		int index = findConversationID(ipAddr);
@@ -66,13 +72,21 @@ public class ConversationHolder {
 		}
 	}
 	
-	/*
-	 *  Handle the received message.
+	/**
+	 * Handle the received message from a particular conversation, 
+	 * will pass the message to the post office object.
+	 * @param message
 	 */
 	public synchronized void handleMessage(Message message) {
 		_postOffice.handleMessage(message);
 	}
 	
+	/**
+	 * The add conversation function will take in a socket and create 
+	 * a conversation for that particular socket.
+	 * @param connectionSocket
+	 * @return
+	 */
 	public synchronized boolean addConversation(Socket connectionSocket) {
 		if(findConversationID(connectionSocket.getInetAddress().getHostAddress()) == -1) {
 			try{ 
@@ -87,8 +101,10 @@ public class ConversationHolder {
 	}
 	
 	// Private member functions:
-	/*
-	 *  Find the ID of the conversation in the list, defined by IP.
+	/**
+	 * Find the ID of the conversation in the list, defined by IP.
+	 * @param ip
+	 * @return
 	 */
 	private int findConversationID(String ip) {
 		ListIterator<Conversation> itr = _conversations.listIterator();
@@ -103,19 +119,19 @@ public class ConversationHolder {
 	}
 	
 	// Private member variables:
-	/*
+	/**
 	 * Store the holding class, PostOffice.
 	 */
 	private PostOffice _postOffice;
-	/*
+	/**
 	 * List of active conversations.
 	 */
 	private ArrayList<Conversation> _conversations;
-	/*
+	/**
 	 * Address book singleton, allows for a new conversation to opened if the address is known.
 	 */
 	private AddressBook _addressBook;
-	/*
+	/**
 	 * Port that the server connections will be listening on.
 	 */
 	private int _port;

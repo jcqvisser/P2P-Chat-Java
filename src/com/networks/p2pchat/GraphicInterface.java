@@ -8,7 +8,19 @@ import java.util.ListIterator;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+/**
+ * The graphic interface class is used for displaying all messages to the user
+ * and take any input from the user to sent to others.
+ * @author Anthony
+ * @author Jacques
+ *
+ */
 public class GraphicInterface {
+	/**
+	 * The constructor will initialize the ui and will take in a post office object,
+	 * this is used for displaying messages from the user.
+	 * @param postOffice
+	 */
 	public GraphicInterface(PostOffice postOffice) {
 		_postOffice = postOffice;
 		_me = new Peer();
@@ -21,21 +33,41 @@ public class GraphicInterface {
 		}
 	}
 	
+	/**
+	 * Get my username will initialize the login window object so that the user
+	 * can enter their username and target connection ip address.
+	 */
 	public void getMyUsername() {
 		_loginWindow = new LoginWindow(this);
 	}
 	
+	/**
+	 * The handle message function is called when the user enters a message into
+	 * the client window, this is then passed to post office to be handled.
+	 * @param message
+	 * @param ip
+	 * @param channel
+	 */
 	public synchronized void handleMessage(String message, String ip, String channel) {
 		_postOffice.handleMessage(message, ip, channel);
 		displayMessage(message, _me, ip, channel);
 	}
 	
+	/**
+	 * Display message takes in the message, who the message is from and the target
+	 * window to display it in.
+	 * @param message
+	 * @param fromWho
+	 * @param targetIp
+	 * @param targetChannel
+	 */
 	public void displayMessage(String message, Peer fromWho, String targetIp, String targetChannel) {
 		int windowID = findClientWindow(targetIp + targetChannel);
 		if(windowID != -1) {
 			_clientWindows.get(windowID).displayMessage(message, fromWho);
 		} else {
-			addWindow(targetIp, targetChannel, message, fromWho);
+			addWindow(targetIp, targetChannel);
+			_clientWindows.get(findClientWindow(targetIp + targetChannel)).displayMessage(message, fromWho);
 		}
 	}
 	
@@ -55,24 +87,18 @@ public class GraphicInterface {
 		_loginWindow.dispose();
 	}
 	
-	/*
+	/**
 	 * Create a new client window for displaying messages.
+	 * @param ip
+	 * @param channel
 	 */
 	public void addWindow(String ip, String channel) {
 		_clientWindows.add(new ClientWindow(this, ip, channel));
 	}
 	
-	/*
-	 * Create a new client window for displaying messages.
-	 * Overloaded to take message and display when window is initialized.
-	 */
-	private void addWindow(String ip, String channel, String message, Peer fromWho) {
-		_clientWindows.add(new ClientWindow(this, ip, channel));
-		_clientWindows.get(findClientWindow(ip + channel)).displayMessage(message, fromWho);
-	}
-	
-	/*
+	/**
 	 * Remove a client window from the list (and display).
+	 * @param ipAndChannel
 	 */
 	public synchronized void removeClientWindow(String ipAndChannel) {
 		int windowID = findClientWindow(ipAndChannel);
@@ -82,8 +108,10 @@ public class GraphicInterface {
 		}
 	}
 	
-	/*
+	/**
 	 * Search for a particular client window in the array list of client windows.
+	 * @param ipAndChannel
+	 * @return
 	 */
 	private int findClientWindow(String ipAndChannel) {
 		ListIterator<ClientWindow> itr = _clientWindows.listIterator();
@@ -98,8 +126,22 @@ public class GraphicInterface {
 	}
 	
 	// Private member variables.
+	/**
+	 * The post office object, post office will handle the messages typed into
+	 * the interface and will give the interface messages to display.
+	 */
 	private PostOffice _postOffice;
+	/**
+	 * List of client windows for different conversations.
+	 */
 	private ArrayList<ClientWindow> _clientWindows;
+	/**
+	 * This object defines the current user, it is used to display messages
+	 * that the user just typed in the client window.
+	 */
 	private Peer _me;
+	/**
+	 * The login window is used to get the users id and initial connection ip.
+	 */
 	private LoginWindow _loginWindow;
 }

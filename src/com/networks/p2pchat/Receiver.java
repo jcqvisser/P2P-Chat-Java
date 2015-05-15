@@ -35,7 +35,7 @@ public class Receiver implements Runnable{
 		start();
 	}
 	
-	/* 
+	/** 
 	 * Main run-loop which waits around for messages to be send to it through the inputStream
 	 * @see java.lang.Runnable#run()
 	 * 
@@ -73,7 +73,9 @@ public class Receiver implements Runnable{
 		}
 	}
 	
-	/* Star the thread */
+	/**
+	 * Start the thread
+	 */
 	public void start() {
 		_runThread = true;
 		if (_thread == null)
@@ -83,22 +85,35 @@ public class Receiver implements Runnable{
 		}
 	}
 	
+	/**
+	 * Close the thread, this will stop the receiver thread loop.
+	 */
 	public void close(){
 		_runThread = false;
 	}
 	
-	/*The Conversation object to pass received mssages to. This object is also intended to hold this Receiver. */
+	/**
+	 * The Conversation object to pass received mssages to. This object is also intended to hold this Receiver.
+	 */
 	private Conversation _conv;
 	
-	/*The inputStream on which to listen for new messages*/
+	/**
+	 * The inputStream on which to listen for new messages
+	 */
 	private InputStream _inStream;
 	
-	/* boolean value to see whether this thread must be closed*/
+	/**
+	 * boolean value to see whether this thread must be closed
+	 */
 	private volatile boolean _runThread;
 	
-	/* BufferedReader for reading from InputStream line-by-line*/
+	/**
+	 * BufferedReader for reading from InputStream line-by-line
+	 */
 	private BufferedReader _inputReader;
 	
-	/* Thread object */
+	/**
+	 * Thread object
+	 */
 	private Thread _thread;
 }

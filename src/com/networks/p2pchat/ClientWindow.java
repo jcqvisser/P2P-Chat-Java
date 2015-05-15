@@ -16,54 +16,6 @@ import javax.swing.JTextArea;
 public class ClientWindow extends JFrame implements Runnable {
 
 	/**
-	 * 	Private data members.
-	 */
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTextField textField;
-	private GraphicInterface _graphicInterface;
-	private String _title;
-	private String _ip;
-	private String _channel;
-	private JTextArea txtrDisplayArea;
-	private JScrollPane scrollPaneDisplayArea;
-	private Thread _thread;
-	
-	/**
-	 *	Display message strings on the screen
-	 */
-	
-	public void displayMessage(String message, Peer fromWho) {
-		txtrDisplayArea.append(fromWho.getId() + " (" + fromWho.getIp() + "):- " + message + '\n');
-		txtrDisplayArea.setCaretPosition(txtrDisplayArea.getDocument().getLength());
-	}
-	
-	public void start() {
-		if (_thread == null)
-		{
-			_thread = new Thread (this, "ClientWindow:" + _ip);
-			_thread.start ();
-		}
-	}
-	
-	public void run() {
-		try {
-			setVisible(true);
-			toFront();
-			repaint();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Remove get the IP and Channel String, unique for this chat window.
-	 */
-	public String getIpChannel() {
-		return _ip + _channel;
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public ClientWindow(GraphicInterface graphicInterface, String ip, String channel) {
@@ -111,6 +63,96 @@ public class ClientWindow extends JFrame implements Runnable {
 		txtrDisplayArea.setText("");
 		txtrDisplayArea.setEditable(false);
 		scrollPaneDisplayArea.setViewportView(txtrDisplayArea);
+		
 		start();
 	}
+	
+	
+	/**
+	 * Display message strings on the screen
+	 * @param message
+	 * @param fromWho
+	 */
+	public void displayMessage(String message, Peer fromWho) {
+		txtrDisplayArea.append(fromWho.getId() + " (" + fromWho.getIp() + "):- " + message + '\n');
+		txtrDisplayArea.setCaretPosition(txtrDisplayArea.getDocument().getLength());
+	}
+	
+	/**
+	 * Start the thread that handles the client window.
+	 */
+	public void start() {
+		if (_thread == null)
+		{
+			_thread = new Thread (this, "ClientWindow:" + _ip);
+			_thread.start ();
+		}
+	}
+	
+	/**
+	 * The thread run loop, is called when the thread starts running.
+	 */
+	public void run() {
+		try {
+			setVisible(true);
+			toFront();
+			repaint();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Remove get the IP and Channel String, unique for this chat window.
+	 */
+	public String getIpChannel() {
+		return _ip + _channel;
+	}
+	
+	/**
+	 * 	Private data members.
+	 */
+	/**
+	 * The serial for the window.
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * The JPanel content pane that holds the other input frames.
+	 */
+	private JPanel contentPane;
+	/**
+	 * The text field object is used for entering messages from the user.
+	 */
+	private JTextField textField;
+	/**
+	 * The graphic interface object is an instance of the containing class,
+	 * called when messages are typed from the user and will call this thread 
+	 * to display messages.
+	 */
+	private GraphicInterface _graphicInterface;
+	/**
+	 * The title object is the title of the window.
+	 */
+	private String _title;
+	/**
+	 * The ip object will define the target ip that this client window is for.
+	 */
+	private String _ip;
+	/**
+	 * The channel object defines the target channel that this client window is for.
+	 * If the channel is set to 'private' it is for direct messaging.
+	 */
+	private String _channel;
+	/**
+	 * Text display area displays the chat history with the client.
+	 */
+	private JTextArea txtrDisplayArea;
+	/**
+	 * The scroll pane display area allows the chat history to be scrollable.
+	 */
+	private JScrollPane scrollPaneDisplayArea;
+	/**
+	 * The thread object handles the threading of the display window.
+	 */
+	private Thread _thread;
 }
