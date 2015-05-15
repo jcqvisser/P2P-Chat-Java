@@ -19,7 +19,12 @@ import com.networks.p2pchat.Message.MessageType;
  */
 
 public class PostOffice implements Runnable {
-	// Create the postoffice object.
+	/**
+	 * The post office constructor will create the subclasses,
+	 * and will start the gui login window to get user credentials.
+	 * @param port
+	 * @throws IOException
+	 */
 	public PostOffice(int port) throws IOException {
 		_port = port;
 		_graphicInterface = new GraphicInterface(this);
@@ -37,6 +42,10 @@ public class PostOffice implements Runnable {
 		start();
 	}
 	
+	/**
+	 * Thread run loop, this function overloads the implementation
+	 * from Runnable.
+	 */
 	public void run() {
 		while(_runThread) {
 			synchronized(this) {
@@ -54,6 +63,9 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
+	/**
+	 * Initialize the thread for the post office.
+	 */
 	public void start() {
 		_runThread = true;
 		if (_thread == null)
@@ -63,6 +75,9 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
+	/**
+	 * Close the thread for the post office object.
+	 */
 	public void close() {
 		_runThread = false;
 		_connectionListener.close();
@@ -89,12 +104,19 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
-	// Add a new conversation object for a particular socket.
+	/**
+	 * Add a new conversation object for a particular socket.
+	 * @param connectionSocket
+	 * @return
+	 */
 	public synchronized boolean addConversation(Socket connectionSocket) {
 		return _conversationHolder.addConversation(connectionSocket);
 	}
 	
-	// Handle the received message.
+	/**
+	 * Handle the received message. This will add the message to the list of messages and
+	 * will notify the thread that a message is ready to be handled. 
+	 */
 	public synchronized void handleMessage(Message message) {
 		// Add message to inbox.
 		synchronized(this) {
@@ -103,8 +125,13 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
-	/*This version of the handleMessage Function creates a Message object from the information supplied
-	 * by the user and sends it to it's destination by placing it in the inbox.*/
+	/**
+	 * This version of the handleMessage Function creates a Message object from the information supplied
+	 * by the user and sends it to it's destination by placing it in the inbox.
+	 * @param message The message object to be forwarded
+	 * @param targetIp The IP the message should be sent to.
+	 * @param targetChannel The channel that the message should be sent to.
+	 */
 	public synchronized void handleMessage(String message, String targetIp, String targetChannel) {
 		// Create new message object.
 		synchronized(this) {
@@ -118,6 +145,11 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
+	/**
+	 * Set the peer object that contains information about 'me'
+	 * i.e. the client.
+	 * @param username
+	 */
 	private void setMePeer(String username) {
 		try {
 			_me = new Peer(username, Inet4Address.getLocalHost().getHostAddress().toString());
@@ -126,8 +158,11 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
-	/* The Messenger Function classifies message in the inbox (incoming or outgoing) by it's type and
-	 * calls the appropriate function on it to send it to it's destination*/
+	/**
+	 * The Messenger Function classifies message in the inbox (incoming or outgoing) by it's type and
+	 * calls the appropriate function on it to send it to it's destination
+	 * @param message
+	 */
 	private void messenger(Message message) {
 		switch(message.getMessageType()){
 		case MSG: 
@@ -175,7 +210,10 @@ public class PostOffice implements Runnable {
 		}
 	}
 
-	/* handleMSG Function deals with the logic of incoming MSG type Messages.*/
+	/**
+	 * handleMSG Function deals with the logic of incoming MSG type Messages
+	 * @param message
+	 */
 	void handleMSG(Message message) {
 		if (message.getDestination().getIp().compareTo(_me.getIp()) == 0) {
 			if (! _addressBook.addressExists(message.getOrigin().getIp())) {
@@ -202,8 +240,11 @@ public class PostOffice implements Runnable {
 		
 	}
 
-	/* handleNICK function deals with NICK messages used to change a user's 
-	 * Nickname (ID)*/
+	/**
+	 * handleNICK function deals with NICK messages used to change a user's 
+	 * Nickname (ID)
+	 * @param message
+	 */
 	void handleNICK(Message message) {
 		if (message.getDestination().getIp().compareTo(_me.getIp()) == 0){
 			
@@ -214,7 +255,8 @@ public class PostOffice implements Runnable {
 		}
 	}
 
-	/* handleHELO function deals with messages of type HELO,
+	/** 
+	 * handleHELO function deals with messages of type HELO,
 	 * HELO messages have an Origin, Source and Destination (Peer objects)
 	 * When a HELO message is received, source is changed to you (PostOffice._me)
 	 * then it is sent on to all your contacts after decrementing the message's
@@ -279,16 +321,57 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
-	// Private member variables:
+	/**
+	 * Private member variables:
+	 */
+	/**
+	 * The conversation holder object, contains all connected conversations
+	 */
 	private ConversationHolder _conversationHolder;
+	/**
+	 * The graphic interface object is used to handle all display functions
+	 */
 	private GraphicInterface _graphicInterface;
+	/**
+	 * The connection listener object will initialize a server socket that will
+	 * listen for incoming connections.
+	 */
 	private ConnectionListener _connectionListener;
+	/**
+	 * Contains information about the user ('me').
+	 */
 	private Peer _me;
+	/**
+	 * The thread object is used to handle the threading of the post office class.
+	 */
 	private Thread _thread;
+	/**
+	 * The post office thread will run as long as this is true.
+	 */
 	private volatile boolean _runThread;
+	/**
+	 * The inbox list contains all messages that are waiting to be handled by the
+	 * post office object.
+	 */
 	private ArrayList<Message> _inbox;
+	/**
+	 * The addressbook contains the usernames and ip addresses of all known people
+	 * connected to the network.
+	 */
 	private AddressBook _addressBook;
+	/**
+	 * The message time to live defines how long a message will travel in the network
+	 * before it is deleted.
+	 */
 	private int _messageTtl = 4;
+	/**
+	 * This list contains all of the helo messages that have been received to avoid
+	 * resending a message to someone who has already received one.
+	 */
 	private ArrayList<Message> _heloMessages;
+	/** 
+	 * The port object defines the port that the program is listening on,
+	 * and therefore the port that connections are made to.
+	 */
 	private int _port;
 }
