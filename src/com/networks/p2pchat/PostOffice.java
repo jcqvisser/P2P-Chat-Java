@@ -340,11 +340,12 @@ public class PostOffice implements Runnable {
 		}
 		
 		for (Map.Entry<String, String> entry : _channelList.get(message.getChannelID()).getUsers().entrySet()) {
-			Message messageFwd = new Message(message);
-			messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
-			messageFwd.setSource(_me);
-			_conversationHolder.sendMessage(messageFwd);
-			return;
+			if (entry.getKey().compareTo(_me.getIp()) != 0){
+				Message messageFwd = new Message(message);
+				messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
+				messageFwd.setSource(_me);
+				_conversationHolder.sendMessage(messageFwd);
+			}
 		}
 				
 	}
