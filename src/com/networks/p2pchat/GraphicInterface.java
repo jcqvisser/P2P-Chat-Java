@@ -61,12 +61,30 @@ public class GraphicInterface {
 		_connectionWindow.updateUserList();
 	}
 	
+	/**
+	 * Send the join command to post office, instructing a new connection to
+	 * be made to the target ip (and channel).
+	 * @param ip
+	 * @param channel
+	 */
 	public synchronized void sendJoin(String ip, String channel) {
 		System.out.println("Connect to " + ip + " - " + channel);
 	}
 	
+	/**
+	 * Request a list of channels from a particular target ip address.
+	 * @param ip
+	 */
 	public synchronized void sendLISTCH(String ip) {
 		_postOffice.sendLISTCH(ip);
+	}
+	
+	/**
+	 * Create a new channel
+	 * @param channel
+	 */
+	public synchronized void createChannel(String channel) {
+		_postOffice.createChannel(channel);
 	}
 	
 	/**

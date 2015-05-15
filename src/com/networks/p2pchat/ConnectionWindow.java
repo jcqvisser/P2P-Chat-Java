@@ -97,7 +97,8 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_lstChannel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				System.out.println("Test " + _lstChannel.getSelectedIndex()) ;
+				System.out.println("Selected channel: " + _lstChannel.getSelectedValue());
+				_graphicInterface.sendJoin(_lstUser.getSelectedValue(), _lstChannel.getSelectedValue());
 			}
 		});
 		_lstChannel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -109,6 +110,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 			public void mouseReleased(MouseEvent arg0) {
 				System.out.println("Selected user: " + _lstUser.getSelectedValue());
 				_lstChannel.setModel(_channels.get(_lstUser.getSelectedValue()));
+				_graphicInterface.sendLISTCH(_lstUser.getSelectedValue());
 			}
 		});
 		_lstUser.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -123,7 +125,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_btnAddChannel = new JButton("Private Conversation");
 		_btnAddChannel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				_graphicInterface.sendJoin(_modelUser.get(_lstUser.getSelectedIndex()), "private");
+				_graphicInterface.sendJoin(_lstUser.getSelectedValue(), "private");
 			}
 		});
 		_btnAddChannel.setBounds(256, 240, 236, 29);
@@ -140,7 +142,8 @@ public class ConnectionWindow extends JFrame implements Runnable {
 			public void keyPressed(KeyEvent arg0) {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					// Handle enter command.
-					
+					_graphicInterface.createChannel(_textField.getText());
+					_textField.setText("");
 				}
 			}
 		});
@@ -151,6 +154,10 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		start();
 	}
 	
+	/**
+	 * Call this function when a new user is registered on the network, adds them
+	 * to the list of online users for connecting to.
+	 */
 	public void updateUserList() {
 		_modelUser.clear();
 		for(Entry<String, String> user : _addressBook.getMap().entrySet()) {
@@ -161,6 +168,12 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		}
 	}
 	
+	/**
+	 * Update the list of channels after a response is heard from the target
+	 * ip that the request was made to.
+	 * @param userIp
+	 * @param channels
+	 */
 	public void updateChannelList(String userIp, ArrayList<String> channels) {
 		_channels.get(userIp).clear();
 		for(String channel : channels) {
