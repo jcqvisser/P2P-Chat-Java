@@ -208,6 +208,12 @@ public class PostOffice implements Runnable {
 		case JOIN: 
 //			handleJOIN(message);	
 			break;
+		case INVALIDPASS:
+//			handleINVALIDPASS(message);
+			break;
+		case NOTAMEMBER:
+//			handleNOTAMEMBER(message);
+			break;
 		}
 	}
 
