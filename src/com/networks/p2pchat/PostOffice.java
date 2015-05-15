@@ -185,7 +185,7 @@ public class PostOffice implements Runnable {
 			handleHI(message);	
 			break;
 		case QUIT:
-//			handleQUIT(message);	
+			handleQUIT(message);	
 			break;
 		case USERS:
 //			handleUSERS(message);	
@@ -348,7 +348,12 @@ public class PostOffice implements Runnable {
 		}
 				
 	}
-	
+/**
+ * Determines whether a channel exists in the {@link _channelList} as defined by it's
+ * name	
+ * @param channelID: A String
+ * @return
+ */
 	private boolean channelExists(String channelID) {
 		for (String key : _channelList.keySet()) {
 			if (channelID.compareTo(key) == 0) {
@@ -356,6 +361,25 @@ public class PostOffice implements Runnable {
 			}
 		}
 		return false;
+	}
+	
+/**
+ * Handles a {@link MessageType#QUIT} by removing the user from the channel specified
+ * in {@link Message#getChannelID()} if that channel is owned by the user the QUIT message
+ * is sent to.
+ * @param message
+ */
+	private void handleQUIT(Message message) {
+		if (message.getMessageType() != MessageType.QUIT) {
+			return;
+		}
+		if (!channelExists(message.getChannelID())) {
+			// TODO some message saying the guy is stupid
+			return;
+		}
+		
+		_channelList.get(message.getChannelID()).removeUser(message.getOrigin());
+		
 	}
 	
 	/**
