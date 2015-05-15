@@ -275,7 +275,8 @@ public class PostOffice implements Runnable {
 	 * If the message's ttl is at 0 it is not sent on.
 	 * 
 	 * Whenever a HELO is received, the origin is saved in your addressbook,
-	 * also a HI message is sent back to the Source (not origin).
+	 * also a HI message is sent back to the Source (not origin).A
+	 * @see com.networks.p2pchat.PostOffice#addToHeloLog(Message)
 	 */
 	void handleHELO(Message message) {
 		Message messageFwd = new Message(message);
@@ -298,7 +299,16 @@ public class PostOffice implements Runnable {
 						message.getOrigin());
 		_conversationHolder.sendMessage(messageHI);
 	}
-	
+
+	/**
+	 * handleHI function is called to deal with messages of type {@linkplain MessageType#HI} 
+	 * 
+	 * HI messages are sent back to the source of the corresponding {@link MessageType#HELO} 
+	 * using the logic in this function. HELO messages are stored and their origin is compared to the
+	 * destination of HI messages, the HI message is then forwarded to the source of the HELO message.
+	 * @param message is a {@link Message} object of type {@link MessageType#HI}
+	 * @see com.networks.p2pchat.PostOffice#getHeloSource(Message)
+	 */
 	void handleHI(Message message) {
 		_addressBook.addAddress(message.getOrigin());
 		_addressBook.addAddress(message.getSource());
@@ -313,6 +323,13 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
+	/**
+	 * the getHeloSource function finds the {@link MessageType#HELO} message correspnding
+	 * to the HI message passed in in order to let the HI message find it's path back to it's origin.
+	 * @see com.networks.p2pchat.PostOffice#handleHI(Message)
+	 * @param message a HI message of type {@linkplain com.networks.p2pchat.Message}
+	 * @return A Peer object that is the source of the HELO message corresponding the the HI message parameter 
+	 */
 	private Peer getHeloSource(Message message) {
 		String heloOriginIp = message.getDestination().getIp(); 
 		for (Message msg : _heloMessages) {
@@ -322,7 +339,12 @@ public class PostOffice implements Runnable {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Adds a {@link com.networks.p2pchat.Message} object of type {@link com.networks.p2pchat.Message.MessageType#HELO} to the local list thereof
+	 * so its source and origin may be used to determine the forward path of subsequent {@link com.networks.p2pchat.Message.MessageType#HI} messages
+	 * @param message a Message object of type HELO
+	 */
 	private void addToHeloLog(Message message) {
 		for (Message msg : _heloMessages) {
 			if (msg.getOrigin().getIp().compareTo(message.getOrigin().getIp()) == 0) {
