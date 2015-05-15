@@ -6,7 +6,11 @@ import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
+/**
+ * "Already implemented has an efficiency all it's own" - Jacques Visser 2015
+ * @author jcqvi_000
+ *
+ */
 @XmlRootElement( namespace = "com.networks.p2pchat")
 public class Message {
 	
