@@ -5,11 +5,20 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 public class GraphicInterface {
 	public GraphicInterface(PostOffice postOffice) {
 		_postOffice = postOffice;
 		_me = new Peer();
 		_clientWindows = new ArrayList<ClientWindow>();
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
+			System.err.println("Error setting interface look and feel: " + e);
+		}
 	}
 	
 	public void getMyUsername() {
