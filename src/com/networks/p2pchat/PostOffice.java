@@ -463,8 +463,8 @@ public class PostOffice implements Runnable {
 		_graphicInterface.updateUserList();
 	}
 	
-	public sendLISTCH(String IP) {
-		_messageBuilder.sendLISTCH();
+	public void sendLISTCH(String IP) {
+		_messageBuilder.sendLISTCH(IP);
 	}
 	
 	/**

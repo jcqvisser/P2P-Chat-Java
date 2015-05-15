@@ -15,5 +15,9 @@ public class MessageBuilder {
 	public MessageBuilder() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	public void sendLISTCH(String IP) {
+		
+	}
 
 }
