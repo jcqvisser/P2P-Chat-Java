@@ -39,7 +39,7 @@ public class PostOffice implements Runnable {
 		_addressBook = AddressBook.getInstance();
 		_inbox = new ArrayList<Message>();
 		_heloMessages = new ArrayList<Message>();
-		_messageBuilder = new MessageBuilder(_conversationHolder);
+		_messageBuilder = new MessageBuilder(_conversationHolder, _me);
 		
 		start();
 	}
@@ -155,6 +155,7 @@ public class PostOffice implements Runnable {
 	private void setMePeer(String username) {
 		try {
 			_me = new Peer(username, Inet4Address.getLocalHost().getHostAddress().toString());
+			_messageBuilder.updateMePeer(_me);
 		} catch (UnknownHostException e) {
 			System.err.println("Error getting the host address: " + e);
 		}
@@ -201,9 +202,7 @@ public class PostOffice implements Runnable {
 //			handleREPEAT(message);	
 			break;
 		case CH:
-	// TODO LISTCH can be called from outside
-	// TODO Arraylist of strings with channelnames and a string ip of the owner, passed back to fromt
-//			handleCH(message);	
+			handleCH(message);	
 			break;
 		case LISTUSERS:
 			handleLISTUSERS(message);	
@@ -243,7 +242,6 @@ public class PostOffice implements Runnable {
 			addAddress(message.getDestination());
 			_conversationHolder.sendMessage(message);
 		}
-		// TODO pass to GUI
 	}
 	
 	void handleFILE(Message message) {
@@ -260,7 +258,6 @@ public class PostOffice implements Runnable {
 									message.getOrigin(),
 									channelIDs);
 		_conversationHolder.sendMessage(messageCH);
-	// TODO LISTCH can be called from outside
 	}
 	
 	void handleCH(Message message) {
@@ -465,6 +462,12 @@ public class PostOffice implements Runnable {
 	
 	public void sendLISTCH(String IP) {
 		_messageBuilder.sendLISTCH(IP);
+	}
+	
+	public void sendJOIN(String IP, String Channel) { _messageBuilder.sendJOIN(IP, channel);}
+	
+	public void createChannel(String Channel) {
+		// TODO implement, mother fucker
 	}
 	
 	/**
