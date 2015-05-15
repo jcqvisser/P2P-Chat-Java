@@ -13,7 +13,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JTextArea;
 
-public class ClientWindow extends JFrame {
+public class ClientWindow extends JFrame implements Runnable {
 
 	/**
 	 * 	Private data members.
@@ -27,6 +27,7 @@ public class ClientWindow extends JFrame {
 	private String _channel;
 	private JTextArea txtrDisplayArea;
 	private JScrollPane scrollPaneDisplayArea;
+	private Thread _thread;
 	
 	/**
 	 *	Display message strings on the screen
@@ -35,6 +36,24 @@ public class ClientWindow extends JFrame {
 	public void displayMessage(String message, Peer fromWho) {
 		txtrDisplayArea.append(fromWho.getId() + " (" + fromWho.getIp() + "):- " + message + '\n');
 		txtrDisplayArea.setCaretPosition(txtrDisplayArea.getDocument().getLength());
+	}
+	
+	public void start() {
+		if (_thread == null)
+		{
+			_thread = new Thread (this, "ClientWindow:" + _ip);
+			_thread.start ();
+		}
+	}
+	
+	public void run() {
+		try {
+			setVisible(true);
+			toFront();
+			repaint();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -92,5 +111,6 @@ public class ClientWindow extends JFrame {
 		txtrDisplayArea.setText("");
 		txtrDisplayArea.setEditable(false);
 		scrollPaneDisplayArea.setViewportView(txtrDisplayArea);
+		start();
 	}
 }

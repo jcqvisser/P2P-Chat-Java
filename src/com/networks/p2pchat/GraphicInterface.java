@@ -1,33 +1,19 @@
 package com.networks.p2pchat;
 
-import java.awt.EventQueue;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 public class GraphicInterface {
 	public GraphicInterface(PostOffice postOffice) {
 		_postOffice = postOffice;
-		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
 		_me = new Peer();
 		_clientWindows = new ArrayList<ClientWindow>();
 	}
 	
-	public Peer getMyUsername() {
-		System.out.println("Please enter a username: ");
-		try {
-			String username = _inFromUser.readLine();
-			_me = new Peer(username, Inet4Address.getLocalHost().getHostAddress().toString());
-			return _me;
-		} catch (IOException e) {
-			System.err.println("Error reading user input: " + e);
-			return null;
-		}
+	public void getMyUsername() {
+		_loginWindow = new LoginWindow(this);
 	}
 	
 	public synchronized void handleMessage(String message, String ip, String channel) {
@@ -44,28 +30,27 @@ public class GraphicInterface {
 		}
 	}
 	
+	/**
+	 * Function to set the username and ip acquired from the login window.
+	 * Warning: This must only be called by the login window, as it disposes the window.
+	 * @param username: The new username for the client.
+	 * @param ip: The new ip address to connect to.
+	 */
+	public void setUsernameConnectionIp(String username, String ip) {
+		try {
+			_me = new Peer(username, Inet4Address.getLocalHost().getHostAddress().toString());
+		} catch (UnknownHostException e) {
+			System.err.println("Error getting local host address: " + e);
+		}
+		_postOffice.initialUsernameConnectionIp(username, ip);
+		_loginWindow.dispose();
+	}
+	
 	/*
 	 * Create a new client window for displaying messages.
 	 */
 	public void addWindow(String ip, String channel) {
-		GraphicInterface tempThis = this;
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ClientWindow chatWindow = new ClientWindow(tempThis, ip, channel);
-					chatWindow.addWindowListener(new WindowAdapter() {
-						@Override
-						public void windowClosing(WindowEvent e) {
-							// Handle window closing event.
-						}
-					});
-					chatWindow.setVisible(true);
-					_clientWindows.add(chatWindow);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		_clientWindows.add(new ClientWindow(this, ip, channel));
 	}
 	
 	/*
@@ -73,19 +58,8 @@ public class GraphicInterface {
 	 * Overloaded to take message and display when window is initialized.
 	 */
 	private void addWindow(String ip, String channel, String message, Peer fromWho) {
-		GraphicInterface tempThis = this;
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ClientWindow chatWindow = new ClientWindow(tempThis, ip, channel);
-					chatWindow.setVisible(true);
-					chatWindow.displayMessage(message, fromWho);
-					_clientWindows.add(chatWindow);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		_clientWindows.add(new ClientWindow(this, ip, channel));
+		_clientWindows.get(findClientWindow(ip + channel)).displayMessage(message, fromWho);
 	}
 	
 	/*
@@ -116,7 +90,7 @@ public class GraphicInterface {
 	
 	// Private member variables.
 	private PostOffice _postOffice;
-	private BufferedReader _inFromUser;
 	private ArrayList<ClientWindow> _clientWindows;
 	private Peer _me;
+	private LoginWindow _loginWindow;
 }

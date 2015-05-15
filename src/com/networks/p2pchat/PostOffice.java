@@ -1,7 +1,9 @@
 package com.networks.p2pchat;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Map;
@@ -19,13 +21,15 @@ import com.networks.p2pchat.Message.MessageType;
 public class PostOffice implements Runnable {
 	// Create the postoffice object.
 	public PostOffice(int port) throws IOException {
+		_port = port;
 		_graphicInterface = new GraphicInterface(this);
+		_conversationHolder = new ConversationHolder(this, _port);
+		_connectionListener = new ConnectionListener(this, _port);
+		setMePeer("Unknown");
 		
 		// Initialize user id.
-		_me =_graphicInterface.getMyUsername();
+		_graphicInterface.getMyUsername();
 		
-		_conversationHolder = new ConversationHolder(this, port);
-		_connectionListener = new ConnectionListener(this, port);
 		_addressBook = AddressBook.getInstance();
 		_inbox = new ArrayList<Message>();
 		_heloMessages = new ArrayList<Message>();
@@ -64,6 +68,27 @@ public class PostOffice implements Runnable {
 		_connectionListener.close();
 	}
 	
+	/**
+	 * Set the username and connection IP for the host, the program will hold while
+	 * waiting for the username and connection ip to continue with the code.
+	 * Should only be called by the graphic interface class.
+	 * @param username
+	 * @param ip
+	 */
+	public synchronized void initialUsernameConnectionIp(String username, String ip) {
+		setMePeer(username);
+		if(ip.compareTo("") != 0 && ip != null) {
+			try {
+				addConversation(new Socket(ip, _port));
+			} catch (UnknownHostException e) {
+				System.err.println("Error, target host is unknown: " + e);
+			} catch (IOException e) {
+				System.err.println("Error creating new client connection: " + e);
+			}
+			_graphicInterface.addWindow(ip, "test");
+		}
+	}
+	
 	// Add a new conversation object for a particular socket.
 	public synchronized boolean addConversation(Socket connectionSocket) {
 		return _conversationHolder.addConversation(connectionSocket);
@@ -90,6 +115,14 @@ public class PostOffice implements Runnable {
 				targetChannel,
 				message));
 			notify();
+		}
+	}
+	
+	private void setMePeer(String username) {
+		try {
+			_me = new Peer(username, Inet4Address.getLocalHost().getHostAddress().toString());
+		} catch (UnknownHostException e) {
+			System.err.println("Error getting the host address: " + e);
 		}
 	}
 	
@@ -257,4 +290,5 @@ public class PostOffice implements Runnable {
 	private AddressBook _addressBook;
 	private int _messageTtl = 4;
 	private ArrayList<Message> _heloMessages;
+	private int _port;
 }
