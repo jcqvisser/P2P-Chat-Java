@@ -103,7 +103,9 @@ public class Message {
 			String channelID,
 			byte[] file,
 			String filename,
-			FileType fType) {
+			FileType fType,
+			int blockNo,
+			int totalBlocks) {
 		this.setMessageType(msgType);
 		this.setOrigin(origin);
 		this.setSource(source);
@@ -112,6 +114,8 @@ public class Message {
 		this.setData(file);
 		this.setFilename(filename);
 		this.setFileType(fType);
+		this.setBlockNumber(blockNo);
+		this.setTotalBlocks(totalBlocks);
 	}	
 	
 	public Message(Message msg)
@@ -154,6 +158,8 @@ public class Message {
 	public boolean getForwardable() {return _forwardable;}
 	public FileType getFileType() {return _fType;}
 	public ArrayList<Peer> getUsersList() {return _users;}
+	public int getBlockNumber() {return _blockNumber;}
+	public int getTotalBlocks() {return _totalBlocks;}
 	
 	// Setters
 	public void setMessageType(MessageType a) {_mType = a;}
@@ -169,6 +175,8 @@ public class Message {
 	public void setForwardable(boolean a) {_forwardable = a;}
 	public void setFileType(FileType a) {_fType = a;}
 	public void setUsers(ArrayList<Peer> a) {_users = a;}
+	public void setBlockNumber(int a) {_blockNumber = a;}
+	public void setTotalBlocks(int a) {_totalBlocks = a;}
 	
 
 	private MessageType _mType;
@@ -180,6 +188,8 @@ public class Message {
 	private String _text;
 	private String _filename;
 	private byte[] _data;
+	private int _blockNumber;
+	private int _totalBlocks;
 	@XmlElementWrapper(name = "channels")
 	@XmlElement(name = "channel")
 	private ArrayList<String> _channels;
@@ -188,6 +198,7 @@ public class Message {
 	@XmlElementWrapper(name = "users")
 	@XmlElement(name = "peer")
 	private ArrayList<Peer> _users;
+	
 	
 	
 }
