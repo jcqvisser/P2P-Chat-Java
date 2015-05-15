@@ -188,7 +188,7 @@ public class PostOffice implements Runnable {
 			handleQUIT(message);	
 			break;
 		case USERS:
-//			handleUSERS(message);	
+			handleUSERS(message);	
 			break;
 		case PASS:
 //			handlePASS(message);	
@@ -203,7 +203,7 @@ public class PostOffice implements Runnable {
 //			handleCH(message);	
 			break;
 		case LISTUSERS:
-//			handleLISTUSERS(message);	
+			handleLISTUSERS(message);	
 			break;
 		case JOIN: 
 //			handleJOIN(message);	
@@ -379,7 +379,32 @@ public class PostOffice implements Runnable {
 		}
 		
 		_channelList.get(message.getChannelID()).removeUser(message.getOrigin());
+	}
+	
+	private void handleLISTUSERS(Message message) {
+		if (message.getMessageType() != MessageType.USERS) {
+			return;
+		}
+		if (!channelExists(message.getChannelID())) {
+			// TODO channel doesnt exist message  
+			return;
+		}	
 		
+		ArrayList<Peer> users = new ArrayList<Peer>();
+		for (Map.Entry<String,String> entry : _channelList.get(message.getChannelID()).getUsers().entrySet()) {
+			users.add(new Peer(entry.getValue(), entry.getKey()));
+		}
+		
+		Message messageReply = new Message(MessageType.USERS,
+				_me,
+				users,
+				message.getOrigin());
+		
+		_conversationHolder.sendMessage(messageReply);
+	}
+	
+	private void handleUSERS(Message message) {
+		// TODO implement
 	}
 	
 	/**
