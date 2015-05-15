@@ -5,6 +5,7 @@ import java.net.Inet4Address;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 
@@ -193,7 +194,7 @@ public class PostOffice implements Runnable {
 //			handlePASS(message);	
 			break;
 		case MSGCH:
-//			handleMSGCH(message);	
+			handleMSGCH(message);	
 			break;
 		case REPEAT: 
 //			handleREPEAT(message);	
@@ -321,6 +322,13 @@ public class PostOffice implements Runnable {
 		}
 	}
 	
+	private void handleMSGCH(Message message) {
+		// TODO check if channel exists
+		
+		// TODO check if person is listed in the channel
+		// TODO forward message to all channel participants 
+	}
+	
 	/**
 	 * Private member variables:
 	 */
@@ -374,4 +382,9 @@ public class PostOffice implements Runnable {
 	 * and therefore the port that connections are made to.
 	 */
 	private int _port;
+	/*
+	 * The channellist object is a collection of all the channels that this user
+	 * hosts. keyed by their name and ip
+	 */
+	private HashMap<String, Channel> _channelList;
 }
