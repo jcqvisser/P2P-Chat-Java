@@ -14,6 +14,8 @@ public class Channel {
 		_channelName = channelName;
 		_me = me;
 		_channelPass = "";
+		_users = new HashMap<String,String>();
+		addUser(_me);
 	}
 	/**
 	 * Constructor for a channel with a password.
@@ -26,6 +28,7 @@ public class Channel {
 		_me = me;
 		_users = new HashMap<String, String>();
 		_channelPass = channelPass;
+		addUser(_me);
 	}
 	
 	
