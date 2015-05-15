@@ -230,7 +230,7 @@ public class PostOffice implements Runnable {
 	void handleMSG(Message message) {
 		if (message.getDestination().getIp().compareTo(_me.getIp()) == 0) {
 			if (! _addressBook.addressExists(message.getOrigin().getIp())) {
-				_addressBook.addAddress(message.getOrigin());
+				addAddress(message.getOrigin());
 			}
 			_graphicInterface.displayMessage(message.getText(), 
 					message.getOrigin(),
@@ -239,7 +239,7 @@ public class PostOffice implements Runnable {
 		} else if (_addressBook.addressExists(message.getDestination().getIp())) {
 			_conversationHolder.sendMessage(message);
 		} else {
-			_addressBook.addAddress(message.getDestination());
+			addAddress(message.getDestination());
 			_conversationHolder.sendMessage(message);
 		}
 		// TODO pass to GUI
@@ -259,7 +259,13 @@ public class PostOffice implements Runnable {
 									message.getOrigin(),
 									channelIDs);
 		_conversationHolder.sendMessage(messageCH);
-		
+	// TODO LISTCH can be called from outside
+	}
+	
+	void handleCH(Message message) {
+		if (message.getMessageType() == MessageType.CH){
+			_graphicInterface.updateChannelList(message.getOrigin().getIp(), message.getChannelList());
+		}
 	}
 
 	/**
@@ -273,7 +279,7 @@ public class PostOffice implements Runnable {
 		} else {
 			Peer updatedContact = message.getOrigin();
 			updatedContact.setId(message.getText());
-			_addressBook.addAddress(updatedContact);
+			addAddress(updatedContact);
 		}
 	}
 
@@ -301,7 +307,7 @@ public class PostOffice implements Runnable {
 				_conversationHolder.sendMessage(messageFwd);
 			}
 			if (!_addressBook.addressExists(message.getOrigin().getIp())) {
-				_addressBook.addAddress(message.getOrigin());
+				addAddress(message.getOrigin());
 			}	
 		}
 		Message messageHI = new Message(MessageType.HI,
@@ -322,9 +328,8 @@ public class PostOffice implements Runnable {
 	 * @see com.networks.p2pchat.PostOffice#getHeloSource(Message)
 	 */
 	void handleHI(Message message) {
-		_addressBook.addAddress(message.getOrigin());
-		_addressBook.addAddress(message.getSource());
-		
+		addAddress(message.getOrigin());
+		addAddress(message.getSource());
 		if (message.getDestination().getIp().compareTo(_me.getIp()) != 0) {
 			Message messageFwd = new Message(message);
 			messageFwd.setSource(_me);
@@ -446,10 +451,15 @@ public class PostOffice implements Runnable {
 	private void handleUSERS(Message message) {
 		for (Peer user : message.getUsersList()) {
 			if (user.getIp().compareTo(_me.getIp()) != 0) {
-				_addressBook.addAddress(user);
+				addAddress(user);
 			}
 		}
 		//TODO Send to gui
+	}
+	
+	private void addAddress(Peer address) {
+		_addressBook.addAddress(address);
+		_graphicInterface.updateUserList();
 	}
 	
 	/**
