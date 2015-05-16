@@ -93,6 +93,22 @@ public class GraphicInterface {
 	}
 	
 	/**
+	 * Update channel list on front end.
+	 * @param channels
+	 */
+	public synchronized void updateOwnedChannels(ArrayList<String> channels) {
+		_connectionWindow.updateOwnedChannels(channels);
+	}
+	
+	/**
+	 * Remove a channel for the user.
+	 * @param channelId
+	 */
+	public synchronized void removeChannel(String channelId){
+		_postOffice.removeChannel(channelId);
+	}
+	
+	/**
 	 * Call this function once the list of channels has been received to 
 	 * update the list of channels for a particular user.
 	 * @param ip
@@ -127,7 +143,6 @@ public class GraphicInterface {
 	 * @param message
 	 * @param fromWho
 	 * @param targetIp
-	 * @param targetChannel
 	 */
 	public void displayMessage(String message, Peer fromWho, String targetIp) {
 		String targetChannel = "private";

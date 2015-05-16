@@ -147,13 +147,19 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_scrollPaneUser.setViewportView(_lstUser);
 		
 		// Initialize owned channel list.
-		_modelOwnedCh = new DefaultListModel<String>();
 		_lstOwnedCh = new JList<String>();
 		_lstOwnedCh.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent evt) {
+				if(evt.getClickCount() == 2) {
+					// Remove channel.
+					_graphicInterface.removeChannel(_lstOwnedCh.getSelectedValue());
+				}
 			}
 		});
+		_lstOwnedCh.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		_modelOwnedCh = new DefaultListModel<String>();
+		_lstOwnedCh.setModel(_modelOwnedCh);
 		_scrollPaneOwnedCh.setViewportView(_lstOwnedCh);
 		
 		/*
@@ -221,6 +227,17 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_channels.get(userIp).clear();
 		for(String channel : channels) {
 			_channels.get(userIp).addElement(channel);
+		}
+	}
+	
+	/**
+	 * Update the channels owned by the user.
+	 * @param channels
+	 */
+	public void updateOwnedChannels(ArrayList<String> channels) {
+		_modelOwnedCh.clear();
+		for(String channel : channels) {
+			_modelOwnedCh.addElement(channel);
 		}
 	}
 	
