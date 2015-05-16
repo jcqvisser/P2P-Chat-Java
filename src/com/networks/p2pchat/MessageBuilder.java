@@ -37,9 +37,6 @@ public class MessageBuilder {
 	}
 	
 	public void sendJOIN(String IP, String channel) {
-		if (channel.compareTo("private") == 0) {
-			return;
-		}
 		Message msg = new Message(MessageType.JOIN,
 				_me,
 				_addressBook.getAddress(IP),

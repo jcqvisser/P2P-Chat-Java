@@ -206,7 +206,7 @@ public class PostOffice implements Runnable {
 			handleUSERS(message);	
 			break;
 		case PASS:
-//			handlePASS(message);	
+			handlePASS(message);	
 			break;
 		case MSGCH:
 			handleMSGCH(message);	
@@ -222,8 +222,6 @@ public class PostOffice implements Runnable {
 			break;
 		case JOIN: 
 			handleJOIN(message);	
-// needs to be passed to the channel object and the return must be looked at
-// must be passed to gui
 			break;
 		case INVALIDPASS:
 //			handleINVALIDPASS(message);
@@ -234,8 +232,10 @@ public class PostOffice implements Runnable {
 // send to gui
 			break;
 		case JOINED:
-//			handleJOINED();
+			handleJOINED(message);
 			break;
+		case INVALIDCH:
+//			handleINVALIDCH(message);
 		}
 	}
 
@@ -479,12 +479,30 @@ public class PostOffice implements Runnable {
 			return;
 		}
 		JoinResponse jr = _channelList.get(message.getChannelID()).addUserByMessage(message);
-
+		sendJoinResponseMessage(jr, message);
+	}
+	
+	private void handlePASS(Message message) {
+		if (!channelExists(message.getChannelID())) {
+			// TODO send invalid channel
+			return;
+		}
+		JoinResponse jr = _channelList.get(message.getChannelID()).addUserByMessage(message);
+		sendJoinResponseMessage(jr, message);
+	}
+	
+	private void handleJOINED(Message message) {
+		_graphicInterface.addWindow(message.getOrigin().getIp(), message.getChannelID());
 	}
 	
 	private void addAddress(Peer address) {
 		_addressBook.addAddress(address);
 		_graphicInterface.updateUserList();
+	}
+	
+	public void createChannel(String channel) {
+		Channel ch = new Channel(channel, _me);
+		_channelList.put(channel, ch);
 	}
 	
 	public void sendLISTCH(String IP) { _messageBuilder.sendLISTCH(IP); }
@@ -495,11 +513,9 @@ public class PostOffice implements Runnable {
 	
 	public void sendINVALIDPASS(String IP, String channel) {_messageBuilder.sendINVALIDPASS(IP, channel);}
 	
-	public void senJoinResponseMessage(JoinResponse jr, Message msg) {_messageBuilder.sendJoinResponseMessage(jr, msg);}
-	public void createChannel(String channel) {
-		Channel ch = new Channel(channel, _me);
-		_channelList.put(channel, ch);
-	}
+//	public void sendINVALIDCH()
+	public void sendJoinResponseMessage(JoinResponse jr, Message msg) {_messageBuilder.sendJoinResponseMessage(jr, msg);}
+	
 	
 	/**
 	 * Private member variables:

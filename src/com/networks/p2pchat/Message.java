@@ -87,7 +87,7 @@ public class Message {
 		this.setChannelID(channelID);
 	}
 	
-	// JOIN, QUIT, REPEAT, INVALIDPASS, NOTAMEMBER, JOINED
+	// JOIN, QUIT, REPEAT, INVALIDPASS, NOTAMEMBER, JOINED, INVALIDPASS
 	public Message(	MessageType msgType, 
 			Peer origin,
 			Peer destination,
