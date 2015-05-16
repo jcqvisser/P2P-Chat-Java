@@ -98,7 +98,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				System.out.println("Selected channel: " + _lstChannel.getSelectedValue());
-				_graphicInterface.sendJoin(_lstUser.getSelectedValue(), _lstChannel.getSelectedValue());
+				_graphicInterface.sendJOIN(_lstUser.getSelectedValue(), _lstChannel.getSelectedValue());
 			}
 		});
 		_lstChannel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -125,7 +125,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_btnAddChannel = new JButton("Private Conversation");
 		_btnAddChannel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				_graphicInterface.sendJoin(_lstUser.getSelectedValue(), "private");
+				_graphicInterface.sendJOIN(_lstUser.getSelectedValue(), "private");
 			}
 		});
 		_btnAddChannel.setBounds(256, 240, 236, 29);
