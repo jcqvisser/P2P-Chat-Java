@@ -152,6 +152,15 @@ public class PostOffice implements Runnable {
 						MessageType.MSGCH,
 						_me,
 						_me,
+						_me,
+						targetChannel,
+						message));
+			} else {
+				_messageBuffer.add(new Message(
+						MessageType.MSGCH,
+						_me,
+						_me,
+						_addressBook.getAddress(targetIp),
 						targetChannel,
 						message));
 			}
@@ -383,31 +392,37 @@ public class PostOffice implements Runnable {
 	}
 	
 	private void handleMSGCH(Message message) {
+		System.out.println("Handling message channel");
 		if (!channelExists(message.getChannelID())) {
-			// TODO channel doesn't exist message
-			_conversationHolder.sendMessage(message);
+			if(message.getDestination().getIp().compareTo(_me.getIp()) == 0) {
+				_graphicInterface.displayMessage(message.getText(), message.getOrigin(), 
+						message.getSource().getIp(), message.getChannelID());
+			} else {
+				_conversationHolder.sendMessage(message);
+			}
 			return; 
-		}
-		
-		if (!_channelList.get(message.getChannelID()).hasUser(message.getOrigin())) {
-			// TODO user is not part of channel message
-			System.out.println("User is not part of the channel");
-			return;
-		}
-		System.out.println("Forwarding message to all members of channel");
-		for (Map.Entry<String, String> entry : _channelList.get(message.getChannelID()).getUsers().entrySet()) {
-			if (entry.getKey().compareTo(_me.getIp()) != 0 && 
-					entry.getKey().compareTo(message.getOrigin().getIp()) != 0){
-				Message messageFwd = new Message(message);
-				messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
-				messageFwd.setSource(_me);
-				_conversationHolder.sendMessage(messageFwd);
+		} else {
+			if (!_channelList.get(message.getChannelID()).hasUser(message.getOrigin())) {
+				System.out.println("User is not part of the channel");
+				return;
+			}
+			
+			for (Map.Entry<String, String> entry : _channelList.get(message.getChannelID()).getUsers().entrySet()) {
+				if (entry.getKey().compareTo(_me.getIp()) != 0 && 
+						entry.getKey().compareTo(message.getOrigin().getIp()) != 0){
+					Message messageFwd = new Message(message);
+					messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
+					messageFwd.setSource(_me);
+					_conversationHolder.sendMessage(messageFwd);
+				}
+			}
+			if(message.getOrigin().getId().compareTo(_me.getIp()) != 0) {
+				_graphicInterface.displayMessage(message.getText(), 
+						message.getOrigin(), 
+						message.getDestination().getIp(), 
+						message.getChannelID());
 			}
 		}
-		_graphicInterface.displayMessage(message.getText(), 
-				message.getOrigin(), 
-				message.getDestination().getIp(), 
-				message.getChannelID());
 	}
 /**
  * Determines whether a channel exists in the {@link _channelList} as defined by it's

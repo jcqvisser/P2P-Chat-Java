@@ -85,6 +85,7 @@ public class Message {
 		this.setOrigin(origin);
 		this.setDestination(destination);
 		this.setChannelID(channelID);
+		this.setText(text);
 	}
 	
 	// JOIN, QUIT, REPEAT, INVALIDPASS, NOTAMEMBER, JOINED, INVALIDPASS
