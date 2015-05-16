@@ -3,7 +3,8 @@ package com.networks.p2pchat;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.ListIterator;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -24,7 +25,7 @@ public class GraphicInterface {
 	public GraphicInterface(PostOffice postOffice) {
 		_postOffice = postOffice;
 		_me = new Peer();
-		_clientWindows = new ArrayList<ClientWindow>();
+		_clientWindows = new HashMap<String, ClientWindow>();
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
@@ -107,12 +108,11 @@ public class GraphicInterface {
 	 * @param targetChannel
 	 */
 	public void displayMessage(String message, Peer fromWho, String targetIp, String targetChannel) {
-		int windowID = findClientWindow(targetIp + targetChannel);
-		if(windowID != -1) {
-			_clientWindows.get(windowID).displayMessage(message, fromWho);
+		if(_clientWindows.containsKey(targetIp + targetChannel)){
+			_clientWindows.get(targetIp + targetChannel).displayMessage(message, fromWho);
 		} else {
 			addWindow(targetIp, targetChannel);
-			_clientWindows.get(findClientWindow(targetIp + targetChannel)).displayMessage(message, fromWho);
+			_clientWindows.get(targetIp + targetChannel).displayMessage(message, fromWho);
 		}
 	}
 	
@@ -140,36 +140,18 @@ public class GraphicInterface {
 	 * @param channel
 	 */
 	public void addWindow(String ip, String channel) {
-		_clientWindows.add(new ClientWindow(this, ip, channel));
+		_clientWindows.put((ip + channel), new ClientWindow(this, ip, channel));
 	}
 	
 	/**
 	 * Remove a client window from the list (and display).
 	 * @param ipAndChannel
 	 */
-	public synchronized void removeClientWindow(String ipAndChannel) {
-		int windowID = findClientWindow(ipAndChannel);
-		if(windowID != -1 && _clientWindows.get(windowID) != null) {
-			_clientWindows.get(windowID).dispose();
-			_clientWindows.remove(windowID);
+	public synchronized void removeClientWindow(String ip, String channel) {
+		if(_clientWindows.containsKey(ip + channel) && _clientWindows.get(ip + channel) != null) {
+			_clientWindows.get(ip + channel).dispose();
+			_clientWindows.remove(ip + channel);
 		}
-	}
-	
-	/**
-	 * Search for a particular client window in the array list of client windows.
-	 * @param ipAndChannel
-	 * @return
-	 */
-	private int findClientWindow(String ipAndChannel) {
-		ListIterator<ClientWindow> itr = _clientWindows.listIterator();
-		int index = 0;
-		while(itr.hasNext()) {
-			index = itr.nextIndex();
-			if(itr.next().getIpChannel().compareTo(ipAndChannel) == 0) {
-				return index;
-			}
-		}
-		return -1;
 	}
 	
 	// Private member variables.
@@ -181,7 +163,8 @@ public class GraphicInterface {
 	/**
 	 * List of client windows for different conversations.
 	 */
-	private ArrayList<ClientWindow> _clientWindows;
+//	private ArrayList<ClientWindow> _clientWindows;
+	private Map<String, ClientWindow> _clientWindows;
 	/**
 	 * This object defines the current user, it is used to display messages
 	 * that the user just typed in the client window.

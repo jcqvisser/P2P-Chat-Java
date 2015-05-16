@@ -30,7 +30,7 @@ public class ClientWindow extends JFrame implements Runnable {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				// Handle window closing event.
-				_graphicInterface.removeClientWindow(getIpChannel());
+				_graphicInterface.removeClientWindow(_ip, _channel);
 			}
 		});
 
@@ -101,13 +101,6 @@ public class ClientWindow extends JFrame implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Remove get the IP and Channel String, unique for this chat window.
-	 */
-	public String getIpChannel() {
-		return _ip + _channel;
 	}
 	
 	/**
