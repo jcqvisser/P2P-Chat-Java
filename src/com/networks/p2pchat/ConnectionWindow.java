@@ -40,7 +40,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		
-		setBounds(100, 100, 518, 419);
+		setBounds(100, 100, 510, 409);
 		setTitle("Connection Window");
 		_contentPane = new JPanel();
 		_contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -85,7 +85,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		docAChOwn.setParagraphAttributes(0, docAChOwn.getLength(), center, false);
 		_textPaneOwnedCh.setText("Owned Channels:");
 		_textPaneOwnedCh.setEditable(false);
-		_textPaneOwnedCh.setBounds(10, 311, 136, 68);
+		_textPaneOwnedCh.setBounds(10, 311, 136, 20);
 		_contentPane.add(_textPaneOwnedCh);
 		
 		/*
@@ -101,7 +101,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_contentPane.add(_scrollPaneChannel);
 		
 		_scrollPaneOwnedCh = new JScrollPane();
-		_scrollPaneOwnedCh.setBounds(156, 311, 336, 68);
+		_scrollPaneOwnedCh.setBounds(156, 311, 336, 60);
 		_contentPane.add(_scrollPaneOwnedCh);
 		
 		/*
@@ -145,22 +145,22 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_modelUser = new DefaultListModel<String>();
 		_lstUser.setModel(_modelUser);
 		_scrollPaneUser.setViewportView(_lstUser);
-		
+		_modelOwnedCh = new DefaultListModel<String>();
+
 		// Initialize owned channel list.
 		_lstOwnedCh = new JList<String>();
+		_scrollPaneOwnedCh.setViewportView(_lstOwnedCh);
 		_lstOwnedCh.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent evt) {
 				if(evt.getClickCount() == 2) {
 					// Remove channel.
-					_graphicInterface.removeChannel(_lstOwnedCh.getSelectedValue());
+					_graphicInterface.addWindow(_lstOwnedCh.getSelectedValue());
 				}
 			}
 		});
 		_lstOwnedCh.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		_modelOwnedCh = new DefaultListModel<String>();
 		_lstOwnedCh.setModel(_modelOwnedCh);
-		_scrollPaneOwnedCh.setViewportView(_lstOwnedCh);
 		
 		/*
 		 * Initialize the button.
@@ -176,6 +176,17 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		});
 		_btnAddChannel.setBounds(256, 240, 236, 29);
 		_contentPane.add(_btnAddChannel);
+		
+		_btnRemoveChannel = new JButton("Remove Channel");
+		_btnRemoveChannel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(_lstOwnedCh.getSelectedValue() != null) {
+					_graphicInterface.removeChannel(_lstOwnedCh.getSelectedValue());
+				}
+			}
+		});
+		_btnRemoveChannel.setBounds(10, 342, 136, 29);
+		_contentPane.add(_btnRemoveChannel);
 		
 		/*
 		 * Initialize the new channel text field.
@@ -333,6 +344,10 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	 * 
 	 */
 	private JButton _btnAddChannel;
+	/**
+	 * 
+	 */
+	private JButton _btnRemoveChannel;
 	/**
 	 * 
 	 */

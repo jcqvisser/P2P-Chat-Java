@@ -178,7 +178,25 @@ public class GraphicInterface {
 	 * @param channel
 	 */
 	public void addWindow(String ip, String channel) {
-		_clientWindows.put((ip + channel), new ClientWindow(this, ip, channel));
+		if(!_clientWindows.containsKey(ip + channel)) {
+			_clientWindows.put((ip + channel), new ClientWindow(this, ip, channel));
+		} else if(_clientWindows.get(ip + channel) == null) {
+			_clientWindows.put((ip + channel), new ClientWindow(this, ip, channel));
+		}
+	}
+	
+	/**
+	 * Add an owned channel to the list,
+	 * i.e. add a channel that belongs to the current user so the ip
+	 * address associated with it is stored in _me.
+	 * @param channel
+	 */
+	public void addWindow(String channel) {
+		if(!_clientWindows.containsKey(_me.getIp() + channel)) {
+			_clientWindows.put((_me.getIp() + channel), new ClientWindow(this, _me.getIp(), channel));
+		} else if(_clientWindows.get(_me.getIp() + channel) == null) {
+			_clientWindows.put((_me.getIp() + channel), new ClientWindow(this, _me.getIp(), channel));
+		}
 	}
 	
 	/**
@@ -188,6 +206,8 @@ public class GraphicInterface {
 	public synchronized void removeClientWindow(String ip, String channel) {
 		if(_clientWindows.containsKey(ip + channel) && _clientWindows.get(ip + channel) != null) {
 			_clientWindows.get(ip + channel).dispose();
+			_clientWindows.remove(ip + channel);
+		} else if(_clientWindows.containsKey(ip + channel)) {
 			_clientWindows.remove(ip + channel);
 		}
 	}
