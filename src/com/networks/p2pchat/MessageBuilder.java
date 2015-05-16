@@ -105,6 +105,6 @@ public class MessageBuilder {
 	private ConversationHolder _conversationHolder;
 	private Peer _me;
 	private AddressBook _addressBook;
-	private int _ttl;
+	private int _ttl = 4;
 
 }

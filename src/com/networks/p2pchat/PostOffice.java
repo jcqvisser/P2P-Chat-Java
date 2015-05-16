@@ -319,13 +319,17 @@ public class PostOffice implements Runnable {
 	 * @see com.networks.p2pchat.PostOffice#addToHeloLog(Message)
 	 */
 	void handleHELO(Message message) {
+		System.out.println("hendleHELO");
 		addAddress(message.getSource());
 		addAddress(message.getOrigin());
 		Message messageFwd = new Message(message);
 		addToHeloLog(message);
+		System.out.println("before if " + message.getTtl());
 		if (message.getTtl() > 0){
+			System.out.println("after if");
 			messageFwd.setSource(_me);
 			for (Map.Entry<String, String> entry : _addressBook.getMap().entrySet()) {
+				System.out.print("destination peer" + entry.getValue() + entry.getKey());
 				messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
 				messageFwd.setTtl(message.getTtl() - 1);
 				_conversationHolder.sendMessage(messageFwd);
