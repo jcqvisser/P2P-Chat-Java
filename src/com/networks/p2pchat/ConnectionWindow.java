@@ -98,9 +98,15 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_lstChannel = new JList<String>();
 		_lstChannel.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				System.out.println("Selected channel: " + _lstChannel.getSelectedValue());
-				_graphicInterface.sendJOIN(_nameIpMap.get(_lstUser.getSelectedValue()), _lstChannel.getSelectedValue());
+			public void mouseReleased(MouseEvent evt) {
+				if(_nameIpMap.get(_lstUser.getSelectedValue()) != null && _lstChannel.getSelectedValue() != null) {
+					/*
+					 * Open a new channel window when the double click command is given.
+					 */
+					if(evt.getClickCount() == 2) {
+						_graphicInterface.sendJOIN(_nameIpMap.get(_lstUser.getSelectedValue()), _lstChannel.getSelectedValue());
+					}
+				}
 			}
 		});
 		_lstChannel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -109,10 +115,17 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_lstUser = new JList<String>();
 		_lstUser.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				System.out.println("Selected user: " + _lstUser.getSelectedValue() + " - Under IP: " + _nameIpMap.get(_lstUser.getSelectedValue()));
-				_lstChannel.setModel(_channels.get(_nameIpMap.get(_lstUser.getSelectedValue())));
-				_graphicInterface.sendLISTCH(_nameIpMap.get(_lstUser.getSelectedValue()));
+			public void mouseReleased(MouseEvent evt) {
+				if(_nameIpMap.get(_lstUser.getSelectedValue()) != null) {
+					_lstChannel.setModel(_channels.get(_nameIpMap.get(_lstUser.getSelectedValue())));
+					_graphicInterface.sendLISTCH(_nameIpMap.get(_lstUser.getSelectedValue()));
+					
+					if(evt.getClickCount() == 2) {
+						_graphicInterface.sendJOIN(_nameIpMap.get(_lstUser.getSelectedValue()), "private");
+					}
+					
+				} 
+				
 			}
 		});
 		_lstUser.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -167,7 +180,6 @@ public class ConnectionWindow extends JFrame implements Runnable {
 			_modelUser.addElement(listEntry);
 			_nameIpMap.put(listEntry, user.getKey());
 			if(!_channels.containsKey(user.getKey())) {
-				System.out.println("Adding new Default List Model for: " + user.getKey());
 				_channels.put(user.getKey(), new DefaultListModel<String>());
 			}
 		}

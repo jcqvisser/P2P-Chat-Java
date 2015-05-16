@@ -67,7 +67,6 @@ public class GraphicInterface {
 	 * @param channel
 	 */
 	public synchronized void sendJOIN(String ip, String channel) {
-		System.out.println("Connect to " + ip + " - " + channel);
 		_postOffice.sendJOIN(ip, channel);
 		addWindow(ip, channel);
 	}
@@ -86,6 +85,7 @@ public class GraphicInterface {
 	 */
 	public synchronized void createChannel(String channel) {
 		_postOffice.createChannel(channel);
+		addWindow(_me.getIp(), channel);
 	}
 	
 	/**
