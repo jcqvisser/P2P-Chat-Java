@@ -3,29 +3,23 @@ package com.networks.p2pchat;
 import java.io.*;
 
 public class Peer2Peer {
-	
-	// Public Members:
 
+	/**
+	 * Main function, starts when the program starts and initializes the post office
+	 * object to start the listener, etc.
+	 * @param args
+	 */
 	public static void main(String[] args) {
-		// Initialize input streams.
-		_inFromUser = new BufferedReader( new InputStreamReader(System.in));
+		/**
+		 * Initialize the post office object, it takes care of the rest..
+		 */
 		try {
 			_postOffice = new PostOffice(1337);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	// Get input from the user.
-	public static String getUserInput() {
-		try {
-			return _inFromUser.readLine();
-		} catch(IOException e) {
-			return null;
-		}
-	}
 
-	private static BufferedReader _inFromUser;
 	@SuppressWarnings("unused")
 	private static PostOffice _postOffice;
 
