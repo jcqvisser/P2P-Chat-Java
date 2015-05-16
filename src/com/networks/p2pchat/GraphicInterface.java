@@ -31,7 +31,6 @@ public class GraphicInterface {
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			System.err.println("Error setting interface look and feel: " + e);
 		}
-		_connectionWindow = new ConnectionWindow(this);
 	}
 	
 	/**
@@ -69,6 +68,7 @@ public class GraphicInterface {
 	 */
 	public synchronized void sendJoin(String ip, String channel) {
 		System.out.println("Connect to " + ip + " - " + channel);
+		_postOffice.sendJoin(ip, channel);
 	}
 	
 	/**
@@ -129,6 +129,8 @@ public class GraphicInterface {
 		}
 		_postOffice.initialUsernameConnectionIp(username, ip);
 		_loginWindow.dispose();
+
+		_connectionWindow = new ConnectionWindow(this);
 	}
 	
 	/**
