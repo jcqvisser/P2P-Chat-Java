@@ -295,6 +295,8 @@ public class PostOffice implements Runnable {
 	 * @see com.networks.p2pchat.PostOffice#addToHeloLog(Message)
 	 */
 	void handleHELO(Message message) {
+		addAddress(message.getSource());
+		addAddress(message.getOrigin());
 		Message messageFwd = new Message(message);
 		addToHeloLog(message);
 		if (message.getTtl() > 0){
@@ -304,9 +306,6 @@ public class PostOffice implements Runnable {
 				messageFwd.setTtl(message.getTtl() - 1);
 				_conversationHolder.sendMessage(messageFwd);
 			}
-			if (!_addressBook.addressExists(message.getOrigin().getIp())) {
-				addAddress(message.getOrigin());
-			}	
 		}
 		Message messageHI = new Message(MessageType.HI,
 						_messageTtl - message.getTtl(),
