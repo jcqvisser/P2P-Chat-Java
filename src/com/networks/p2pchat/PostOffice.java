@@ -273,10 +273,11 @@ public class PostOffice implements Runnable {
 	}
 	
 	void handleLISTCH(Message message) {
-		ArrayList<String> channelIDs= new ArrayList<String>();
-		for (String key : _channelList.keySet()) {
-			channelIDs.add(key);
-		}	
+//		ArrayList<String> channelIDs= new ArrayList<String>();
+//		for (String key : _channelList.keySet()) {
+//			channelIDs.add(key);
+//		}	
+		ArrayList<String> channelIDs = getMyChannels();
 		Message messageCH = new Message(MessageType.CH,
 									_me,
 									message.getOrigin(),
@@ -529,6 +530,30 @@ public class PostOffice implements Runnable {
 	public void createChannel(String channel) {
 		Channel ch = new Channel(channel, _me);
 		_channelList.put(channel, ch);
+		_graphicInterface.updateOwnedChannels(getMyChannels());
+	}
+	
+	public void removeChannel(String channel) {
+		// TODO delete channel
+		// TODO notify all users of channel
+		for (Map.Entry<String, String> entry : _channelList.get(message.getChannelID()).getUsers().entrySet()) {
+			if (entry.getKey().compareTo(_me.getIp()) != 0 && 
+					entry.getKey().compareTo(message.getOrigin().getIp()) != 0){
+				Message mag = new Message(MessageType.CHKICK);
+				messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
+				messageFwd.setSource(_me);
+				_conversationHolder.sendMessage(messageFwd);
+			}
+		}
+		_graphicInterface.updateOwnedChannels(getMyChannels());
+	}
+
+	public ArrayList<String> getMyChannels() {
+		ArrayList<String> channelIDs= new ArrayList<String>();
+		for (String key : _channelList.keySet()) {
+			channelIDs.add(key);
+		}
+		return channelIDs;
 	}
 	
 	public void sendLISTCH(String IP) { _messageBuilder.sendLISTCH(IP); }
