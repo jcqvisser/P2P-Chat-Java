@@ -29,6 +29,7 @@ public class LoginWindow extends JFrame implements Runnable  {
 		
 		// Set what happens when the window is closed.
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
 		
 		// Initialize the JFrame window for display.
 		setBounds(100, 100, 504, 114);

@@ -25,6 +25,7 @@ public class ClientWindow extends JFrame implements Runnable {
 		_channel = channel;
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setResizable(false);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

@@ -38,6 +38,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_addressBook = AddressBook.getInstance();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
 		
 		setBounds(100, 100, 518, 347);
 		setTitle("Connection Window");
