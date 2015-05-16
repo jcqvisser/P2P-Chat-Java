@@ -479,27 +479,7 @@ public class PostOffice implements Runnable {
 			return;
 		}
 		JoinResponse jr = _channelList.get(message.getChannelID()).addUserByMessage(message);
-		switch (jr) {
-		case ALREADY_JOINED:
-			break;
-		case DETAILS_CORRECT:
-//			sendJOINED(message.getOrigin(), message.getChannelID());
-			break;
-		case INVALID_PASSWORD:
-//			sendINVALIDPASS(message.getOrigin(), message.getChannelID());
-			break;
-		case LOGIN_REQUIRED:
-//			sendINVALIDPASS(message.getOrigin(), message.getChannelID());
-			break;
-		case SUPPLY_PASSWORD:
-//			sendINVALIDPASS(message.getOrigin(), message.getChannelID());
-			break;
-		case WRONG_CHANNEL:
-//			sendINVALIDCH(message.getOrigin(), message.getChannelID());
-			break;
-		case WRONG_USER:
-			break;
-		}
+
 	}
 	
 	private void addAddress(Peer address) {
@@ -511,6 +491,11 @@ public class PostOffice implements Runnable {
 	
 	public void sendJOIN(String IP, String channel) { _messageBuilder.sendJOIN(IP, channel);}
 	
+	public void sendJOINED(String IP, String channel) { _messageBuilder.sendJOINED(IP, channel);}
+	
+	public void sendINVALIDPASS(String IP, String channel) {_messageBuilder.sendINVALIDPASS(IP, channel);}
+	
+	public void senJoinResponseMessage(JoinResponse jr, Message msg) {_messageBuilder.sendJoinResponseMessage(jr, msg);}
 	public void createChannel(String channel) {
 		Channel ch = new Channel(channel, _me);
 		_channelList.put(channel, ch);
