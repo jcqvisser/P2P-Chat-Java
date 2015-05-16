@@ -520,8 +520,10 @@ public class PostOffice implements Runnable {
 	}
 	
 	private void addAddress(Peer address) {
-		_addressBook.addAddress(address);
-		_graphicInterface.updateUserList();
+		if (address.getIp().compareTo(_me.getIp()) != 0) {
+			_addressBook.addAddress(address);
+			_graphicInterface.updateUserList();
+		}
 	}
 	
 	public void createChannel(String channel) {
