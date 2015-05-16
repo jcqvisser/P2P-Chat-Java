@@ -3,6 +3,7 @@
  */
 package com.networks.p2pchat;
 
+import com.networks.p2pchat.Channel.JoinResponse;
 import com.networks.p2pchat.Message.MessageType;
 
 /**
@@ -56,12 +57,52 @@ public class MessageBuilder {
 		_conversationHolder.sendMessage(msg);
 	}
 	
-	public void sendJOINED(Peer a, String channelId){
+	public void sendJOINED(String IP, String channelId){
 		Message msg = new Message(MessageType.JOINED,
 				_me,
-				a,
+				_addressBook.getAddress(IP),
 				channelId);
 		_conversationHolder.sendMessage(msg);
+	}
+	
+	public void sendINVALIDPASS(String IP, String channel) {
+		Message msg = new Message(MessageType.INVALIDPASS,
+					_me,
+					_addressBook.getAddress(IP),
+					channel);
+		_conversationHolder.sendMessage(msg);
+	}
+	
+	public void sendINVALIDCH(String IP, String channel) {
+		Message msg = new Message(MessageType.INVALIDCH,
+				_me,
+				_addressBook.getAddress(IP),
+				channel);
+		_conversationHolder.sendMessage(msg);
+	}
+	
+	public void sendJoinResponseMessage(JoinResponse jr, Message message) {
+		switch (jr) {
+		case ALREADY_JOINED:
+			break;
+		case DETAILS_CORRECT:
+			sendJOINED(message.getOrigin().getIp(), message.getChannelID());
+			break;
+		case INVALID_PASSWORD:
+			sendINVALIDPASS(message.getOrigin().getIp(), message.getChannelID());
+			break;
+		case LOGIN_REQUIRED:
+			sendINVALIDPASS(message.getOrigin().getIp(), message.getChannelID());
+			break;
+		case SUPPLY_PASSWORD:
+			sendINVALIDPASS(message.getOrigin().getIp(), message.getChannelID());
+			break;
+		case WRONG_CHANNEL:
+			sendINVALIDCH(message.getOrigin().getIp() , message.getChannelID());
+			break;
+		case WRONG_USER:
+			break;
+		}
 	}
 	
 	private ConversationHolder _conversationHolder;
