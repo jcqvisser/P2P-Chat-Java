@@ -80,6 +80,9 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_contentPane.add(_txtpnAddChannel);
 		
 		_textPaneOwnedCh = new JTextPane();
+		StyledDocument docAChOwn = _textPaneOwnedCh.getStyledDocument();
+		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		docAChOwn.setParagraphAttributes(0, docAChOwn.getLength(), center, false);
 		_textPaneOwnedCh.setText("Owned Channels:");
 		_textPaneOwnedCh.setEditable(false);
 		_textPaneOwnedCh.setBounds(10, 311, 136, 68);
