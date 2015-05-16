@@ -464,7 +464,7 @@ public class PostOffice implements Runnable {
 		_messageBuilder.sendLISTCH(IP);
 	}
 	
-	public void sendJOIN(String IP, String Channel) { _messageBuilder.sendJOIN(IP, channel);}
+	public void sendJOIN(String IP, String channel) { _messageBuilder.sendJOIN(IP, channel);}
 	
 	public void createChannel(String Channel) {
 		// TODO implement, mother fucker

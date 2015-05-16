@@ -35,7 +35,11 @@ public class MessageBuilder {
 		_conversationHolder.sendMessage(msg);
 	}
 	
-	public void sendJOIN(String IP, String Channel) {
+	public void sendJOIN(String IP, String channel) {
+		Message msg = new Message(MessageType.JOIN,
+				_me,
+				_addressBook.getAddress(IP),
+				channel);
 		
 	}
 	
