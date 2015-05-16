@@ -34,6 +34,7 @@ public class PostOffice implements Runnable {
 		
 		_addressBook = AddressBook.getInstance();
 		_inbox = new ArrayList<Message>();
+		_channelList = new HashMap<String, Channel>();
 		_heloMessages = new ArrayList<Message>();
 		_messageBuilder = new MessageBuilder(_conversationHolder, _me);
 		
