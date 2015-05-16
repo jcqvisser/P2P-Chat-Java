@@ -20,7 +20,7 @@ public class Message {
 	
 	public enum MessageType {
 		HELO, HI, LISTCH, CH, JOIN, NICK, PASS, LISTUSERS, USERS, MSGCH, FILE,
-		QUIT, MSG, REPEAT, INVALIDPASS, NOTAMEMBER, JOINED, INVALIDCH
+		QUIT, MSG, REPEAT, INVALIDPASS, NOTAMEMBER, JOINED, INVALIDCH, CHKICK
 	}
 
 	public Message(){}
@@ -88,7 +88,7 @@ public class Message {
 		this.setText(text);
 	}
 	
-	// JOIN, QUIT, REPEAT, INVALIDPASS, NOTAMEMBER, JOINED, INVALIDPASS
+	// JOIN, QUIT, REPEAT, INVALIDPASS, NOTAMEMBER, JOINED, INVALIDPASS, CHKICK
 	public Message(	MessageType msgType, 
 			Peer origin,
 			Peer destination,

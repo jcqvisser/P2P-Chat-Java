@@ -536,13 +536,13 @@ public class PostOffice implements Runnable {
 	public void removeChannel(String channel) {
 		// TODO delete channel
 		// TODO notify all users of channel
-		for (Map.Entry<String, String> entry : _channelList.get(message.getChannelID()).getUsers().entrySet()) {
-			if (entry.getKey().compareTo(_me.getIp()) != 0 && 
-					entry.getKey().compareTo(message.getOrigin().getIp()) != 0){
-				Message mag = new Message(MessageType.CHKICK);
-				messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
-				messageFwd.setSource(_me);
-				_conversationHolder.sendMessage(messageFwd);
+		for (Map.Entry<String, String> entry : _channelList.get(channel).getUsers().entrySet()) {
+			if (entry.getKey().compareTo(_me.getIp()) != 0){
+				Message msg = new Message(MessageType.CHKICK,
+							_me,
+							_addressBook.getAddress(entry.getKey()),
+							channel);
+				_conversationHolder.sendMessage(msg);
 			}
 		}
 		_graphicInterface.updateOwnedChannels(getMyChannels());
