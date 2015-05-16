@@ -2,8 +2,8 @@ package com.networks.p2pchat;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.ListIterator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Conversation holding class, handles logic of which conversation
@@ -23,7 +23,7 @@ public class ConversationHolder {
 	 */
 	public ConversationHolder(PostOffice postOffice, int port) {
 		_postOffice = postOffice;
-		_conversations = new ArrayList<Conversation>();
+		_conversations = new HashMap<String, Conversation>();
 		_addressBook = AddressBook.getInstance();
 		_port = port;
 	}
@@ -35,19 +35,16 @@ public class ConversationHolder {
 	 * @return
 	 */
 	public synchronized boolean sendMessage(Message message) {
-		int index = findConversationID(message.getDestination().getIp());
-		if(index != -1) {
+		if(_conversations.containsKey(message.getDestination().getIp())) {
 			// Send the message on to the target conversation.
-			_conversations.get(index).Send(message);
+			_conversations.get(message.getDestination().getIp()).Send(message);
 			return true;
 		} else {
 			// Logic if the conversation does not exist.
 			if(_addressBook.addressExists(message.getDestination().getIp())) {
 				try {
-					System.out.println(message.getDestination().getIp());
-					System.out.println(findConversationID(message.getDestination().getIp()));
 					addConversation(new Socket(message.getDestination().getIp(), _port));
-					_conversations.get(findConversationID(message.getDestination().getIp())).Send(message);
+					_conversations.get(message.getDestination().getIp()).Send(message);
 					return true;
 				} catch ( IOException e ) {
 					System.err.println("Error creating connection: " + e);
@@ -65,10 +62,9 @@ public class ConversationHolder {
 	 * @param ipAddr
 	 */
 	public synchronized void closeConversation(String ipAddr) {
-		int index = findConversationID(ipAddr);
-		if(index != -1 && _conversations.get(index) != null) {
-			_conversations.get(index).close();
-			_conversations.remove(index);
+		if(_conversations.containsKey(ipAddr) && _conversations.get(ipAddr) != null) {
+			_conversations.get(ipAddr).close();
+			_conversations.remove(ipAddr);
 		}
 	}
 	
@@ -83,39 +79,21 @@ public class ConversationHolder {
 	
 	/**
 	 * The add conversation function will take in a socket and create 
-	 * a conversation for that particular socket.
+	 * a conversation for that particular socket, normally only called
+	 * on initialization from outside class.
 	 * @param connectionSocket
 	 * @return
 	 */
 	public synchronized boolean addConversation(Socket connectionSocket) {
-		if(findConversationID(connectionSocket.getInetAddress().getHostAddress()) == -1) {
+		if(!_conversations.containsKey(connectionSocket.getInetAddress().getHostAddress())) {
 			try{ 
-				_conversations.add(new Conversation(this, connectionSocket));
+				_conversations.put(connectionSocket.getInetAddress().getHostAddress(), new Conversation(this, connectionSocket));
 			} catch(IOException ioe) {
 				System.err.println("Error creating new conversation: " + ioe);
 			}
-			
 			return true;
 		}
 		return false;
-	}
-	
-	// Private member functions:
-	/**
-	 * Find the ID of the conversation in the list, defined by IP.
-	 * @param ip
-	 * @return
-	 */
-	private int findConversationID(String ip) {
-		ListIterator<Conversation> itr = _conversations.listIterator();
-		int index = 0;
-		while(itr.hasNext()) {
-			index = itr.nextIndex();
-			if(itr.next().getRecipientIp().compareTo(ip) == 0) {
-				return index;
-			}
-		}
-		return -1;
 	}
 	
 	// Private member variables:
@@ -126,7 +104,7 @@ public class ConversationHolder {
 	/**
 	 * List of active conversations.
 	 */
-	private ArrayList<Conversation> _conversations;
+	private Map<String, Conversation> _conversations;
 	/**
 	 * Address book singleton, allows for a new conversation to opened if the address is known.
 	 */

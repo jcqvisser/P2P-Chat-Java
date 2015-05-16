@@ -163,7 +163,6 @@ public class GraphicInterface {
 	/**
 	 * List of client windows for different conversations.
 	 */
-//	private ArrayList<ClientWindow> _clientWindows;
 	private Map<String, ClientWindow> _clientWindows;
 	/**
 	 * This object defines the current user, it is used to display messages

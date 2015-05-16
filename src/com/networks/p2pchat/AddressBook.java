@@ -75,7 +75,7 @@ public class AddressBook {
 	 * @return
 	 */
 	public boolean addressExists(String AddrIp) {
-		return (_addresses.get(AddrIp) != null);
+		return (_addresses.containsKey(AddrIp));
 	}
 	
 	// Private member variables.
