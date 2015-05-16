@@ -69,6 +69,7 @@ public class GraphicInterface {
 	public synchronized void sendJOIN(String ip, String channel) {
 		System.out.println("Connect to " + ip + " - " + channel);
 		_postOffice.sendJOIN(ip, channel);
+		addWindow(ip, channel);
 	}
 	
 	/**

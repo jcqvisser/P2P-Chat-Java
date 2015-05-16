@@ -102,7 +102,7 @@ public class PostOffice implements Runnable {
 			} catch (IOException e) {
 				System.err.println("Error creating new client connection: " + e);
 			}
-			_graphicInterface.addWindow(ip, "test");
+			_messageBuilder.sendHELO(ip);
 		}
 	}
 	
