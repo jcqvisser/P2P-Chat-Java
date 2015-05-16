@@ -104,13 +104,33 @@ public class GraphicInterface {
 	
 	/**
 	 * Display message takes in the message, who the message is from and the target
-	 * window to display it in.
+	 * window to display it in. The target channel is used for identifying the 
+	 * chat window.
 	 * @param message
 	 * @param fromWho
 	 * @param targetIp
 	 * @param targetChannel
 	 */
 	public void displayMessage(String message, Peer fromWho, String targetIp, String targetChannel) {
+		if(_clientWindows.containsKey(targetIp + targetChannel)){
+			_clientWindows.get(targetIp + targetChannel).displayMessage(message, fromWho);
+		} else {
+			addWindow(targetIp, targetChannel);
+			_clientWindows.get(targetIp + targetChannel).displayMessage(message, fromWho);
+		}
+	}
+	
+	/**
+	 * Display message takes in the message, who the message is from and the target
+	 * window to display it in. This instance does not take in a channel id, therefore
+	 * is used to display private conversations.
+	 * @param message
+	 * @param fromWho
+	 * @param targetIp
+	 * @param targetChannel
+	 */
+	public void displayMessage(String message, Peer fromWho, String targetIp) {
+		String targetChannel = "private";
 		if(_clientWindows.containsKey(targetIp + targetChannel)){
 			_clientWindows.get(targetIp + targetChannel).displayMessage(message, fromWho);
 		} else {
