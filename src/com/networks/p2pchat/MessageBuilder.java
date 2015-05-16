@@ -36,6 +36,9 @@ public class MessageBuilder {
 	}
 	
 	public void sendJOIN(String IP, String channel) {
+		if (channel.compareTo("private") == 0) {
+			
+		}
 		Message msg = new Message(MessageType.JOIN,
 				_me,
 				_addressBook.getAddress(IP),
@@ -43,8 +46,18 @@ public class MessageBuilder {
 		
 	}
 	
+	public void sendHELO(String IP) {
+		Message msg = new Message(MessageType.HELO,
+							_ttl,
+							_me,
+							_me,
+							new Peer("", IP));
+		
+	}
+	
 	private ConversationHolder _conversationHolder;
 	private Peer _me;
 	private AddressBook _addressBook;
+	private int _ttl;
 
 }
