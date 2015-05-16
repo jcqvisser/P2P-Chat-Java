@@ -149,6 +149,11 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		// Initialize owned channel list.
 		_modelOwnedCh = new DefaultListModel<String>();
 		_lstOwnedCh = new JList<String>();
+		_lstOwnedCh.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent evt) {
+			}
+		});
 		_scrollPaneOwnedCh.setViewportView(_lstOwnedCh);
 		
 		/*
