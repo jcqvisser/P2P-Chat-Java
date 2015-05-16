@@ -34,7 +34,7 @@ public class PostOffice implements Runnable {
 		_connectionListener = new ConnectionListener(this, _port);
 		
 		_addressBook = AddressBook.getInstance();
-		_inbox = new ArrayList<Message>();
+		_messageBuffer = new ArrayList<Message>();
 		_channelList = new HashMap<String, Channel>();
 		_heloMessages = new ArrayList<Message>();
 		_messageBuilder = new MessageBuilder(_conversationHolder, _me);
@@ -58,7 +58,7 @@ public class PostOffice implements Runnable {
 				} catch (InterruptedException ie) {
 					System.out.println("Wait interrupted: " + ie);
 				}
-				ListIterator<Message> itr = _inbox.listIterator();
+				ListIterator<Message> itr = _messageBuffer.listIterator();
 				while(itr.hasNext()) {
 					messenger(itr.next());
 					itr.remove();
@@ -124,7 +124,7 @@ public class PostOffice implements Runnable {
 	public synchronized void handleMessage(Message message) {
 		// Add message to inbox.
 		synchronized(this) {
-			_inbox.add(message);
+			_messageBuffer.add(message);
 			notify();
 		}
 	}
@@ -140,7 +140,7 @@ public class PostOffice implements Runnable {
 		// Create new message object.
 		synchronized(this) {
 			if (targetChannel.compareTo("private") == 0){
-				_inbox.add(new Message(
+				_messageBuffer.add(new Message(
 						MessageType.MSG,
 						_me,
 						_addressBook.getAddress(targetIp),
@@ -148,7 +148,7 @@ public class PostOffice implements Runnable {
 						targetChannel,
 						message));
 			} else if(targetIp.compareTo(_me.getIp()) == 0) {
-				_inbox.add(new Message(
+				_messageBuffer.add(new Message(
 						MessageType.MSGCH,
 						_me,
 						_me,
@@ -385,16 +385,19 @@ public class PostOffice implements Runnable {
 	private void handleMSGCH(Message message) {
 		if (!channelExists(message.getChannelID())) {
 			// TODO channel doesn't exist message
+			_conversationHolder.sendMessage(message);
 			return; 
 		}
 		
 		if (!_channelList.get(message.getChannelID()).hasUser(message.getOrigin())) {
 			// TODO user is not part of channel message
+			System.out.println("User is not part of the channel");
 			return;
 		}
-		
+		System.out.println("Forwarding message to all members of channel");
 		for (Map.Entry<String, String> entry : _channelList.get(message.getChannelID()).getUsers().entrySet()) {
-			if (entry.getKey().compareTo(_me.getIp()) != 0){
+			if (entry.getKey().compareTo(_me.getIp()) != 0 && 
+					entry.getKey().compareTo(message.getOrigin().getIp()) != 0){
 				Message messageFwd = new Message(message);
 				messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
 				messageFwd.setSource(_me);
@@ -550,7 +553,7 @@ public class PostOffice implements Runnable {
 	 * The inbox list contains all messages that are waiting to be handled by the
 	 * post office object.
 	 */
-	private ArrayList<Message> _inbox;
+	private ArrayList<Message> _messageBuffer;
 	/**
 	 * The addressbook contains the usernames and ip addresses of all known people
 	 * connected to the network.
