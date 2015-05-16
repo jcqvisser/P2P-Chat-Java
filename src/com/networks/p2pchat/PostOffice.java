@@ -31,15 +31,15 @@ public class PostOffice implements Runnable {
 		_graphicInterface = new GraphicInterface(this);
 		_conversationHolder = new ConversationHolder(this, _port);
 		_connectionListener = new ConnectionListener(this, _port);
-		setMePeer("Unknown");
-		
-		// Initialize user id.
-		_graphicInterface.getMyUsername();
 		
 		_addressBook = AddressBook.getInstance();
 		_inbox = new ArrayList<Message>();
 		_heloMessages = new ArrayList<Message>();
 		_messageBuilder = new MessageBuilder(_conversationHolder, _me);
+		
+		// Initialize user id.
+		setMePeer("Unknown");
+		_graphicInterface.getMyUsername();
 		
 		start();
 	}
