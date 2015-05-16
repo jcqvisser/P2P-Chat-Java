@@ -40,7 +40,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		
-		setBounds(100, 100, 518, 347);
+		setBounds(100, 100, 518, 419);
 		setTitle("Connection Window");
 		_contentPane = new JPanel();
 		_contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -79,6 +79,12 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_txtpnAddChannel.setBounds(10, 280, 136, 20);
 		_contentPane.add(_txtpnAddChannel);
 		
+		_textPaneOwnedCh = new JTextPane();
+		_textPaneOwnedCh.setText("Owned Channels:");
+		_textPaneOwnedCh.setEditable(false);
+		_textPaneOwnedCh.setBounds(10, 311, 136, 68);
+		_contentPane.add(_textPaneOwnedCh);
+		
 		/*
 		 * Initialize the scroll pane objects.
 		 */
@@ -91,10 +97,15 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_scrollPaneChannel.setBounds(256, 42, 236, 187);
 		_contentPane.add(_scrollPaneChannel);
 		
+		_scrollPaneOwnedCh = new JScrollPane();
+		_scrollPaneOwnedCh.setBounds(156, 311, 336, 68);
+		_contentPane.add(_scrollPaneOwnedCh);
+		
 		/*
 		 * Initialize the list objects.
 		 */
 		
+		// Initialize channel list.
 		_lstChannel = new JList<String>();
 		_lstChannel.addMouseListener(new MouseAdapter() {
 			@Override
@@ -112,6 +123,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_lstChannel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		_scrollPaneChannel.setViewportView(_lstChannel);
 		
+		// Initialize user list
 		_lstUser = new JList<String>();
 		_lstUser.addMouseListener(new MouseAdapter() {
 			@Override
@@ -130,6 +142,11 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_modelUser = new DefaultListModel<String>();
 		_lstUser.setModel(_modelUser);
 		_scrollPaneUser.setViewportView(_lstUser);
+		
+		// Initialize owned channel list.
+		_modelOwnedCh = new DefaultListModel<String>();
+		_lstOwnedCh = new JList<String>();
+		_scrollPaneOwnedCh.setViewportView(_lstOwnedCh);
 		
 		/*
 		 * Initialize the button.
@@ -165,6 +182,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_textField.setBounds(156, 280, 336, 20);
 		_contentPane.add(_textField);
 		_textField.setColumns(10);
+		
 		
 		start();
 	}
@@ -250,6 +268,10 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	/**
 	 * 
 	 */
+	private JTextPane _textPaneOwnedCh;
+	/**
+	 * 
+	 */
 	private JTextPane _txtpnAddChannel;
 	/**
 	 * Scrollpane for user view.
@@ -260,6 +282,10 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	 */
 	private JScrollPane _scrollPaneChannel;
 	/**
+	 * 
+	 */
+	private JScrollPane _scrollPaneOwnedCh;
+	/**
 	 * List of users.
 	 */
 	private JList<String> _lstUser;
@@ -268,6 +294,12 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	 * List of channels.
 	 */
 	private JList<String> _lstChannel;
+	private Map<String, DefaultListModel<String>> _channels;
+	/**
+	 * 
+	 */
+	private JList<String> _lstOwnedCh;
+	private DefaultListModel<String> _modelOwnedCh;
 	/**
 	 * The text input for creating new channels.
 	 */
@@ -280,10 +312,6 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	 * 
 	 */
 	private AddressBook _addressBook;
-	/**
-	 * 
-	 */
-	private Map<String, DefaultListModel<String>> _channels;
 	/**
 	 * 
 	 */
