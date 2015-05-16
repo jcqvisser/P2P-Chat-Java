@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 
+import com.networks.p2pchat.Channel.JoinResponse;
 import com.networks.p2pchat.Message.MessageType;
 
 /**
@@ -138,13 +139,24 @@ public class PostOffice implements Runnable {
 	public synchronized void handleMessage(String message, String targetIp, String targetChannel) {
 		// Create new message object.
 		synchronized(this) {
-			_inbox.add(new Message(
-				MessageType.MSG,
-				_me,
-				new Peer("targetId", targetIp),
-				targetChannel,
-				message));
-			notify();
+			if (targetChannel.compareTo("private") == 0){
+				_inbox.add(new Message(
+						MessageType.MSG,
+						_me,
+						_addressBook.getAddress(targetIp),
+						//new Peer("targetId", targetIp),
+						targetChannel,
+						message));
+				notify();
+			} else if(targetIp.compareTo(_me.getIp()) == 0) {
+				_inbox.add(new Message(
+						MessageType.MSGCH,
+						_me,
+						_me,
+						targetChannel,
+						message));
+			}
+			
 		}
 	}
 	
@@ -209,7 +221,7 @@ public class PostOffice implements Runnable {
 			handleLISTUSERS(message);	
 			break;
 		case JOIN: 
-//			handleJOIN(message);	
+			handleJOIN(message);	
 // needs to be passed to the channel object and the return must be looked at
 // must be passed to gui
 			break;
@@ -220,6 +232,9 @@ public class PostOffice implements Runnable {
 		case NOTAMEMBER:
 //			handleNOTAMEMBER(message);
 // send to gui
+			break;
+		case JOINED:
+//			handleJOINED();
 			break;
 		}
 	}
@@ -236,7 +251,7 @@ public class PostOffice implements Runnable {
 			_graphicInterface.displayMessage(message.getText(), 
 					message.getOrigin(),
 					message.getOrigin().getIp(), 
-					message.getChannelID());
+					"private");
 		} else if (_addressBook.addressExists(message.getDestination().getIp())) {
 			_conversationHolder.sendMessage(message);
 		} else {
@@ -387,7 +402,10 @@ public class PostOffice implements Runnable {
 				_conversationHolder.sendMessage(messageFwd);
 			}
 		}
-				
+		_graphicInterface.displayMessage(message.getText(), 
+				message.getOrigin(), 
+				message.getDestination().getIp(), 
+				message.getChannelID());
 	}
 /**
  * Determines whether a channel exists in the {@link _channelList} as defined by it's
@@ -455,19 +473,47 @@ public class PostOffice implements Runnable {
 		//TODO Send to gui
 	}
 	
+	private void handleJOIN(Message message) {
+		if (!channelExists(message.getChannelID())) {
+			// TODO send invalid channel
+			return;
+		}
+		JoinResponse jr = _channelList.get(message.getChannelID()).addUserByMessage(message);
+		switch (jr) {
+		case ALREADY_JOINED:
+			break;
+		case DETAILS_CORRECT:
+//			sendJOINED(message.getOrigin(), message.getChannelID());
+			break;
+		case INVALID_PASSWORD:
+//			sendINVALIDPASS(message.getOrigin(), message.getChannelID());
+			break;
+		case LOGIN_REQUIRED:
+//			sendINVALIDPASS(message.getOrigin(), message.getChannelID());
+			break;
+		case SUPPLY_PASSWORD:
+//			sendINVALIDPASS(message.getOrigin(), message.getChannelID());
+			break;
+		case WRONG_CHANNEL:
+//			sendINVALIDCH(message.getOrigin(), message.getChannelID());
+			break;
+		case WRONG_USER:
+			break;
+		}
+	}
+	
 	private void addAddress(Peer address) {
 		_addressBook.addAddress(address);
 		_graphicInterface.updateUserList();
 	}
 	
-	public void sendLISTCH(String IP) {
-		_messageBuilder.sendLISTCH(IP);
-	}
+	public void sendLISTCH(String IP) { _messageBuilder.sendLISTCH(IP); }
 	
 	public void sendJOIN(String IP, String channel) { _messageBuilder.sendJOIN(IP, channel);}
 	
-	public void createChannel(String Channel) {
-		// TODO implement, mother fucker
+	public void createChannel(String channel) {
+		Channel ch = new Channel(channel, _me);
+		_channelList.put(channel, ch);
 	}
 	
 	/**

@@ -56,6 +56,14 @@ public class MessageBuilder {
 		_conversationHolder.sendMessage(msg);
 	}
 	
+	public void sendJOINED(Peer a, String channelId){
+		Message msg = new Message(MessageType.JOINED,
+				_me,
+				a,
+				channelId);
+		_conversationHolder.sendMessage(msg);
+	}
+	
 	private ConversationHolder _conversationHolder;
 	private Peer _me;
 	private AddressBook _addressBook;
