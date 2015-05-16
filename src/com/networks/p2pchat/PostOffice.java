@@ -56,7 +56,7 @@ public class PostOffice implements Runnable {
 				try {
 					wait();
 				} catch (InterruptedException ie) {
-					System.out.println("Wait interrupted: " + ie);
+					System.err.println("Wait interrupted: " + ie);
 				}
 				ListIterator<Message> itr = _messageBuffer.listIterator();
 				while(itr.hasNext()) {
@@ -392,7 +392,6 @@ public class PostOffice implements Runnable {
 	}
 	
 	private void handleMSGCH(Message message) {
-		System.out.println("Handling message channel");
 		if (!channelExists(message.getChannelID())) {
 			if(message.getDestination().getIp().compareTo(_me.getIp()) == 0) {
 				_graphicInterface.displayMessage(message.getText(), message.getOrigin(), 
@@ -403,7 +402,7 @@ public class PostOffice implements Runnable {
 			return; 
 		} else {
 			if (!_channelList.get(message.getChannelID()).hasUser(message.getOrigin())) {
-				System.out.println("User is not part of the channel");
+				System.err.println("User is not part of the channel");
 				return;
 			}
 			
@@ -416,7 +415,7 @@ public class PostOffice implements Runnable {
 					_conversationHolder.sendMessage(messageFwd);
 				}
 			}
-			if(message.getOrigin().getId().compareTo(_me.getIp()) != 0) {
+			if(message.getOrigin().getIp().compareTo(_me.getIp()) != 0) {
 				_graphicInterface.displayMessage(message.getText(), 
 						message.getOrigin(), 
 						message.getDestination().getIp(), 
@@ -493,12 +492,11 @@ public class PostOffice implements Runnable {
 	private void handleJOIN(Message message) {
 		if (!channelExists(message.getChannelID())) {
 			// TODO send invalid channel
-			System.out.println("channel doesnt exist");
+			System.err.println("channel doesnt exist");
 			return;
 		}
 		JoinResponse jr = _channelList.get(message.getChannelID()).addUserByMessage(message);
 		sendJoinResponseMessage(jr, message);
-		System.out.println("handlejoin");
 	}
 	
 	private void handlePASS(Message message) {

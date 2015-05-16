@@ -79,12 +79,10 @@ public class MessageBuilder {
 	}
 	
 	public void sendJoinResponseMessage(JoinResponse jr, Message message) {
-		System.out.println("sendjoinrespoenfafewa" + jr);
 		switch (jr) {
 		case ALREADY_JOINED:
 			break;
 		case DETAILS_CORRECT:
-			System.out.println("details correct");
 			sendJOINED(message.getOrigin().getIp(), message.getChannelID());
 			break;
 		case INVALID_PASSWORD:
