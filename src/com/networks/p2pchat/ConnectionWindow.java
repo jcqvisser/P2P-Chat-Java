@@ -123,9 +123,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 					if(evt.getClickCount() == 2) {
 						_graphicInterface.sendJOIN(_nameIpMap.get(_lstUser.getSelectedValue()), "private");
 					}
-					
 				} 
-				
 			}
 		});
 		_lstUser.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -140,7 +138,9 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_btnAddChannel = new JButton("Private Conversation");
 		_btnAddChannel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				_graphicInterface.sendJOIN(_nameIpMap.get(_lstUser.getSelectedValue()), "private");
+				if(_nameIpMap.get(_lstUser.getSelectedValue()) != null) {
+					_graphicInterface.sendJOIN(_nameIpMap.get(_lstUser.getSelectedValue()), "private");
+				}
 			}
 		});
 		_btnAddChannel.setBounds(256, 240, 236, 29);
