@@ -244,6 +244,8 @@ public class PostOffice implements Runnable {
 			break;
 		case INVALIDCH:
 //			handleINVALIDCH(message);
+		case CHKICK:
+			handleCHKICK(message);
 		}
 	}
 
@@ -520,6 +522,10 @@ public class PostOffice implements Runnable {
 		_graphicInterface.addWindow(message.getOrigin().getIp(), message.getChannelID());
 	}
 	
+	private void handleCHKICK(Message message) {
+		_graphicInterface.removeClientWindow(message.getOrigin().getIp(), message.getChannelID());
+	}
+	
 	private void addAddress(Peer address) {
 		if (address.getIp().compareTo(_me.getIp()) != 0) {
 			_addressBook.addAddress(address);
@@ -556,6 +562,10 @@ public class PostOffice implements Runnable {
 		return channelIDs;
 	}
 	
+	public Peer getMe(){
+		return _me;
+	}
+	
 	public void sendLISTCH(String IP) { _messageBuilder.sendLISTCH(IP); }
 	
 	public void sendJOIN(String IP, String channel) { _messageBuilder.sendJOIN(IP, channel);}
@@ -564,7 +574,8 @@ public class PostOffice implements Runnable {
 	
 	public void sendINVALIDPASS(String IP, String channel) {_messageBuilder.sendINVALIDPASS(IP, channel);}
 	
-//	public void sendINVALIDCH()
+	public void sendINVALIDCH(String IP, String channel) {_messageBuilder.sendINVALIDCH(IP, channel);}
+	
 	public void sendJoinResponseMessage(JoinResponse jr, Message msg) {_messageBuilder.sendJoinResponseMessage(jr, msg);}
 	
 	
