@@ -68,7 +68,11 @@ public class GraphicInterface {
 	 * @param channel
 	 */
 	public synchronized void sendJOIN(String ip, String channel) {
-		_postOffice.sendJOIN(ip, channel);
+		if(channel.compareTo("private") == 0) {
+			addWindow(ip, channel);
+		} else {
+			_postOffice.sendJOIN(ip, channel);
+		}
 	}
 	
 	/**
