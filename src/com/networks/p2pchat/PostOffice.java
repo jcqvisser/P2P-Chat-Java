@@ -147,7 +147,6 @@ public class PostOffice implements Runnable {
 						//new Peer("targetId", targetIp),
 						targetChannel,
 						message));
-				notify();
 			} else if(targetIp.compareTo(_me.getIp()) == 0) {
 				_inbox.add(new Message(
 						MessageType.MSGCH,
@@ -156,7 +155,7 @@ public class PostOffice implements Runnable {
 						targetChannel,
 						message));
 			}
-			
+			notify();
 		}
 	}
 	
@@ -476,10 +475,12 @@ public class PostOffice implements Runnable {
 	private void handleJOIN(Message message) {
 		if (!channelExists(message.getChannelID())) {
 			// TODO send invalid channel
+			System.out.println("channel doesnt exist");
 			return;
 		}
 		JoinResponse jr = _channelList.get(message.getChannelID()).addUserByMessage(message);
 		sendJoinResponseMessage(jr, message);
+		System.out.println("handlejoin");
 	}
 	
 	private void handlePASS(Message message) {

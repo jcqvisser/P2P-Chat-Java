@@ -92,22 +92,22 @@ public class Channel {
 			return JoinResponse.WRONG_CHANNEL;
 		}
 		
-		if (joinMessage.getMessageType() != MessageType.JOIN ||
+		if (joinMessage.getMessageType() != MessageType.JOIN &&
 				joinMessage.getMessageType() != MessageType.PASS) {
 			return JoinResponse.LOGIN_REQUIRED;
 		}
 		
-		if (joinMessage.getMessageType() == MessageType.JOIN || 
-				_channelPass.compareTo("") == 0) {
+		if (joinMessage.getMessageType() == MessageType.JOIN && 
+				(_channelPass == null || _channelPass.compareTo("") == 0 )){
 			return addUser(joinMessage.getOrigin());
 		}
 		
-		if (joinMessage.getMessageType() == MessageType.PASS ||
+		if (joinMessage.getMessageType() == MessageType.PASS &&
 				_channelPass.compareTo(joinMessage.getText()) == 0) {
 			return addUser(joinMessage.getOrigin());
 		}
 		
-		if (joinMessage.getMessageType() == MessageType.JOIN || _channelPass.compareTo("") != 0) {
+		if (joinMessage.getMessageType() == MessageType.JOIN && (_channelPass.compareTo("") != 0 || _channelPass != null)) {
 			return JoinResponse.INVALID_PASSWORD;
 		}	
 		
