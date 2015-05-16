@@ -329,18 +329,21 @@ public class PostOffice implements Runnable {
 			System.out.println("after if");
 			messageFwd.setSource(_me);
 			for (Map.Entry<String, String> entry : _addressBook.getMap().entrySet()) {
-				System.out.print("destination peer" + entry.getValue() + entry.getKey());
-				messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
-				messageFwd.setTtl(message.getTtl() - 1);
-				_conversationHolder.sendMessage(messageFwd);
+				if (entry.getKey().compareTo(_me.getIp()) != 0){
+					System.out.print("destination peer" + entry.getValue() + entry.getKey());
+					messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
+					messageFwd.setTtl(message.getTtl() - 1);
+					_conversationHolder.sendMessage(messageFwd);
+				}
 			}
 		}
 		Message messageHI = new Message(MessageType.HI,
 						_messageTtl - message.getTtl(),
 						_me,
 						_me,
-						message.getOrigin());
+						message.getSource());
 		_conversationHolder.sendMessage(messageHI);
+		System.out.println("HI sent to " + messageHI.getDestination().getIp());
 	}
 
 	/**
