@@ -33,6 +33,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	public ConnectionWindow(GraphicInterface graphicInterface) {
 		_graphicInterface = graphicInterface;
 		_channels = new HashMap<String, DefaultListModel<String>>();
+		_nameIpMap = new HashMap<String, String>();
 		
 		_addressBook = AddressBook.getInstance();
 		
@@ -98,7 +99,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				System.out.println("Selected channel: " + _lstChannel.getSelectedValue());
-				_graphicInterface.sendJOIN(_lstUser.getSelectedValue(), _lstChannel.getSelectedValue());
+				_graphicInterface.sendJOIN(_nameIpMap.get(_lstUser.getSelectedValue()), _lstChannel.getSelectedValue());
 			}
 		});
 		_lstChannel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -108,9 +109,9 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_lstUser.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				System.out.println("Selected user: " + _lstUser.getSelectedValue());
-				_lstChannel.setModel(_channels.get(_lstUser.getSelectedValue()));
-				_graphicInterface.sendLISTCH(_lstUser.getSelectedValue());
+				System.out.println("Selected user: " + _lstUser.getSelectedValue() + " - Under IP: " + _nameIpMap.get(_lstUser.getSelectedValue()));
+				_lstChannel.setModel(_channels.get(_nameIpMap.get(_lstUser.getSelectedValue())));
+				_graphicInterface.sendLISTCH(_nameIpMap.get(_lstUser.getSelectedValue()));
 			}
 		});
 		_lstUser.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -125,7 +126,7 @@ public class ConnectionWindow extends JFrame implements Runnable {
 		_btnAddChannel = new JButton("Private Conversation");
 		_btnAddChannel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				_graphicInterface.sendJOIN(_lstUser.getSelectedValue(), "private");
+				_graphicInterface.sendJOIN(_nameIpMap.get(_lstUser.getSelectedValue()), "private");
 			}
 		});
 		_btnAddChannel.setBounds(256, 240, 236, 29);
@@ -161,8 +162,11 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	public void updateUserList() {
 		_modelUser.clear();
 		for(Entry<String, String> user : _addressBook.getMap().entrySet()) {
-			_modelUser.addElement(user.getValue() + " (" + user.getKey() + ")");
+			String listEntry = user.getValue() + " (" + user.getKey() + ")";
+			_modelUser.addElement(listEntry);
+			_nameIpMap.put(listEntry, user.getKey());
 			if(!_channels.containsKey(user.getKey())) {
+				System.out.println("Adding new Default List Model for: " + user.getKey());
 				_channels.put(user.getKey(), new DefaultListModel<String>());
 			}
 		}
@@ -267,4 +271,8 @@ public class ConnectionWindow extends JFrame implements Runnable {
 	 * 
 	 */
 	private Map<String, DefaultListModel<String>> _channels;
+	/**
+	 * 
+	 */
+	private Map<String, String> _nameIpMap;
 }
