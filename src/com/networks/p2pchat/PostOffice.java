@@ -322,10 +322,13 @@ public class PostOffice implements Runnable {
 	 * @see com.networks.p2pchat.PostOffice#addToHeloLog(Message)
 	 */
 	void handleHELO(Message message) {
+		System.out.println("handleHELO");
 		addAddress(message.getSource());
 		addAddress(message.getOrigin());
 		Message messageFwd = new Message(message);
-		addToHeloLog(message);
+		Message loggedHelo = new Message(message);
+		
+		_heloLog.put(messageFwd.getDestination().getIp(), message.getSource().getIp());
 		if (message.getTtl() > 0){
 			messageFwd.setSource(_me);
 			for (Map.Entry<String, String> entry : _addressBook.getMap().entrySet()) {
@@ -341,6 +344,7 @@ public class PostOffice implements Runnable {
 						_me,
 						_me,
 						message.getSource());
+		System.out.println("sending HI to: " + messageHI.getDestination().getIp());
 		_conversationHolder.sendMessage(messageHI);
 	}
 
@@ -356,45 +360,14 @@ public class PostOffice implements Runnable {
 	void handleHI(Message message) {
 		addAddress(message.getOrigin());
 		addAddress(message.getSource());
-		if (message.getDestination().getIp().compareTo(_me.getIp()) != 0) {
-			Message messageFwd = new Message(message);
-			messageFwd.setSource(_me);
-			Peer newDestination = getHeloSource(message);
-			if (newDestination == null) {return;}
-			messageFwd.setDestination(newDestination);
-			System.out.println("Hi forwarded to: " + messageFwd.getDestination().getIp());
-			_conversationHolder.sendMessage(messageFwd);
-		}
-	}
-	
-	/**
-	 * the getHeloSource function finds the {@link MessageType#HELO} message correspnding
-	 * to the HI message passed in in order to let the HI message find it's path back to it's origin.
-	 * @see com.networks.p2pchat.PostOffice#handleHI(Message)
-	 * @param message a HI message of type {@linkplain com.networks.p2pchat.Message}
-	 * @return A Peer object that is the source of the HELO message corresponding the the HI message parameter 
-	 */
-	private Peer getHeloSource(Message message) {
-		String heloOriginIp = message.getDestination().getIp(); 
-		for (Message msg : _heloMessages) {
-			if (msg.getOrigin().getIp().compareTo(heloOriginIp) == 0){
-				return msg.getSource();
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Adds a {@link com.networks.p2pchat.Message} object of type {@link com.networks.p2pchat.Message.MessageType#HELO} to the local list thereof
-	 * so its source and origin may be used to determine the forward path of subsequent {@link com.networks.p2pchat.Message.MessageType#HI} messages
-	 * @param message a Message object of type HELO
-	 */
-	private void addToHeloLog(Message message) {
-		for (Message msg : _heloMessages) {
-			if (msg.getOrigin().getIp().compareTo(message.getOrigin().getIp()) == 0) {
-				_heloMessages.remove(msg);
-			}
-		}
+		System.out.println("handleHI");
+		Message messageFwd = new Message(message);
+		messageFwd.setSource(_me);
+		Peer newDestination = _addressBook.getAddress(_heloLog.get(message.getSource().getIp()));
+		if (newDestination == null) {return;}
+		messageFwd.setDestination(newDestination);
+		System.out.println("Hi forwarded to: " + messageFwd.getDestination().getIp());
+		_conversationHolder.sendMessage(messageFwd);
 	}
 	
 	private void handleMSGCH(Message message) {
@@ -617,11 +590,6 @@ public class PostOffice implements Runnable {
 	 * before it is deleted.
 	 */
 	private int _messageTtl = 4;
-	/**
-	 * This list contains all of the helo messages that have been received to avoid
-	 * resending a message to someone who has already received one.
-	 */
-	private ArrayList<Message> _heloMessages;
 	/** 
 	 * The port object defines the port that the program is listening on,
 	 * and therefore the port that connections are made to.
@@ -634,4 +602,6 @@ public class PostOffice implements Runnable {
 	private HashMap<String, Channel> _channelList;
 	
 	private MessageBuilder _messageBuilder;
+	
+	private HashMap<String, String> _heloLog;
 }
