@@ -106,6 +106,7 @@ public class GraphicInterface {
 	 */
 	public synchronized void removeChannel(String channelId){
 		_postOffice.removeChannel(channelId);
+		removeClientWindow(_me.getIp(), channelId);
 	}
 	
 	/**
