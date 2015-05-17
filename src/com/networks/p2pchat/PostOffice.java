@@ -325,7 +325,6 @@ public class PostOffice implements Runnable {
 		System.out.println("handleHELO");
 		Message messageFwd = new Message(message);
 		
-		_heloLog.put(messageFwd.getDestination().getIp(), message.getSource().getIp());
 		if (message.getTtl() > 0){
 			messageFwd.setSource(_me);
 			for (Map.Entry<String, String> entry : _addressBook.getMap().entrySet()) {
@@ -333,6 +332,7 @@ public class PostOffice implements Runnable {
 						entry.getKey().compareTo(message.getSource().getIp()) != 0){
 					messageFwd.setDestination(new Peer(entry.getValue(), entry.getKey()));
 					messageFwd.setTtl(message.getTtl() - 1);
+					_heloLog.put(messageFwd.getDestination().getIp(), message.getSource().getIp());
 					_conversationHolder.sendMessage(messageFwd);
 				}
 			}
@@ -364,6 +364,7 @@ public class PostOffice implements Runnable {
 		System.out.println("handleHI");
 		Message messageFwd = new Message(message);
 		messageFwd.setSource(_me);
+		System.out.println("Helo log source: " + _heloLog.get(message.getSource().getIp()));
 		Peer newDestination = _addressBook.getAddress(_heloLog.get(message.getSource().getIp()));
 		if (newDestination == null) {return;}
 		messageFwd.setDestination(newDestination);
