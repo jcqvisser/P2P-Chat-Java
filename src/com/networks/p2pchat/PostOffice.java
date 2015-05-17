@@ -362,6 +362,7 @@ public class PostOffice implements Runnable {
 			Peer newDestination = getHeloSource(message);
 			if (newDestination == null) {return;}
 			messageFwd.setDestination(newDestination);
+			System.out.println("Hi forwarded to: " + messageFwd.getDestination().getIp());
 			_conversationHolder.sendMessage(messageFwd);
 		}
 	}
