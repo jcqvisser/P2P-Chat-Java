@@ -52,7 +52,6 @@ public class MessageBuilder {
 							_me,
 							new Peer("", IP));
 		_conversationHolder.sendMessage(msg);
-		System.out.println("Hello sent to: " + msg.getDestination().getIp());
 	}
 	
 	public void sendJOINED(String IP, String channelId){
