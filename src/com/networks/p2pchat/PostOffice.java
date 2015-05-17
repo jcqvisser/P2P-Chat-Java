@@ -323,10 +323,7 @@ public class PostOffice implements Runnable {
 	 */
 	void handleHELO(Message message) {
 		System.out.println("handleHELO");
-		addAddress(message.getSource());
-		addAddress(message.getOrigin());
 		Message messageFwd = new Message(message);
-		Message loggedHelo = new Message(message);
 		
 		_heloLog.put(messageFwd.getDestination().getIp(), message.getSource().getIp());
 		if (message.getTtl() > 0){
@@ -346,6 +343,9 @@ public class PostOffice implements Runnable {
 						message.getSource());
 		System.out.println("sending HI to: " + messageHI.getDestination().getIp());
 		_conversationHolder.sendMessage(messageHI);
+		// Add addresses after sending messages to known contact.
+		addAddress(message.getSource());
+		addAddress(message.getOrigin());
 	}
 
 	/**
